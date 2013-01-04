@@ -1,0 +1,15 @@
+#!/bin/bash
+destination=$CODEPATH/
+
+if [ -a $destination ]
+  	then
+    	echo "$destination exists."
+	if [ -a $2 ]
+  		then
+    		echo "$2 exists."
+		cp -rvi $2 $destination
+	fi
+fi
+
+
+

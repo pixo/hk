@@ -1,0 +1,32 @@
+#!/bin/bash
+
+if [ -z "$PROJECT" ] 
+	then
+		if [ "-d" == $1 ]
+			then
+				devmode=true
+				codepath=/$HOMEWORKS/users/$USER/codes
+				project=$2
+			else
+				devmode=false
+				codepath=/$HOMEWORKS/codes/release
+				project=$1
+		fi
+
+		export DEVMODE=$devmode
+		export PROJECTSPATH=/$HOMEWORKS/projects
+		export CODEPATH=$codepath
+		PROJECTENV=$CODEPATH/projenv/$project.env
+
+		if [ -a $PROJECTENV ]
+		  	then
+		  		export PROJECT=$project
+		    	bash --rcfile $PROJECTENV
+		    else
+		    	echo "project '$1' doesn't exists."
+		fi
+
+	else
+		echo "You already are in the project '$PROJECT'. Please use the command 'exit' and try again."
+
+fi
