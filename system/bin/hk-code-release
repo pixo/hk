@@ -1,15 +1,20 @@
 #!/bin/bash
 
-destination=$CODEPATH/
+destination=$CODEPATH
 origin=$HOMEWORKS/users/$USER/codes/debug
 directories="python templates system"
 
-if [ -z "$$HOMEWORKS" ]
+if [ -n "$HOMEWORKS" ]
 	then
-		echo "you should set the HOMEWORKS variable"
-	else
-	   	echo "$destination exists."
-    	for directory in $directories 
-    		do	cp -rv $origin/$directory $destination
-    		done
+		if [ -n "$CODEPATH" ]
+			then 
+		    	for directory in $directories 
+		    		do	cp -rv $origin/$directory $destination
+		    	done
+	    	else
+	    		echo "You should set a project with the command first eg:'hk-project project-name'. "
+	    	fi
+else
+		echo "You should set the HOMEWORKS variable."
+
 fi
