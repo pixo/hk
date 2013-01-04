@@ -1,15 +1,15 @@
 #!/bin/bash
+
 destination=$CODEPATH/
+origin=$HOMEWORKS/users/$USER/codes/debug
+directories="python templates system"
 
-if [ -a $destination ]
-  	then
-    	echo "$destination exists."
-	if [ -a $2 ]
-  		then
-    		echo "$2 exists."
-		cp -rvi $2 $destination
-	fi
+if [ -z "$$HOMEWORKS" ]
+	then
+		echo "you should set the HOMEWORKS variable"
+	else
+	   	echo "$destination exists."
+    	for directory in $directories 
+    		do	cp -rv $origin/$directory $destination
+    		done
 fi
-
-
-
