@@ -1,9 +1,9 @@
 #!/bin/bash
 
 destination="/etc/bash_completion.d"
-origin=$CODEPATH/system/bash_completion.d
+origin=$HK_CODE_PATH/system/bash_completion.d
 
-if [ -n "$HOMEWORKS" ]
+if [ -n "$HK_ROOT" ]
 	then
 		if [ -d $destination ]
 			then 
@@ -11,7 +11,7 @@ if [ -n "$HOMEWORKS" ]
 					then
 				    	for file in `ls $origin/hk-*completion` 
 		    				
-		    				do sudo ln -sfv $file $BASH_COMPLETION_DIR $destination
+		    				do sudo ln -sfv $file $destination
 				    	
 				    	done
 				else
@@ -21,6 +21,6 @@ if [ -n "$HOMEWORKS" ]
 	    	echo "Directory '/etc/bash_completion.d' doesn't exist"
 	    fi
 else
-		echo "You should set the HOMEWORKS variable."
+		echo "You should set the HK_ROOT variable."
 
 fi

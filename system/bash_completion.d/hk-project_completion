@@ -22,7 +22,12 @@ if [[ "$cur" == -* ]]
 	then
 		opts="-d -help"
 	else
-		opts=`ls $HOMEWORKS/projects`
+		if [ -d "$HK_ROOT" ]
+			then
+				opts=`ls $HK_ROOT/projects`
+			else
+				opts=""
+		fi
 
 fi
 

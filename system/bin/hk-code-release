@@ -1,12 +1,12 @@
 #!/bin/bash
 
-destination=$CODEPATH
-origin=$HOMEWORKS/users/$USER/codes/debug
+destination=$HK_CODE_PATH
+origin=$HK_ROOT/users/$USER/codes/debug
 directories="python templates system"
 
-if [ -n "$HOMEWORKS" ]
+if [ -n "$HK_ROOT" ]
 	then
-		if [ -n "$CODEPATH" ]
+		if [ -n "$HK_CODE_PATH" ]
 			then 
 		    	for directory in $directories 
 		    		do	cp -rv $origin/$directory $destination
@@ -15,6 +15,6 @@ if [ -n "$HOMEWORKS" ]
 	    		echo "You should set a project with the command first eg:'hk-project project-name'. "
 	    	fi
 else
-		echo "You should set the HOMEWORKS variable."
+		echo "You should set the HK_ROOT variable."
 
 fi
