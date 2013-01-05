@@ -4,6 +4,22 @@ destination=$HK_CODE_PATH
 origin=$HK_ROOT/users/$USER/codes/debug
 directories="python templates system"
 
+if [ -n "$1" ]
+	then
+		isindir=false
+		for value in $directories
+			do
+				if [ $1 == $value ] 
+					then
+						isindir=true
+				fi
+		done
+		if $isindir
+			then
+				directories=$1
+		fi
+fi
+
 if [ -n "$HK_ROOT" ]
 	then
 		if [ -n "$HK_CODE_PATH" ]
