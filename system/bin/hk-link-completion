@@ -1,7 +1,23 @@
 #!/bin/bash
 
 destination="/etc/bash_completion.d"
-origin=$HK_CODE_PATH/system/bash_completion.d
+
+if $HK_DEV_MODE
+	then
+		echo -e "\\033[0;33mWARNING:\\033[0;00mYou are in devmode."
+		echo "What do you want to link [Debug/Release]?"
+
+		read ans
+		case "$ans" in
+			d*|D*)
+				origin=$HK_USER_CODE_PATH/system/bash_completion.d;;
+			r*|R*)
+				origin=$HK_CODE_PATH/system/bash_completion.d;;
+			*)
+				echo 'exiting';
+				exit;;
+		esac
+fi
 
 if [ -n "$HK_ROOT" ]
 	then
@@ -10,9 +26,7 @@ if [ -n "$HK_ROOT" ]
 				if [ -d $origin ]
 					then
 				    	for file in `ls $origin/hk-*completion` 
-		    				
 		    				do sudo ln -sfv $file $destination
-				    	
 				    	done
 				else
 					echo "You should set a project with the command first eg:'hk-project project-name'. "
@@ -22,5 +36,4 @@ if [ -n "$HK_ROOT" ]
 	    fi
 else
 		echo "You should set the HK_ROOT variable."
-
 fi
