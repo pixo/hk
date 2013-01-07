@@ -1,0 +1,7 @@
+{
+  "env" : {
+    "default" : {
+      "db" : "$HK_DB_SERVER/$HK_DB"
+    }
+  }
+}
