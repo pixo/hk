@@ -16,12 +16,12 @@ if [ -n "$HK_ROOT" ]
 				export HK_CODE_PATH=$HK_ROOT/codes/release
 				export HK_DEV_MODE=$devmode
 				export HK_PROJECTS_PATH=$HK_ROOT/projects
-				PROJECTENV=$HK_ROOT/codes/projenv/$project.env
+				export HK_PROJECT_ENV=$HK_ROOT/codes/projenv/$project.env
 
 				if [ -a $PROJECTENV ]
 				  	then
 				  		export HK_PROJECT=$project
-				    	bash --rcfile $PROJECTENV
+				    	bash --rcfile $HK_PROJECT_ENV
 				    else
 				    	echo "project '$1' doesn't exists."
 				fi

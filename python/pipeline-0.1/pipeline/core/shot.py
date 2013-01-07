@@ -9,9 +9,9 @@ import os,time
 
 def lsShots(db, project="", sequence="", shot=""):
     if sequence != "":
-        sequence="sq%s_" % sequence
+        sequence="%s_" % sequence
         if shot != "":
-            shot="sh%s_" % shot
+            shot="%s_" % shot
          
     startkey = u"%s_%s%s" % (project , sequence, shot)
     endkey = u"%s_%s%s\u0fff" % (project , sequence, shot)
@@ -34,10 +34,10 @@ def createShot(project, sequence, name, description, cut_in, cut_out, db):
     if not (name in shotslist ) :
         shot_doc = {
             "type": "shot",
-            "_id": "%s_%s" % (project_id, name),
-            "name": name,
+            "_id": "%s_%s" % (sequence_id, name),
             "project_id": project_id,
             "sequence_id": sequence_id,
+            "name": name,
             "description": description,
             "cut_in": cut_in,
             "cut_out": cut_out,

@@ -16,7 +16,7 @@ for seq in range(1,3):
     sequence_name="sq%03d" % seq
     core.sequence.createSequence(project, sequence_name, "ceci est une sequence", db)
     for sh in range(1,10):
-        shot_name="%s_sh%03d"% (sequence_name,sh)
+        shot_name="%ssh%03d"% (sequence_name,sh)
         core.shot.createShot(project, sequence_name, shot_name, "ceci est le shot %03d" % sh, 1, 100, db)
 
 #core.shot.lsShots(db, project,sequence)
