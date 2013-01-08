@@ -1,0 +1,15 @@
+MODULES_MANAGER_V2
+pipeline.__init__|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/__init__.py
+pipeline.core.__init__|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/core/__init__.py
+pipeline.core.project|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/core/project.py
+pipeline.core.repository|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/core/repository.py
+pipeline.core.sequence|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/core/sequence.py
+pipeline.core.shot|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/core/shot.py
+pipeline.core.shotTask|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/core/shotTask.py
+pipeline.examples.__init__|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/examples/__init__.py
+pipeline.examples.repository|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/examples/repository.py
+pipeline.examples.sequences|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/examples/sequences.py
+pipeline.examples.shots|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/examples/shots.py
+pipeline.utils.__init__|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/utils/__init__.py
+pipeline.utils.dataBase|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/utils/dataBase.py
+pipeline.utils.path|/homeworks/users/pixo/codes/debug/python/pipeline-0.1/pipeline/utils/path.py

@@ -1,0 +1,26 @@
+'''
+Created on Dec 30, 2012
+
+@author: pixo
+'''
+import couchdb
+import os
+import createShot,createProject,createSequence,lsShots
+
+server = couchdb.Server(os.getenv("DBSERVER"))
+db=server[os.getenv("DB")]
+
+projnam = "testing"
+
+lsShots.lsShots(db, "testing")
+
+#createProject.createProject(projnam, db)
+
+#for i in range(1,4):
+#    createSequence.createSequence(projnam, "sq%03d" % i , "my sequence %03d", db)
+
+
+
+#for i in range(1,4):
+#    createShot.createShot(projnam,"sq001","sh%03d" % i , "my shot %03d" % i, 1, 100, db)
+

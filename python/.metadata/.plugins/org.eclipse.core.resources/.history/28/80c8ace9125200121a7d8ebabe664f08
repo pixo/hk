@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+
+import couchdb
+import argparse
+
+dname="db1"
+user="admin:admin"
+server = couchdb.Server("http://%s@127.0.0.1:5984" % user)
+
+if dname in server:
+    db = server[dname]
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("project", help="name of the project to create")
+    args = parser.parse_args()
+    
+    key = u"project_%s" % args.project
+    view = db.view("_design/%s/_view/shotsByProjectId" % dname, key=key)
+    for row in view.rows:
+        print row["value"]["name"]
+
+else :
+    print """Database "%s" doesn't exist""" % dname
+
+

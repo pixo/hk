@@ -1,0 +1,10 @@
+'''
+Created on Dec 30, 2012
+
+@author: pixo
+'''
+
+if __name__ == '__main__':
+    print "terminal"
+else :
+    print "indirect"

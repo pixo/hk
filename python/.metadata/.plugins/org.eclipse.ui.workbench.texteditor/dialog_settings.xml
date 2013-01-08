@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="299" key="DIALOG_WIDTH"/>
+		<item value="256" key="DIALOG_Y_ORIGIN"/>
+		<item value="1326" key="DIALOG_X_ORIGIN"/>
+		<item value="389" key="DIALOG_HEIGHT"/>
+		<item value="1|Sans|10.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="true" key="wrap"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="isRegEx"/>
+		<item value="false" key="incremental"/>
+		<item value="false" key="wholeword"/>
+		<item value="destination" key="selection"/>
+		<list key="findhistory">
+			<item value="push"/>
+			<item value="push_full_path"/>
+			<item value="file"/>
+			<item value="entity_verAtt"/>
+			<item value="    entity_verAtt[version] = entity_id&#x0A;    entity_doc[&quot;version&quot;] = entity_verAtt"/>
+			<item value="compo"/>
+			<item value="name"/>
+			<item value="shot_doc"/>
+		</list>
+		<list key="replacehistory">
+			<item value="destination"/>
+			<item value="push_full"/>
+			<item value="source_file"/>
+			<item value="entity_version_attr"/>
+			<item value="entity_version_dict"/>
+			<item value="type"/>
+			<item value="task"/>
+			<item value="task_doc"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.GotoLineAction$GotoLineDialog_dialogBounds">
+		<item value="476" key="DIALOG_Y_ORIGIN"/>
+		<item value="684" key="DIALOG_X_ORIGIN"/>
+	</section>
+</section>

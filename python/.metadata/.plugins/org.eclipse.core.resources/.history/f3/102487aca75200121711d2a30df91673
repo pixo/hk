@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+import couchdb
+import argparse
+import os,time
+
+def createProjectOnFS(projectName):
+    root = "/works/projects"
+    projectPath = "%s/%s" % (root,projectName)
+    if not os.path.exists(projectPath): 
+        os.makedirs(projectPath, mode = 0775) 
+        print "Project %s created : %s" % (projectName, projectPath)
+        
+def createProjectOnDB(projectName,db):
+    doc = {
+    "_id": "project_%s" % projectName,
+    "type": "project",
+    "name": projectName,
+    "creator": os.getenv("USER"),
+    "created": time.strftime("%Y %b %d %H:%M:%S", time.gmtime())
+    }
+    _id, _rev = db.save(doc)
+    print "Project %r created as Document(%r)" % (projectName, _id)
+
+def createProject(projectName,db):
+    createProjectOnDB(projectName,db)
+    createProjectOnFS(projectName)
+
+if __name__ == '__main__':#terminal
+    dbname="db1"
+    user="admin:admin"
+    server = couchdb.Server("http://%s@127.0.0.1:5984" % user)
+    
+    if dbname in server:
+        db = server[dbname]
+        parser = argparse.ArgumentParser()
+        
+        parser.add_argument("name", help="name of the project to create")
+        args = parser.parse_args()
+        projectName = args.name
+        
+        try :
+            createProject(projectName,db)
+    
+        except couchdb.ResourceConflict:#Project already exist
+            print 'Project "%s" already exist' % projectName
+            
+    else :
+        print """Database "%s" doesn't exist""" % dbname
+    

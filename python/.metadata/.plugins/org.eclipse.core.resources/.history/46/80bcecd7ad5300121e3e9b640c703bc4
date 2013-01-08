@@ -1,0 +1,24 @@
+'''
+Created on Dec 30, 2012
+
+@author: pixo
+'''
+
+import createShot,createProject,createSequence,lsShots
+import db1
+
+db = db1.get()
+projnam = "testing2"
+
+#lsShots.lsShots(db, "testing")
+
+createProject.createProject(projnam, db)
+
+#for i in range(1,4):
+#    createSequence.createSequence(projnam, "sq%03d" % i , "my sequence %03d", db)
+
+
+
+for i in range(1,4):
+    createShot.createShot(projnam,"sq001","sh%03d" % i , "my shot %03d" % i, 1, 100, db)
+

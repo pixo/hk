@@ -1,0 +1,19 @@
+'''
+Created on Jan 6, 2013
+
+@author: pixo
+'''
+import pipeline.core as core
+import pipeline.utils as utils
+
+
+db=utils.dataBase.getDataBase()
+project="testing"
+sequence="001"
+shot="001"
+
+#core.shot.lsShots(db, project)
+core.sequence.lsSequences(db, project)
+#core.project.createProject(project, db)
+#core.sequence.createSequence(project, sequence, "ceci est une sequence", db)
+#core.shot.createShot(project, sequence, shot, "ceci est un shot", 1, 100, db)

@@ -1,0 +1,8 @@
+'''
+Created on Jan 8, 2013
+
+@author: pixo
+'''
+import pipeline.core.repository as repository
+
+repository

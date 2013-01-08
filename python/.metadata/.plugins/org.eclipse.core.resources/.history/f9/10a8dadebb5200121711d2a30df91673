@@ -1,0 +1,12 @@
+'''
+Created on Dec 30, 2012
+
+@author: pixo
+'''
+
+def get():
+    dbname="db1"
+    user="admin:admin"
+    server = couchdb.Server("http://%s@127.0.0.1:5984" % user)
+    return server[dbname]
+    

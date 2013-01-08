@@ -1,0 +1,9 @@
+MODULES_MANAGER_V2
+createProject|/homeworks/users/pixo/code/python/zzpipe/production/createProject.py
+createSequence|/homeworks/users/pixo/code/python/zzpipe/production/createSequence.py
+createShot|/homeworks/users/pixo/code/python/zzpipe/production/createShot.py
+db1|/homeworks/users/pixo/code/python/zzpipe/production/db1.py
+lsShots|/homeworks/users/pixo/code/python/zzpipe/production/lsShots.py
+lsShots2|/homeworks/users/pixo/code/python/zzpipe/production/lsShots2.py
+projectInfo|/homeworks/users/pixo/code/python/zzpipe/production/projectInfo.py
+test|/homeworks/users/pixo/code/python/zzpipe/production/test.py

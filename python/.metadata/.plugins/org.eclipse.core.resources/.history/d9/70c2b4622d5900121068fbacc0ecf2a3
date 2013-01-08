@@ -1,0 +1,11 @@
+'''
+Created on Jan 8, 2013
+
+@author: pixo
+'''
+import pipeline.core as core
+import pipeline.utils as utils
+
+db=
+
+core.repository.push(db, entity_id)
