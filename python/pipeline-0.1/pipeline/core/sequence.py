@@ -3,8 +3,6 @@ Created on Jan 6, 2013
 
 @author: pixo
 '''
-#import couchdb
-#import argparse
 import os,time
 
 def lsSequences(db, project="", sequence=""):

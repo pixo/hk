@@ -12,22 +12,30 @@ if [ -n "$HK_ROOT" ]
 						devmode=false
 						project=$1
 				fi
+
+				if [ -z "$project" ]
+					then
+						echo "hk-project: Empty project"
+						exit
+				fi
+
 				export HK_USER_CODE_PATH=$HK_ROOT/users/$USER/codes/debug
 				export HK_CODE_PATH=$HK_ROOT/codes/release
 				export HK_DEV_MODE=$devmode
 				export HK_PROJECTS_PATH=$HK_ROOT/projects
+				export HK_HOME=$HK_ROOT/users/$USER
 				export HK_PROJECT_ENV=$HK_ROOT/codes/projenv/$project.env
 
-				if [ -a $PROJECTENV ]
+				if [ -a $HK_PROJECT_ENV ]
 				  	then
 				  		export HK_PROJECT=$project
 				    	bash --rcfile $HK_PROJECT_ENV
 				    else
-				    	echo "project '$1' doesn't exists."
+				    	echo "hk-project:project '$project' doesn't exists."
 				fi
 		else
-				echo "You already are in the project '$HK_PROJECT'. Please use the command 'exit' to leave the current project and try again."
+				echo "hk-project:You already are in the project '$HK_PROJECT'. Please use the command 'exit' to leave the current project and try again."
 		fi
 else
-	echo "Bad env:'HK_ROOT' is null.Please call an system administrator."
+	echo "hk-project:Bad env,'HK_ROOT' is null.Please call an system administrator."
 fi
