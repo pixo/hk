@@ -21,9 +21,9 @@ for seq in range(1,3):
         shot_name="%s-sh%03d"% (sequence_name,sh)
         core.shot.createShot(project, sequence_name, shot_name, "ceci est le shot %03d" % sh, 1, 100, db)
         core.shotTask.createShotTask(project, sequence_name, shot_name, "lighting", "ceci est une tache lighting", db)
-        core.shotTask.createShotTask(project, sequence_name, shot_name, "render", "ceci est une tache render", db)
-        core.shotTask.createShotTask(project, sequence_name, shot_name, "comp", "ceci est une tache comp", db)
-        core.shotTask.createShotTask(project, sequence_name, shot_name, "layout", "ceci est une tache layout", db)
+        #core.shotTask.createShotTask(project, sequence_name, shot_name, "render", "ceci est une tache render", db)
+        #core.shotTask.createShotTask(project, sequence_name, shot_name, "comp", "ceci est une tache comp", db)
+        #core.shotTask.createShotTask(project, sequence_name, shot_name, "layout", "ceci est une tache layout", db)
 
 #core.shot.lsShots(db, project,sequence)
 

@@ -51,3 +51,4 @@ def createShotTask(project, sequence, shot, type, description, db):
     else:
         print "createShotTask: Shot %s already exist" % name
         return False
+    
