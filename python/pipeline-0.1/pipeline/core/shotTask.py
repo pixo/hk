@@ -16,28 +16,28 @@ def lsShotTask(db, shot_id="",task=""):
         print row["value"]["name"]
     return tasks
 
-def createShotTask(project, sequence, shot, type, description, db):
+def createShotTask( db, project, sequence, shot, assettype, description ):
     """string projectName, string shotName, string description, int cut_in, int cut_out, couch.db.Server db"""
     project_id = "%s" % project
     sequence_id = "%s_%s" % (project_id, sequence)
     shot_id = "%s_%s" % (sequence_id, shot)
-    task_id = "%s_%s" % (shot_id, type)
+    task_id = "%s_%s" % (shot_id, assettype)
     
-    name = "%s_%s" % (shot, type)
-    shot_doc = db[shot_id]
-    tasks = shot_doc.setdefault(type, {})
-    taskslist = lsShotTask(db, shot_id, type)
+    name = "%s_%s" % (shot, assettype)
+#     shot_doc = db[shot_id]
+#     tasks = shot_doc.setdefault(assettype, {})
+    taskslist = lsShotTask(db, shot_id, assettype)
     
     if not ( name in taskslist ) :
         task_doc = {
-            "type": type,
+            "type": assettype,
             "_id": task_id,
             "project_id": project_id,
             "sequence_id": sequence_id,
             "shot_id": shot_id,
             "name": name,
             "description": description,
-            "version": dict(),
+            "versions": dict(),
             "creator": os.getenv("USER"),
             "created": time.strftime("%Y %b %d %H:%M:%S", time.gmtime()),
             "inherit": "shots",

@@ -17,7 +17,6 @@ def lsShots(db, project="", sequence="", shot=""):
     #startkey = u"%s" % ( project )
     #endkey = u"%s\u0fff" % ( project )
     
-    
     view = db.view("_design/%s/_view/shotsByProjectAndName" % "cg_project", startkey=startkey, endkey=endkey)
     shots = list()
     
@@ -30,8 +29,6 @@ def createShot(project, sequence, name, description, cut_in, cut_out, db):
     """string projectName, string shotName, string description, int cut_in, int cut_out, couch.db.Server db"""
     project_id = "%s" % project
     sequence_id = "%s_%s" % (project_id, sequence)
-    sequence_doc = db[sequence_id]
-    shots = sequence_doc.setdefault("shots", {})
     shotslist = lsShots(db, project, sequence, name)
     
     if not (name in shotslist ) :

@@ -22,14 +22,12 @@ def lsSequences(db, project="", sequence=""):
 def createSequence(project, name, description, db):
     """string projectName, string sequenceName, string description, couch.db.Server db"""
     project_id = "%s" % project
-    project_doc = db[project_id]
-    seqs = project_doc.setdefault("sequences", {})
     seqlist = lsSequences(db, project)
     
     if not (name in seqlist) :
         seq_doc = {
             "type": "sequence",
-            "_id": "%s_%s" % (project_doc["_id"], name),
+            "_id": "%s_%s" % ( project_id, name ),
             "project_id": project_id,
             "name": name,
             "description": description,
