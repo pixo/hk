@@ -17,7 +17,7 @@ def lsProjects(db, project=""):
         
     return projs
     
-def createProject(name,db):
+def createProject(db, name="NewProject", doc=""):
     projlist=lsProjects(db, name)
     
     if not (name in projlist):
@@ -32,6 +32,7 @@ def createProject(name,db):
         _id, _rev = db.save(doc)
         print "Project %r created as Document(%r)" % (name, _id)
         return True
+    
     else :
         print "Project %r already exist" % name
         return False

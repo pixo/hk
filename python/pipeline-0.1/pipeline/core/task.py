@@ -48,7 +48,7 @@ task: length is 5
 @author: pixo
 '''
 import os, time
-import pipeline
+import asset
 
 def lsTasks(db, entity_id):
     """
@@ -74,7 +74,7 @@ def lsTasks(db, entity_id):
         
     return tasks
 
-def createTask( db, entity_id, description, overridetype = "" ):
+def createTask( db="", entity_id="", description="", doc=dict(),fssuffix="" ):
     """
     Create a task.
     db, type couch.db.Server
@@ -89,7 +89,7 @@ def createTask( db, entity_id, description, overridetype = "" ):
     asset_name = "%s_%s" % ( assettype, assetname )
     name = "%s_%s_%s_%s" % ( assettype, assetname, task, fork )
     taskslist = lsTasks ( db, entity_id )
-    asset_list = pipeline.core.asset.lsAssets(db, entity_id)
+    asset_list = asset.lsAssets(db, entity_id)
     
     """ Check if the asset exist """
     if not asset_name in asset_list:
@@ -101,8 +101,8 @@ def createTask( db, entity_id, description, overridetype = "" ):
         
         """ Create the task structure """
         task_doc = {
-            "file_system":"%s/%s_%s/%s_%s_%s/%s_%s_%s_%s" % (assettype,assettype,assetname,assettype,assetname,task,assettype,assetname,task,fork),
-            "type": task if overridetype == "" else overridetype ,
+            "file_system":"%s%s/%s_%s/%s_%s_%s/%s_%s_%s_%s" % (fssuffix,assettype,assettype,assetname,assettype,assetname,task,assettype,assetname,task,fork),
+            "type": task,
             "_id": entity_id,
             "project_id": project_id,
             "asset_id": asset_id,
@@ -115,6 +115,7 @@ def createTask( db, entity_id, description, overridetype = "" ):
             "inherit": "%s" % assettype,
             "state":"na"
         }
+        task_doc.update(doc)
         
         """Save data structure into the database """
         _id, _rev = db.save (task_doc )
@@ -125,3 +126,4 @@ def createTask( db, entity_id, description, overridetype = "" ):
         
         print "createTask: %s already exist" % name
         return False
+    

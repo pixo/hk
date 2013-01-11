@@ -3,121 +3,190 @@ Created on Jan 8, 2013
 
 @author: pixo
 '''
-import os, time, shutil
+import os, time, shutil, commands, hashlib
 
-#TODO:make a general cleaning (c'est caca ! )
+def hashfile(filepath):
+    
+    sha1 = hashlib.sha1()
+    f = open(filepath, 'rb')
+    
+    try:
+        sha1.update(f.read())
+        
+    finally:
+        f.close()
+        
+    return sha1.hexdigest()
 
-def getIdFromPath(db,userFile=""):
+def comparefile( firstfile, secondfile ):
+    
+    if not (os.path.exists(firstfile) and os.path.exists(secondfile)) :
+        return False
+        
+    if hashfile(firstfile) == hashfile(secondfile):
+        return True
+    
+    else :
+        return False
+
+def createWorkspace(db, id):
+    """Create the entity directory in the user repository  """
+    
+    doc = db[id]
+    path = doc [ "file_system" ].replace ( "/", os.sep )
+    path = os.path.join ( os.getenv("HK_REPOSITORY_PATH"), path )
+    
+    if os.path.exists(path):
+        print("createWorkspace(): %s already exist" % path )
+        return False
+    
+    os.makedirs(path, 0775)
+    print("createWorkspace(): %s created" % path )
+    
+    return path
+
+def getIdFromPath(db,user_file=""):
     """Get doc_id from path , firstly to push in cli """
-    userFile = os.path.expandvars(userFile)
-    userRepository = os.getenv ( "HK_USER_REPOSITORY_PATH" ) + os.sep
-    userFile = userFile.replace ( userRepository , "" )
-    userFile = userFile.replace ( userFile.split(os.sep)[0] + os.sep, "" )
-    doc_id = "%s_%s" % ( os.getenv ( "HK_PROJECT" ), os.path.dirname ( userFile ).replace ( os.sep, "_" ) )    #basename(userFile)
+    
+    user_file = os.path.expandvars(user_file)
+    user_repo = os.getenv ( "HK_USER_REPOSITORY_PATH" ) + os.sep
+    user_file = user_file.replace ( user_repo , "" )
+    user_file = user_file.replace ( user_file.split(os.sep)[0] + os.sep, "" )
+    doc_id = "%s_%s" % ( os.getenv ( "HK_PROJECT" ), os.path.dirname ( user_file ).replace ( os.sep, "_" ) )    #basename(user_file)
     
     if doc_id in db:
-        print doc_id 
         return db [ doc_id ]
     
     else:
         print "getDocIdFromUserFile: doc_id not in db "
         return False
     
-def pull(db, entity_id, version="latest"):
-    """Get the data from the repository """
+def pull(db, id, ver="latest"):
+    """Get the files from the repository """
     
-    entity_doc = db [ entity_id ]
-    entity_version_attr = entity_doc [ "versions" ]
+    doc = db [ id ]
+    ver_attr = doc [ "versions" ]
     
-    if version == "latest" :
-        version = len ( entity_version_attr )
+    """Check which version to import"""
+    if ver == "latest" :
+        ver = len ( ver_attr )
         
-    source_path = entity_version_attr[ str(version) ] [ "path" ]
-    destination_path = source_path.replace ( "$HK_REPOSITORY_PATH", "$HK_USER_REPOSITORY_PATH" )
+    src = ver_attr[ str(ver) ] [ "path" ]
+    dst = src.replace ( "$HK_REPOSITORY_PATH", "$HK_USER_REPOSITORY_PATH" )
     
     """Expand paths"""
-    source_path = os.path.expandvars ( source_path )
-    destination_path = os.path.expandvars ( destination_path )
+    src = os.path.expandvars ( src )
+    dst = os.path.expandvars ( dst )
     
-    if not os.path.exists ( destination_path ):
-        shutil.copytree ( source_path, destination_path )
-        print "Pulled: %s" % destination_path
+    if not os.path.exists ( dst ):
+        shutil.copytree ( src, dst, ignore = shutil.ignore_patterns('*.sha1') )
+        print "Pulled: %s" % dst
         return True
     else :
-        print "File already exist, please rename or remove it : %s" % destination_path
+        print "File already exist, please rename or remove it : %s" % dst
         return False 
 
-def push( db, entity_id, source_file, comments ):
-    """Put the datas into the repository """
+def push( db = "", id = "", src_ls = list(), comments = ""):
+    """
+    push() Put the datas into the repository 
+    db, type couch.db.Server
+    entity id, type string
+    src_ls, type list of string
+    comments, type string
+    """
+        
+    """ Check the src_ls type is a list """
+    if type ( src_ls ) == str :
+        src_ls = list ( { src_ls } )
     
-    #Get a copy of the document to work on
-    entity_doc = db [ entity_id ]
+    """ Get a copy of the document to work on """
+    doc = db [ id ]
     
-    #Get a copy of the copied doccument "versions" attribute
-    entity_version_attr = entity_doc [ "versions" ]
-    version = len ( entity_version_attr ) + 1
+    """ Get a copy of the copied document "versions" attribute """
+    ver_attr = doc [ "versions" ]
+    ver = len ( ver_attr ) + 1
     
-    if type(source_file) == str:
-        source_files_list = list({source_file})
-    else:
-        source_files_list = source_file
-            
-    destination_path = entity_id [ len ( "%s_" % os.getenv( "HK_PROJECT" ) ) : ]    #remove the project name from the entity_id
-    destination_path = destination_path.replace ( "_", os.sep )
-    destination_path = os.path.join ( "$HK_REPOSITORY_PATH", entity_doc["inherit"], destination_path, "v%03d" % version )    
-    expanded_destination_path = os.path.expandvars ( destination_path )
-      
-    if os.path.exists ( expanded_destination_path ):
-        print "%s already exist please remove it and try again." % expanded_destination_path
+    """ Create the path name where to push to file into the repo"""
+    dst_dir = doc [ "file_system" ].replace ( "/", os.sep )
+    path_attr = os.path.join ( "$HK_REPOSITORY_PATH", dst_dir, "v%03d" % ver )
+    dst_dir = os.path.expandvars(path_attr)
+    
+    if ver > 1:
+        prev_dst_path = doc [ "versions" ][ str( ver-1 ) ]["path"]
+        prev_dst_path = os.path.expandvars ( prev_dst_path )
+        
+    if os.path.exists ( dst_dir ):
+        print "%s already exist please remove it and try again." % dst_dir
         return False
     
-    os.makedirs ( expanded_destination_path, 0775 )
-    destination_file_list=list()
+    files_attr=list()    
+    push_dict = diff_dict = dict()
     
-    #iterate over all the provided source files
-    for source_file in source_files_list :
+    """ Iterate over all the provided source files """
+    for src in src_ls :
         
-        #check if the source file exists in the repository
-        if os.path.exists ( source_file ) :
+        """ check if the source file exists in the repository """
+        if os.path.exists ( src ) :
             
-            #Because some peoples use to name directories with points
-            file_name = os.path.basename(source_file)
+            """ Because some peoples use to name directories with points """
+            file_name = os.path.basename(src)
             
-            #Get extension(s) ,UDIMs and frames are commonly separated with this char
+            """ Get extension(s) ,UDIMs and frames are commonly separated with this char """
             file_ext = file_name.replace(file_name.split(".")[0],"")
             
-            #Creating the full file name
-            destination_file = entity_id + file_ext
-            destination_full = os.path.join ( expanded_destination_path, destination_file )
+            """ Creating the full file name """
+            dst_file = id + file_ext
+            dst = os.path.join ( dst_dir, dst_file )
             
-            #Store the name for the database so we avoid to call the database for each source file
-            destination_file_list.append ( destination_file )
-    
-            #Copy the data into the repository
-            shutil.copyfile ( source_file, destination_full )
-            print "Pushed: %s" % destination_full
+            """ If ver > 1 then compare the last version to the current """
+            same = False
+            if ver > 1:
+                    prev_dst = os.path.join ( prev_dst_path, dst_file )
+                    same = comparefile( src, prev_dst )
+            
+            """ If there is no difference between the latest version put it in the same dict """
+            if not same :
+                diff_dict[src] = dst
+                          
+            push_dict[src] = dst
+
+            """ Store the name for the database so we avoid to call the database for each source file """
+            files_attr.append ( dst_file )
             
         else:
             #TODO:Add an exception here
-            print "Error:s% doesn't exist" % source_file
-            return False
-        
-    #Create the new version data for the "versions" document's attribute 
+            print "Warning: %s doesn't exist" % src
+#             return False
+    
+    """ Create the new version data for the "versions" document's attribute """
     fileinfo = {
                 "creator" : os.getenv ( "USER" ),
                 "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.gmtime() ),
                 "comments" : comments ,
-                "path" : destination_path ,
-                "files" : destination_file_list
+                "path" : path_attr ,
+                "files" : files_attr
                 }
     
-    #Append the data into the document version attribute copy
-    entity_version_attr [ version ] = fileinfo
+    """ Append the data into the document version attribute copy """
+    ver_attr [ ver ] = fileinfo
     
-    #Replace the original "versions" attribute by our modified version
-    entity_doc [ "versions" ] = entity_version_attr
+    """ Replace the original "versions" attribute by our modified version """
+    doc [ "versions" ] = ver_attr
     
-    #Push the info into the db
-    db [ entity_id ] = entity_doc
+    """ Copy the data into the repository """
+    
+    """ If there's no file to copy then no need to push """
+    if len(diff_dict) == 0 :
+        print "push(): no changes between version or no files to push"
+        return False
+    
+    """Copy the data to the repository"""
+    os.makedirs ( dst_dir, 0775 )
+    for key in push_dict:
+        shutil.copyfile ( key, push_dict[key] )
+        print "push(): copied %s" % push_dict[key]
+    
+    """ Push the info into the db """
+    db [ id ] = doc
     
     return True

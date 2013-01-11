@@ -74,7 +74,7 @@ def lsAssets(db, entity_id):
         
     return assets
 
-def createAsset( db, entity_id, description,  overridetype = "" ):
+def createAsset( db, entity_id, description, doc=dict() ):
     """
     Create a asset.
     db, type couch.db.Server
@@ -93,15 +93,16 @@ def createAsset( db, entity_id, description,  overridetype = "" ):
         
         """ Create the asset structure """
         asset_doc = {
-            "type" : assettype if overridetype == "" else overridetype,
+            "type" : assettype,
             "_id" : entity_id,
             "project_id" : project_id,
             "name" : name,
             "description" : description,
             "creator" : os.getenv ( "USER" ),
-            "created" : time.strftime("%Y %b %d %H:%M:%S", time.gmtime()),
+            "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.gmtime() ),
             "state" : "na"
         }
+        asset_doc.update(doc)
         
         """Save data structure into the database """
         _id, _rev = db.save (asset_doc )

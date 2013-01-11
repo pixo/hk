@@ -3,7 +3,7 @@ Created on Jan 6, 2013
 
 @author: pixo
 '''
-from  pipeline import core
+import pipeline.core as core
 import pipeline.utils as utils
 import os
 
@@ -12,8 +12,8 @@ project=os.getenv("HK_PROJECT")
 sequence="001"
 shot="001"
 
-# core.asset.createAsset(db, "testing_chr_maqueue", "Asset shit ma queue")
-core.task.createTask(db, "testing_chr_maqueue_mod_main", "modeling ma queue")
+core.asset.createAsset( db, "testing_chr_caca", "Asset shit ma queue" )
+core.task.createTask( db, "testing_chr_caca_mod_main", "modeling ma queue" )
 
 # core.asset.createAsset(db, "testing_chr_maqueue", "Asset shit ma queue")
 # core.task.createTask(db, "testing_chr_mickey_mod_main", "modeling shit ma bite")
