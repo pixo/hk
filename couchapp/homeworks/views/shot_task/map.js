@@ -1,5 +1,6 @@
 function(doc) {
-  if(doc.task && doc.shot_id) {
+  if(doc.type == "chr") {
     emit(doc._id, doc);
   }  
 }
+

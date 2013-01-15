@@ -29,13 +29,15 @@ def comparefile( firstfile, secondfile ):
     else :
         return False
 
-def createWorkspace(db, doc_id):
-    """Create the entity directory in the user repository  """
-    
+def getWorkspaceFromId(db,doc_id):
     doc = db[doc_id]
     path = doc [ "file_system" ].replace ( "/", os.sep )
     path = os.path.join ( os.getenv("HK_USER_REPOSITORY_PATH"), path )
-    
+    return path
+
+def createWorkspace(db, doc_id):
+    """Create the entity directory in the user repository  """   
+    path =getWorkspaceFromId(db, doc_id)
     if os.path.exists(path):
         print("createWorkspace(): %s already exist" % path )
         return False
