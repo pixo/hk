@@ -88,7 +88,7 @@ def pull(db, doc_id, ver="latest"):
         print "File already exist, please rename or remove it : %s" % dst
         return False 
 
-def push( db = "", doc_id = "", src_ls = list(), comments = ""):
+def push( db = "", doc_id = "", src_ls = list(), comments = "", progressbar = False):
     """
     push() Put the datas into the repository 
     db, type couch.db.Server
@@ -123,7 +123,7 @@ def push( db = "", doc_id = "", src_ls = list(), comments = ""):
     
     files_attr=list()    
     push_dict = diff_dict = dict()
-    
+           
     """ Iterate over all the provided source files """
     for src in src_ls :
         
@@ -182,12 +182,22 @@ def push( db = "", doc_id = "", src_ls = list(), comments = ""):
         print "push(): no changes between version or no files to push"
         return False
     
+    progress_value = 0
+    progress_step = 100.0/(len(push_dict))
+    
+    print ( "%s 100" % progress_step)
+
     """Copy the data to the repository"""
     os.makedirs ( dst_dir, 0775 )
     for key in push_dict:
+        if progressbar :
+            progress_value += progress_step
+            progressbar.setProperty("value", progress_value)
+            
         shutil.copyfile ( key, push_dict[key] )
         print "push(): %s" % push_dict[key]
     
+    print progress_value
     """ Push the info into the db """
     db [ doc_id ] = doc
     
