@@ -7,7 +7,7 @@ import os, time
 import pipeline.utils as utils
 import hksequence
     
-def lsShot ( db, doc_id ):
+def lsDbShot ( db, doc_id ):
     doc_id = doc_id.split("_")
     project,seq,shot = doc_id[0], doc_id[1], doc_id[2]
     startkey = u"%s_%s_%s" % ( project, seq, shot )
@@ -27,13 +27,13 @@ def createShot( db, doc_id, cut_in, cut_out, description ):
     name = "%s_%s" % ( seq, shot )
     
     """ Check the sequence exists """
-    seq_ls = hksequence.lsSeq( db, doc_id )
+    seq_ls = hksequence.lsDbSeq( db, doc_id )
     if not ( seq in seq_ls ):
         print "createShot: Sequence %s doesn't exists ." % seq
         return False
 
     """ Check the shot doesn't exists """
-    shot_ls = lsShot ( db, doc_id )
+    shot_ls = lsDbShot ( db, doc_id )
     if not ( name in shot_ls ) :
         """ Create the shot structure """
         doc = {

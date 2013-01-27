@@ -6,16 +6,23 @@ Created on Jan 11, 2013
 import pipeline.utils as utils
 import os,time
 
-def lsSeq ( db, doc_id ):
+def lsDbSeq ( db, doc_id ):
     doc_id = doc_id.split("_")
-    project,seq = doc_id[0], doc_id[1]
-    startkey = u"%s_%s" % ( project, seq )
-    endkey = u"%s_%s\u0fff" % ( project, seq )
+    project = doc_id[0]
+    
+    if len(doc_id)>1:
+        seq = doc_id[1]
+        startkey = u"%s_%s" % ( project, seq )
+        endkey = u"%s_%s\u0fff" % ( project, seq )
+    else:
+        startkey = u"%s" % ( project )
+        endkey = u"%s\u0fff" % ( project )
+        
     return utils.dataBase.lsDb(db, "seq", startkey, endkey)
     
 def createSequence( db, doc_id, description):    
     project, name = doc_id.split ( "_" )
-    seq_ls = lsSeq( db, doc_id )
+    seq_ls = lsDbSeq( db, doc_id )
     
     """ Check the asset doesn't exist """
     if not ( name in seq_ls ) :

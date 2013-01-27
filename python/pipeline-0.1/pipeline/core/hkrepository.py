@@ -6,7 +6,6 @@ Created on Jan 8, 2013
 import os, time, shutil, hashlib
 
 def hashfile(filepath):
-    
     sha1 = hashlib.sha1()
     f = open(filepath, 'rb')
     
@@ -25,15 +24,19 @@ def comparefile( firstfile, secondfile ):
         
     if hashfile(firstfile) == hashfile(secondfile):
         return True
-    
     else :
         return False
 
-def getWorkspaceFromId(db,doc_id):
+def getWorkspaceFromId(db, doc_id):
     doc = db[doc_id]
     path = doc [ "file_system" ].replace ( "/", os.sep )
     path = os.path.join ( os.getenv("HK_USER_REPOSITORY_PATH"), path )
     return path
+'''
+Created on Jan 27, 2013
+
+@author: pixo
+'''
 
 def createWorkspace(db, doc_id):
     """Create the entity directory in the user repository  """   
@@ -44,26 +47,24 @@ def createWorkspace(db, doc_id):
     
     os.makedirs(path, 0775)
     print("createWorkspace(): %s created" % path )
-    
     return path
 
 def getIdFromPath(db,user_file=""):
     """Get doc_id from path , firstly to push in cli """
-    
     user_file = os.path.expandvars(user_file)
     user_repo = os.getenv ( "HK_USER_REPOSITORY_PATH" ) + os.sep
     user_file = user_file.replace ( user_repo , "" )
     user_file = user_file.replace ( user_file.split(os.sep)[0] + os.sep, "" )
-    doc_id = "%s_%s" % ( os.getenv ( "HK_PROJECT" ), os.path.dirname ( user_file ).replace ( os.sep, "_" ) )    #basename(user_file)
+    doc_id = "%s_%s" % ( os.getenv ( "HK_PROJECT" ), 
+                         os.path.dirname ( user_file ).replace ( os.sep, "_" ) )
     
     if doc_id in db:
         return db [ doc_id ]
-    
     else:
         print "getDocIdFromUserFile: doc_id not in db "
         return False
     
-def pull(db, doc_id, ver="latest"):
+def pull( db, doc_id, ver = "latest", progressbar = False ):
     """Get the files from the repository """
     
     doc = db [ doc_id ]
@@ -81,14 +82,28 @@ def pull(db, doc_id, ver="latest"):
     dst = os.path.expandvars ( dst )
     
     if not os.path.exists ( dst ):
-        shutil.copytree ( src, dst, ignore = shutil.ignore_patterns('*.sha1') )
-        print "Pulled: %s" % dst
+        os.makedirs(dst, 0775)
+        lsdir = os.listdir(src)
+        progress_value = 0
+        progress_step = 100.0/(len(lsdir))
+        
+        for file in lsdir:
+            fulldst = os.path.join(dst,file)
+            shutil.copyfile(os.path.join(src,file),
+                            fulldst)
+            print "Pulled: %s" % fulldst
+            if progressbar :
+                progress_value += progress_step
+                progressbar.setProperty("value", progress_value)
+            
+#         shutil.copytree ( src, dst, ignore = shutil.ignore_patterns('*.sha1') )
         return True
     else :
         print "File already exist, please rename or remove it : %s" % dst
         return False 
 
-def push( db = "", doc_id = "", src_ls = list(), comments = "", progressbar = False):
+def push( db = "", doc_id = "", src_ls = list(), comments = "",
+          progressbar = False, rename = True):
     """
     push() Put the datas into the repository 
     db, type couch.db.Server
@@ -99,8 +114,7 @@ def push( db = "", doc_id = "", src_ls = list(), comments = "", progressbar = Fa
         
     """ Check the src_ls type is a list """
     if type ( src_ls ) == str :
-        src_ls = list ( { src_ls } )
-    
+        src_ls = list ( [ src_ls ] )
     """ Get a copy of the document to work on """
     doc = db [ doc_id ]
     
@@ -110,7 +124,7 @@ def push( db = "", doc_id = "", src_ls = list(), comments = "", progressbar = Fa
     
     """ Create the path name where to push to file into the repo"""
     dst_dir = doc [ "file_system" ].replace ( "/", os.sep )
-    path_attr = os.path.join ( "$HK_REPOSITORY_PATH", dst_dir, "v%03d" % ver )
+    path_attr = os.path.join ( "$HK_REPOSITORY_PATH", dst_dir, "%03d" % ver )
     dst_dir = os.path.expandvars(path_attr)
     
     if ver > 1:
@@ -133,11 +147,16 @@ def push( db = "", doc_id = "", src_ls = list(), comments = "", progressbar = Fa
             """ Because some peoples use to name directories with points """
             file_name = os.path.basename(src)
             
-            """ Get extension(s) ,UDIMs and frames are commonly separated with this char """
+            """ Get extension(s) ,UDIMs and frames are commonly separated 
+                with this char """
             file_ext = file_name.replace(file_name.split(".")[0],"")
             
             """ Creating the full file name """
-            dst_file = doc_id + file_ext
+            if rename:
+                dst_file = doc_id + file_ext
+            else:
+                dst_file = file_name
+                
             dst = os.path.join ( dst_dir, dst_file )
             
             """ If ver > 1 then compare the last version to the current """
@@ -146,24 +165,28 @@ def push( db = "", doc_id = "", src_ls = list(), comments = "", progressbar = Fa
                     prev_dst = os.path.join ( prev_dst_path, dst_file )
                     same = comparefile( src, prev_dst )
             
-            """ If there is no difference between the latest version put it in the same dict """
+            """ If there is no difference between the latest version
+                put it in the same dict """
             if not same :
                 diff_dict[src] = dst
-                          
+            else:
+                print "Same file : \n %s\n%s\n" % (src,prev_dst)
+                            
             push_dict[src] = dst
 
-            """ Store the name for the database so we avoid to call the database for each source file """
+            """ Store the name for the database so we avoid to call 
+                the database for each source file """
             files_attr.append ( dst_file )
             
         else:
             #TODO:Add an exception here
             print "Warning: %s doesn't exist" % src
-#             return False
+            return False
     
     """ Create the new version data for the "versions" document's attribute """
     fileinfo = {
                 "creator" : os.getenv ( "USER" ),
-                "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.gmtime() ),
+                "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.gmtime()),
                 "comments" : comments ,
                 "path" : path_attr ,
                 "files" : files_attr
@@ -184,8 +207,6 @@ def push( db = "", doc_id = "", src_ls = list(), comments = "", progressbar = Fa
     
     progress_value = 0
     progress_step = 100.0/(len(push_dict))
-    
-    print ( "%s 100" % progress_step)
 
     """Copy the data to the repository"""
     os.makedirs ( dst_dir, 0775 )

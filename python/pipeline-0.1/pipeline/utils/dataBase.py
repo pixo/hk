@@ -6,17 +6,28 @@ Created on Jan 6, 2013
 import os
 import couchdb
 
+class ProjectNoSet(Exception):
+    pass
+
 def getDataBase():
-    serveradress=os.getenv("HK_DB_SERVER")
-    databasename=os.getenv("HK_DB")
+    serveradress = os.getenv("HK_DB_SERVER")
+    databasename = os.getenv("HK_DB")
+    if databasename==None :
+        raise ProjectNoSet("Project not set")
     server = couchdb.Server(serveradress)
-    
     return server[databasename]
 
-def lsDb( db, view="", startkey="", endkey="" ):
-    view = db.view ( "_design/%s/_view/%s" % ( "homeworks", view ), startkey=startkey, endkey=endkey )
-    doc_ls = list()
+  
     
+
+def lsDb( db, view="", startkey="", endkey="" ):
+    if endkey == "":
+        endkey=startkey+"\u0fff"
+        
+    view = db.view ( "_design/%s/_view/%s" % ( "homeworks", view ),
+                    startkey = startkey, endkey = endkey )
+    
+    doc_ls = list()
     for row in view.rows:
         doc_ls.append(row["value"]["name"])
         

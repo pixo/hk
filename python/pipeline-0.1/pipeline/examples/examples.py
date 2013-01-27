@@ -67,6 +67,10 @@ def testProject():
 def testSequence():
     db = utils.dataBase.getDataBase()
     core.hksequence.createSequence(db,"testing_sq02", "sequence 1")
+    core.hksequence.createSequence(db,"testing_sq03", "sequence 1")
+    core.hksequence.createSequence(db,"testing_sq04", "sequence 1")
+    core.hksequence.createSequence(db,"testing_sq05", "sequence 1")
+    core.hksequence.createSequence(db,"testing_sq06", "sequence 1")
 
 def testShot():
     db = utils.dataBase.getDataBase()
@@ -165,6 +169,7 @@ def testPull():
 # testTask()
 db = utils.dataBase.getDataBase()
 
-testCreateWs()
+testSequence()
+# testCreateWs()
 # core.hkasset.lsAsset(db, "testing_chr_mickey")
 
