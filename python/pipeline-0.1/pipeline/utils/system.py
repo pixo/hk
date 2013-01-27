@@ -13,6 +13,9 @@ def getRootPath():
 def getProjectsPath():
     return os.getenv("HK_PROJECTS_PATH")
 
+def getProjectName():
+    return os.getenv("HK_PROJECT") 
+
 def extract_number(name):
     # Match the last number in the name and return it as a string,
     # including leading zeroes (that's important for formatting below).

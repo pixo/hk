@@ -62,7 +62,7 @@ def lsTask ( db, doc_id ):
     endkey = u"%s\u0fff" % doc_id
     return dataBase.lsDb(db, task, startkey, endkey)
 
-def createAssetTask ( db="", doc_id="", description="", overdoc=dict() ):
+def createAssetTask ( db = None, doc_id = "", description = "", overdoc = dict() ):
     """
     Create a task.
     db, type couch.db.Server
@@ -70,6 +70,9 @@ def createAssetTask ( db="", doc_id="", description="", overdoc=dict() ):
     description, type string
     """
     
+    if db == None:
+        db = dataBase.getDataBase()
+        
     """ Get datas from doc_id """
     project, typ, asset, task, fork = doc_id.split ( "_" )
     asset_id = "%s_%s_%s" % ( project, typ, asset )

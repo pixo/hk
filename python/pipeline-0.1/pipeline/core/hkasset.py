@@ -57,7 +57,7 @@ def lsAsset ( db, doc_id ):
     endkey = u"%s_%s_%s\u0fff" % ( project, typ, asset )
     return dataBase.lsDb(db, typ, startkey, endkey)
 
-def createAsset( db, doc_id, description, overdoc=dict() ):
+def createAsset( db = None, doc_id = "", description = "", overdoc = dict() ):
     """
     Create a asset.
     db, type couch.db.Server
@@ -65,6 +65,9 @@ def createAsset( db, doc_id, description, overdoc=dict() ):
     description, type string
     """
 
+    if db == None:
+        db = dataBase.getDataBase()
+        
     """ Get datas from doc_id """
     project, typ, asset = doc_id.split ( "_" )
     name = "%s_%s" % ( typ, asset )

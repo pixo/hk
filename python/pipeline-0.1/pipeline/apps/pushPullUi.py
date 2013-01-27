@@ -228,8 +228,7 @@ class UiPush(object):
         item = self.listWidget_file.currentItem()
         lspush.append( self.dictpath[item.text()] )
                 
-        textdoc = self.plainTextEdit_comments.document()
-        comments = textdoc.toPlainText()
+        comments = self.plainTextEdit_comments.toPlainText()
         core.hkrepository.push( self.db, self.doc_id, lspush,
                                 comments, self.progressBar)
         
@@ -702,14 +701,14 @@ class Ui_ShotWindow(Ui_MainWindow):
         return result
 
 
-# Create a Qt application
-app = QtGui.QApplication(sys.argv)
- 
-main=QtGui.QMainWindow()
-setupui=Ui_AssetWindow()
-setupui.setupUi(main)
-main.show()
- 
-# Enter Qt application main loop
-app.exec_()
-sys.exit()
+# # Create a Qt application
+# app = QtGui.QApplication(sys.argv)
+#  
+# main=QtGui.QMainWindow()
+# setupui=Ui_AssetWindow()
+# setupui.setupUi(main)
+# main.show()
+#  
+# # Enter Qt application main loop
+# app.exec_()
+# sys.exit()

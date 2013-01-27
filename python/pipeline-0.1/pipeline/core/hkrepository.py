@@ -4,6 +4,8 @@ Created on Jan 8, 2013
 @author: pixo
 '''
 import os, time, shutil, hashlib
+import pipeline.utils as utils
+import pipeline.utils.dataBase as dataBase
 
 def hashfile(filepath):
     sha1 = hashlib.sha1()
@@ -27,20 +29,21 @@ def comparefile( firstfile, secondfile ):
     else :
         return False
 
-def getWorkspaceFromId(db, doc_id):
+def getWorkspaceFromId(db = None, doc_id = ""):
+    if db == None:
+        db = utils.dataBase.getDataBase()
+    
     doc = db[doc_id]
     path = doc [ "file_system" ].replace ( "/", os.sep )
     path = os.path.join ( os.getenv("HK_USER_REPOSITORY_PATH"), path )
     return path
-'''
-Created on Jan 27, 2013
 
-@author: pixo
-'''
-
-def createWorkspace(db, doc_id):
-    """Create the entity directory in the user repository  """   
-    path =getWorkspaceFromId(db, doc_id)
+def createWorkspace(db = None, doc_id = ""):
+    """Create the entity directory in the user repository  """
+    if db == None :
+        db = dataBase.getDataBase()
+        
+    path = getWorkspaceFromId(db, doc_id)
     if os.path.exists(path):
         print("createWorkspace(): %s already exist" % path )
         return False
@@ -64,8 +67,10 @@ def getIdFromPath(db,user_file=""):
         print "getDocIdFromUserFile: doc_id not in db "
         return False
     
-def pull( db, doc_id, ver = "latest", progressbar = False ):
+def pull( db = None, doc_id = "", ver = "latest", progressbar = False ):
     """Get the files from the repository """
+    if db == None:
+        db = dataBase.getDataBase()
     
     doc = db [ doc_id ]
     ver_attr = doc [ "versions" ]

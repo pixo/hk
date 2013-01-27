@@ -17,12 +17,13 @@ def getDataBase():
     server = couchdb.Server(serveradress)
     return server[databasename]
 
-  
+def lsDb( db = None, view = "", startkey = "", endkey = "" ):
     
-
-def lsDb( db, view="", startkey="", endkey="" ):
+    if db == None:
+        db = getDataBase()
+        
     if endkey == "":
-        endkey=startkey+"\u0fff"
+        endkey = startkey + "\u0fff"
         
     view = db.view ( "_design/%s/_view/%s" % ( "homeworks", view ),
                     startkey = startkey, endkey = endkey )
