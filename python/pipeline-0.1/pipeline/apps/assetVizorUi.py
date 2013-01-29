@@ -97,6 +97,17 @@ class UiCreateAsset(UiCreateOnDb):
         project = utils.system.getProjectName()
         dbtyp = self.typ[1]
         name = self.lineEdit.text()
+        
+        if name.find("_") >= 0:
+            msg = "Can't create asset '%s' name shouldn't contain underscore"
+            self.label_status.setText(msg % name)
+            return
+        
+        if name.find(" ") >= 0:
+            msg = "Can't create asset '%s' name shouldn't contain space"
+            self.label_status.setText(msg % name)
+            return
+            
         description = self.plainTextEdit.toPlainText()    
         asset_id = "%s_%s_%s" % ( project, dbtyp, name )
         core.hkasset.createAsset(doc_id = asset_id, description = description)
@@ -115,9 +126,6 @@ class UiCreateTask(UiCreateOnDb):
     
     
 class UiMainVizor(object):
-    #TODO:add another combo box to filter tasks
-    #TODO:remove create button and the lineedit
-    #TODO:create a progress bar to link to push/pull
         
     db = utils.dataBase.getDataBase()
     ccpath = os.path.join(os.getenv( "HK_PIPELINE"), "pipeline","creative")
@@ -149,6 +157,9 @@ class UiMainVizor(object):
     def createWidget(self):
         pass
     
+    def comboTaskChange(self):
+        pass
+    
     def comboTypeChange(self):
         typ = self.comboBox_a.currentText()
         print self.comboBox_a.currentText()      
@@ -166,6 +177,7 @@ class UiMainVizor(object):
         
     def signalConnect(self):
         self.comboBox_a.currentIndexChanged.connect(self.comboTypeChange)
+        self.comboBox_b.currentIndexChanged.connect(self.comboTaskChange)
         self.lineEdit_a.textChanged.connect(self.searchLine)
         self.treeWidget_a.itemExpanded.connect(self.itemExpanded)
         self.treeWidget_a.itemClicked.connect(self.itemClicked)
@@ -173,7 +185,8 @@ class UiMainVizor(object):
         
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(541, 595)
+        MainWindow.setWindowTitle("asset manager")
+        MainWindow.resize(564, 682)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout_2 = QtGui.QHBoxLayout(self.centralwidget)
@@ -183,18 +196,50 @@ class UiMainVizor(object):
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.verticalLayout = QtGui.QVBoxLayout()
+        self.verticalLayout.setSizeConstraint(QtGui.QLayout.SetDefaultConstraint)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.horizontalLayout_4 = QtGui.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.comboBox_a = QtGui.QComboBox(self.centralwidget)
         self.comboBox_a.setObjectName("comboBox_a")
-        self.verticalLayout.addWidget(self.comboBox_a)
+        self.horizontalLayout_4.addWidget(self.comboBox_a)
+        self.comboBox_b = QtGui.QComboBox(self.centralwidget)
+        self.comboBox_b.setObjectName("comboBox_b")
+        self.horizontalLayout_4.addWidget(self.comboBox_b)
+        self.verticalLayout.addLayout(self.horizontalLayout_4)
+        self.horizontalLayout_5 = QtGui.QHBoxLayout()
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.label = QtGui.QLabel(self.centralwidget)
+        self.label.setObjectName("label")
+        self.horizontalLayout_5.addWidget(self.label)
         self.lineEdit_a = QtGui.QLineEdit(self.centralwidget)
         self.lineEdit_a.setObjectName("lineEdit_a")
-        self.lineEdit_a.setText("type asset name")
-        self.verticalLayout.addWidget(self.lineEdit_a)
+        self.horizontalLayout_5.addWidget(self.lineEdit_a)
+        self.verticalLayout.addLayout(self.horizontalLayout_5)
         self.treeWidget_a = QtGui.QTreeWidget(self.centralwidget)
         self.treeWidget_a.setAlternatingRowColors(True)
         self.treeWidget_a.setObjectName("treeWidget_a")
-        self.treeWidget_a.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.treeWidget_a.headerItem().setText(0,"asset")
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        font.setWeight(75)
+        font.setItalic(False)
+        font.setBold(True)
+         
+#         item_1 = QtGui.QTreeWidgetItem(item_0)
+#         item_1 = QtGui.QTreeWidgetItem(item_0)
+#         item_2 = QtGui.QTreeWidgetItem(item_1)
+#         font = QtGui.QFont()
+#         font.setItalic(True)
+#         item_2 = QtGui.QTreeWidgetItem(item_1)
+#         font = QtGui.QFont()
+#         font.setItalic(True)
+#         item_2 = QtGui.QTreeWidgetItem(item_1)
+#         font = QtGui.QFont()
+#         font.setItalic(True)
+#         item_1 = QtGui.QTreeWidgetItem(item_0)
+#         item_1 = QtGui.QTreeWidgetItem(item_0)
+ 
         self.verticalLayout.addWidget(self.treeWidget_a)
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.verticalLayout_2 = QtGui.QVBoxLayout()
@@ -205,20 +250,16 @@ class UiMainVizor(object):
         self.verticalLayout_2.addWidget(self.labelImage)
         self.plainTextEdit_comment = QtGui.QPlainTextEdit(self.centralwidget)
         self.plainTextEdit_comment.setReadOnly(True)
-        self.plainTextEdit_comment.setPlainText("")
         self.plainTextEdit_comment.setObjectName("plainTextEdit_comment")
         self.verticalLayout_2.addWidget(self.plainTextEdit_comment)
         self.horizontalLayout.addLayout(self.verticalLayout_2)
         self.verticalLayout_main.addLayout(self.horizontalLayout)
         self.horizontalLayout_3 = QtGui.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.lineEdit = QtGui.QLineEdit(self.centralwidget)
-        self.lineEdit.setText("")
-        self.lineEdit.setObjectName("lineEdit")
-        self.horizontalLayout_3.addWidget(self.lineEdit)
-        self.createButton = QtGui.QPushButton(self.centralwidget)
-        self.createButton.setObjectName("createButton")
-        self.horizontalLayout_3.addWidget(self.createButton)
+        self.progressBar = QtGui.QProgressBar(self.centralwidget)
+        self.progressBar.setProperty("value", 0)
+        self.progressBar.setObjectName("progressBar")
+        self.horizontalLayout_3.addWidget(self.progressBar)
         self.verticalLayout_main.addLayout(self.horizontalLayout_3)
         self.horizontalLayout_2.addLayout(self.verticalLayout_main)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -226,19 +267,15 @@ class UiMainVizor(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
+        self.label.setPixmap(os.path.join ( self.ccpath, "search.png" ))
+        self.treeWidget_a.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.createWidget()
         self.signalConnect()
-#         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
-        self.treeWidget_a.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "asset", None, QtGui.QApplication.UnicodeUTF8))
-        self.createButton.setText(QtGui.QApplication.translate("MainWindow", "create", None, QtGui.QApplication.UnicodeUTF8))
 
 class UiAssetVizor(UiMainVizor):
     #TODO:create list of tasks per asset
-    #TODO:change fonts for asset
     #TODO:support sequence and shot
     
     pushls = ("texture",
@@ -280,7 +317,7 @@ class UiAssetVizor(UiMainVizor):
         self.createTaskWin.setupUi(self.createTaskWidget, (nicename, doc_id) )
         self.createTaskWidget.show()
         
-    def pushVersion(self):
+    def pushVersion(self):        
         item = self.treeWidget_a.currentItem()
         task = item.parent().text(0) 
         doc_id = item.doc_id
@@ -363,7 +400,7 @@ class UiAssetVizor(UiMainVizor):
                 pass
             
     def itemExpandedAsset(self,item):
-        itChildCount = item.childCount ()       
+        itChildCount = item.childCount ()      
          
         if not (itChildCount > 1) :
             item.removeChild ( item.child(0) )
@@ -376,15 +413,20 @@ class UiAssetVizor(UiMainVizor):
                 icon=os.path.join ( self.ccpath,task + ".png" )
                 itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
                 itemChild.hktype = "task"
+                itemChild.hkbranch = task
                 itemChild.hkid = ( "%s_%s" ) % ( item.hkid, task_dict[task] )
+                
                 item_none = QtGui.QTreeWidgetItem( itemChild )
                 item_none.hktype = "none"
+                item_none.hkbranch = task
                 item_none.setText ( 0, "Empty" )
                 item_none.setIcon ( 0, QtGui.QIcon(icon_empty ) )
                 item_none.setHidden = True
                 
             order=QtCore.Qt.AscendingOrder    
             item.sortChildren(0, order)
+            
+        self.filterTree()
             
     def itemExpandedTask(self,item):
         if item.child(0).hktype == "none" : 
@@ -402,14 +444,17 @@ class UiAssetVizor(UiMainVizor):
                 itemChild = QtGui.QTreeWidgetItem(item)
                 itemChild.setText(0,itName.split("_")[-1])
                 itemChild.hktype = "fork"
+                itemChild.hkbranch = item.hkbranch
                 icon = os.path.join(self.ccpath,"fork.png")
                 itemChild.setIcon(0,QtGui.QIcon(icon))
                 itemChild.versions = dict()
                 itemChild.hkid = itName
                 itemChild.doc_id = "%s_%s" % (self.project,itName)
                 itemChild.dbdoc = self.db[itemChild.doc_id]
+                
                 item_none = QtGui.QTreeWidgetItem(itemChild)
                 item_none.hktype = "none"
+                item_none.hkbranch = "empty"
                 item_none.setText(0,"Empty")
                 item_none.setIcon(0,QtGui.QIcon(icon_empty))
                 item_none.setText(0,"Empty")
@@ -419,21 +464,29 @@ class UiAssetVizor(UiMainVizor):
             item.sortChildren(0, order)
         
     def itemExpandedFork(self,item):
+        
         if item.child(0).hktype == "none" :
-            if item.versions == dict():
-                item.versions = item.dbdoc["versions"]                
-                if len(item.versions)>0:
-                    for ver in item.versions:
-                        itemChild = QtGui.QTreeWidgetItem(item)
-                        icon = os.path.join(self.ccpath,"file.png")
-                        itemChild.setIcon(0,QtGui.QIcon(icon))
-                        itemChild.setText(0,"%03d"%float(ver))
+            font = QtGui.QFont ()
+            font.setItalic ( True )
+            
+            if item.versions == dict ():
+                item.versions = item.dbdoc["versions"]
+                         
+                if len ( item.versions ) > 0:
+                    
+                    for ver in item.versions :
+                        itemChild = QtGui.QTreeWidgetItem ( item )
+                        itemChild.setFont ( 0, font )
+                        icon = os.path.join ( self.ccpath, "file.png" )
+                        itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
+                        itemChild.setText ( 0, "%03d" % float ( ver ) )
+                        itemChild.hkbranch = item.hkbranch
                         itemChild.hktype = "version"
                         itemChild.info = item.versions[ver]
                         
                     order=QtCore.Qt.DescendingOrder
-                    item.sortChildren(0, order)
-                    item.removeChild(item.child(0))
+                    item.sortChildren ( 0, order )
+                    item.removeChild ( item.child ( 0 ) )
         
     def itemExpanded(self,item):
         if item.hktype == "asset":
@@ -484,38 +537,87 @@ class UiAssetVizor(UiMainVizor):
        
         if item.hktype == "fork":
             self.itemClickedFork(item)
+            
         elif item.hktype == "version":
             self.itemClickedVersion(item)
+            
         else:
             self.plainTextEdit_comment.setPlainText("")
+            
+    def setComboTask(self,task_dict):
+        self.comboBox_b.clear()
+        icon = os.path.join(self.ccpath,"cross.png")
+        self.comboBox_b.addItem(QtGui.QIcon(icon),"No filter")
         
-    def comboTypeChange(self):
-        currtext = self.comboBox_a.currentText()      
+        for key in task_dict:
+            icon=os.path.join(self.ccpath,key+".png")
+            self.comboBox_b.addItem(QtGui.QIcon(icon),key)
+        
+    def filterTree(self):
+        currFilter = self.comboBox_b.currentText()            
+        it = QtGui.QTreeWidgetItemIterator(self.treeWidget_a)
+        while it.value():
+            item = it.value()                
+            if not item.hkbranch == "root":
+                if item.parent().hkbranch == "root":
+                    if item.parent().isExpanded ():
+                        if (item.hkbranch == currFilter) or (currFilter == "No filter") :
+                            item.setHidden(False)
+                        else:
+                            item.setHidden(True)
+                
+            it.next()
+            
+    def comboTypeChange(self):                    
+        currtext = self.comboBox_a.currentText()
+        finded = self.comboBox_a.findText("Please select ...")
+        if finded >= 0 : 
+            item = self.comboBox_a.removeItem(finded)
+            
         self.typ = self.typ_dict[currtext][0]
+        self.setComboTask ( self.typ_dict[ currtext ][1] )
+        
         startkey = "%s_%s" % (self.project,self.typ)
         asset_ls = utils.dataBase.lsDb(self.db, self.typ, startkey)
         icon_empty=os.path.join(self.ccpath,"empty.png")
         #TODO:Optimize instead of deleting items hide by type,                
         self.treeWidget_a.clear()
-        
+                
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        font.setWeight(75)
+        font.setItalic(False)
+        font.setBold(True)
+         
         for asset in asset_ls:
             item_asset = QtGui.QTreeWidgetItem(self.treeWidget_a)
+            item_asset.setFont(0,font)
             item_asset.setText(0,"%s" % asset.split("_")[-1])
             icon=os.path.join(self.ccpath,currtext+".png")
             item_asset.setIcon(0,QtGui.QIcon(icon))
             item_asset.hktype = "asset"
             item_asset.hkid = asset
-            item_none = QtGui.QTreeWidgetItem(item_asset)
-            item_none.setIcon(0,QtGui.QIcon(icon_empty))
-            item_none.setText(0,"Empty")
+            item_asset.hkbranch = "root"
+            
+            item_none = QtGui.QTreeWidgetItem ( item_asset )
+            item_none.setIcon ( 0, QtGui.QIcon ( icon_empty ))
+            item_none.setText ( 0, "Empty" )
             item_none.hktype = "none"
+            item_none.hkbranch = "empty"
+            
+        self.filterTree()
                 
+    def comboTaskChange(self):
+        self.filterTree()
+        
     def createWidget(self):
-        typ_ls = list()
+        """Create the type combobox"""
+        icon = os.path.join(self.ccpath,"combobox.png")
+        self.comboBox_a.addItem(QtGui.QIcon(icon),"Please select ...")
         for key in self.typ_dict:
             icon=os.path.join(self.ccpath,key+".png")
             self.comboBox_a.addItem(QtGui.QIcon(icon),key)
-            typ_ls.append(key) 
+
     
 
 # Create a Qt application
