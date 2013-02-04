@@ -47,6 +47,10 @@ from PySide import QtCore, QtGui
 import pipeline.utils.dataBase as dataBase
 import pipeline.utils as utils
 import pipeline.core as core
+import pipeline
+
+#TODO:Ajout icon et Push en titre avec le nom du projet en face
+#TODO:Fixer la taille max du bouton push, ajout icon et faire en sorte quelle ne bouge pas quand la progress bar apparait
 
 class UiPull(object):
     
@@ -97,7 +101,7 @@ class UiPull(object):
         self.pullButton.setDisabled(False)
         item = self.listWidget_version.currentItem()
         dbver = self.convDict[item.text()]
-        comment = self.versions[ dbver ]["comments"]
+        comment = self.versions[ dbver ]["description"]
         self.plainTextEdit_comment.setPlainText(comment)
 
         path = self.versions[ dbver ]["path"]
@@ -175,14 +179,12 @@ class UiPull(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QtGui.QApplication.translate("Pull", "Pull", None, QtGui.QApplication.UnicodeUTF8))
-        
-#         self.pullButton.setText(QtGui.QApplication.translate("Form", "Pull", None, QtGui.QApplication.UnicodeUTF8))
 
-            
-
-                        
+       
 class UiPush(object):
 
+    ccpath = os.path.join(os.getenv( "HK_PIPELINE"), "pipeline","creative")
+    project = utils.system.getProjectName()
     
     def searchLineChanged(self, lineEdit, listWidget):
         filter = lineEdit.text()
@@ -220,99 +222,149 @@ class UiPush(object):
             lspath.append( key )
             
         self.listWidget_file.addItems( lspath )
+        self.listWidget_file.setSortingEnabled(True)
             
+    def liswidget_clicked(self):
+        pass
+        
     def pushClicked(self):
         lspush = list()
-        self.progressBar.setValue(0)
+        self.progressBar.setHidden(False)
+        self.progressBar.setValue (0)
         
         item = self.listWidget_file.currentItem()
         lspush.append( self.dictpath[item.text()] )
-                
-        comments = self.plainTextEdit_comments.toPlainText()
+        description = self.plainTextEdit_description.toPlainText()
         core.hkrepository.push( self.db, self.doc_id, lspush,
-                                comments, self.progressBar)
+                                description, self.progressBar,
+                                self.labelStatus.setText )
         
-    def commentsChanged( self ):        
-        textdoc = self.plainTextEdit_comments.document()
-        comments = textdoc.toPlainText()
+        self.progressBar.setHidden(True)
+        self.labelStatus.setText ( "Done")
         
-        if comments == "" :
+    def descriptionChanged( self ):        
+        textdoc = self.plainTextEdit_description.document()
+        description = textdoc.toPlainText()
+        
+        if description == "" :
             self.pushButton.setEnabled(False)
         else :
-            self.pushButton.setEnabled(True) 
+            self.pushButton.setEnabled(True)
+    
+    def checkBoxClicked ( self ):
+        print "checked"
         
     def signalConnect(self):
         """ Connect the UI to the Ui_AssetWindow methods """
         self.pushButton.clicked.connect( self.pushClicked )
         self.lineEdit_file.textChanged.connect( self.fileLineChanged )
-        self.plainTextEdit_comments.textChanged.connect( self.commentsChanged )
+        self.plainTextEdit_description.textChanged.connect( self.descriptionChanged )
+        self.listWidget_file.clicked.connect( self.liswidget_clicked)
+        self.checkBox.clicked.connect(self.checkBoxClicked)
         
-    def setupUi( self, Form, db, doc_id):
-        #TODO add push button select all
-        self.db=db
-        self.doc_id=doc_id
+    def setupUi( self, Form, db, doc_id):       
         Form.setObjectName("Form")
-        Form.resize(665, 573)
+        Form.resize(600, 600)
         self.verticalLayout_2 = QtGui.QVBoxLayout(Form)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.verticalLayout_main = QtGui.QVBoxLayout()
         self.verticalLayout_main.setObjectName("verticalLayout_main")
-        self.horizontalLayout_top = QtGui.QHBoxLayout()
-        self.horizontalLayout_top.setObjectName("horizontalLayout_top")
-        self.label_file = QtGui.QLabel(Form)
-        self.label_file.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_file.setObjectName("label_file")
-        self.horizontalLayout_top.addWidget(self.label_file)
-        self.label_comments = QtGui.QLabel(Form)
-        self.label_comments.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_comments.setObjectName("label_comments")
-        self.horizontalLayout_top.addWidget(self.label_comments)
-        self.verticalLayout_main.addLayout(self.horizontalLayout_top)
         self.horizontalLayout_center = QtGui.QHBoxLayout()
         self.horizontalLayout_center.setObjectName("horizontalLayout_center")
         self.verticalLayout_file = QtGui.QVBoxLayout()
         self.verticalLayout_file.setObjectName("verticalLayout_file")
+        self.label_proj = QtGui.QLabel(Form)
+        self.label_proj.setObjectName("label_proj")
+        self.verticalLayout_file.addWidget(self.label_proj)
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.checkBox = QtGui.QCheckBox(Form)
+        self.checkBox.setObjectName("checkBox")
+        self.horizontalLayout.addWidget(self.checkBox)
+        self.label_search = QtGui.QLabel(Form)
+        self.label_search.setMaximumSize(QtCore.QSize(16, 16))
+        self.label_search.setObjectName("label_search")
+        self.horizontalLayout.addWidget(self.label_search)
         self.lineEdit_file = QtGui.QLineEdit(Form)
         self.lineEdit_file.setObjectName("lineEdit_file")
-        self.verticalLayout_file.addWidget(self.lineEdit_file)
+        self.horizontalLayout.addWidget(self.lineEdit_file)
+        self.verticalLayout_file.addLayout(self.horizontalLayout)
         self.listWidget_file = QtGui.QListWidget(Form)
+        self.listWidget_file.setMinimumSize(QtCore.QSize(300, 0))
         self.listWidget_file.setObjectName("listWidget_file")
-        self.listWidget_file.alternatingRowColors()
-        self.listWidget_file.setSortingEnabled(True)
         self.verticalLayout_file.addWidget(self.listWidget_file)
         self.horizontalLayout_center.addLayout(self.verticalLayout_file)
-        self.plainTextEdit_comments = QtGui.QPlainTextEdit(Form)
-        self.plainTextEdit_comments.setObjectName("plainTextEdit_comments")
-        self.horizontalLayout_center.addWidget(self.plainTextEdit_comments)
+        self.verticalLayout = QtGui.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.label_description = QtGui.QLabel(Form)
+        self.label_description.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_description.setObjectName("label_description")
+        self.verticalLayout.addWidget(self.label_description)
+        self.plainTextEdit_description = QtGui.QPlainTextEdit(Form)
+        self.plainTextEdit_description.setMinimumSize(QtCore.QSize(300, 0))
+        self.plainTextEdit_description.setObjectName("plainTextEdit_description")
+        self.verticalLayout.addWidget(self.plainTextEdit_description)
+        self.horizontalLayout_center.addLayout(self.verticalLayout)
         self.verticalLayout_main.addLayout(self.horizontalLayout_center)
         self.horizontalLayout_bottom = QtGui.QHBoxLayout()
         self.horizontalLayout_bottom.setObjectName("horizontalLayout_bottom")
         self.progressBar = QtGui.QProgressBar(Form)
+        self.progressBar.setMinimumSize(QtCore.QSize(550, 0))
         self.progressBar.setProperty("value", 0)
+        self.progressBar.setTextVisible(True)
+        self.progressBar.setInvertedAppearance(False)
+        self.progressBar.setTextDirection(QtGui.QProgressBar.TopToBottom)
         self.progressBar.setObjectName("progressBar")
         self.horizontalLayout_bottom.addWidget(self.progressBar)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_bottom.addItem(spacerItem)
         self.pushButton = QtGui.QPushButton(Form)
-        self.pushButton.setToolTip("Make sure to leave a comment")
+        self.pushButton.setMaximumSize(QtCore.QSize(60, 16777215))
         self.pushButton.setObjectName("pushButton")
-        self.pushButton.setEnabled(False)
         self.horizontalLayout_bottom.addWidget(self.pushButton)
         self.verticalLayout_main.addLayout(self.horizontalLayout_bottom)
+        self.labelStatus = QtGui.QLabel(Form)
+        self.labelStatus.setText("")
+        self.labelStatus.setObjectName("labelStatus")
+        self.verticalLayout_main.addWidget(self.labelStatus)
         self.verticalLayout_2.addLayout(self.verticalLayout_main)
-
+        
+        #Default setup
+        self.db = db
+        self.doc_id = doc_id
+        Form.setWindowTitle("Asset Pusher")
+        self.label_proj.setText("""<html><head/><body><p><span style=\" 
+                                font-size:12pt; font-weight:600;\">Asset Push :
+                                </span><span style=\" font-size:12pt;
+                                \"> '%s'</span></p></body></html>""" % self.doc_id)
+        self.label_description.setText("""<html><head/><body><p><span style=
+                                    \" font-weight:600;\">Description</span>
+                                    </p></body></html>""")
+        
+        self.listWidget_file.setSortingEnabled(True)
+        self.checkBox.setIcon(QtGui.QIcon(os.path.join ( self.ccpath, "all.png" )))
+        self.checkBox.setVisible(False)
+        self.progressBar.setHidden(True)
+        self.label_search.setPixmap( os.path.join ( self.ccpath, "search.png" ) )
+        self.pushButton.setText("Push")
+        self.pushButton.setDisabled(True)
+        icon_push = QtGui.QIcon(os.path.join(self.ccpath,"push.png"))
+        self.pushButton.setIcon(icon_push)
         self.createWidgetList()
         self.signalConnect()
-        self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
-
-    def retranslateUi(self, Form):
-        Form.setWindowTitle(QtGui.QApplication.translate("Form", "Push", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_file.setText(QtGui.QApplication.translate("Form", "File ", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_comments.setText(QtGui.QApplication.translate("Form", "Comments", None, QtGui.QApplication.UnicodeUTF8))        
-        self.pushButton.setText(QtGui.QApplication.translate("Form", "Push", None, QtGui.QApplication.UnicodeUTF8))
+           
+        
 
 class UiPushLs(UiPush):
     
+    def checkBoxClicked ( self ):
+        checkState = self.checkBox.checkState()
+        for i in range( 0, self.listWidget_file.count () ):
+            self.listWidget_file.item(i).setCheckState( checkState )
+    
     def createWidgetList( self ):
+        self.checkBox.setVisible(True)
         self.workspace = core.hkrepository.getWorkspaceFromId(self.db,
                                                             self.doc_id)        
         self.dictpath = utils.system.lsSeq(self.workspace)
@@ -322,11 +374,21 @@ class UiPushLs(UiPush):
             lspath.append( key )
             
         self.listWidget_file.addItems( lspath )
+        
+        font = QtGui.QFont ()
+        font.setPointSize ( 9 )
+        font.setWeight ( 75 )
+        font.setBold ( True )
+        
         for i in range( 0, self.listWidget_file.count() ):
-            self.listWidget_file.item(i).setCheckState( QtCore.Qt.Unchecked )
+            item = self.listWidget_file.item(i)
+            item.setCheckState( QtCore.Qt.Unchecked )
+            if item.text().find(os.sep) > -1:
+                item.setFont(font)
             
     def pushClicked(self):
         lspush = list()
+        self.progressBar.setHidden(False)
         self.progressBar.setValue(0)
         
         for i in range( 0, self.listWidget_file.count() ):
@@ -335,10 +397,13 @@ class UiPushLs(UiPush):
             if item.checkState() == QtCore.Qt.CheckState.Checked:
                 lspush.extend( self.dictpath[item.text()] )
                 
-        textdoc = self.plainTextEdit_comments.document()
-        comments = textdoc.toPlainText()
+        textdoc = self.plainTextEdit_description.document()
+        description = textdoc.toPlainText()
         core.hkrepository.push( self.db, self.doc_id, lspush,
-                                comments, self.progressBar, False)
+                                description, self.progressBar,
+                                self.labelStatus.setText, rename = False)
+        self.progressBar.setHidden(True)
+        self.labelStatus.setText ( "Done")
         
 
 class Ui_MainWindow(object):

@@ -85,7 +85,10 @@ def testAsset():
     environment     : env
     """
     db = utils.dataBase.getDataBase()
-    doc_ids=list({"testing_chr_mickey","testing_vcl_mickey","testing_prp_mickey","testing_env_mickey"})
+#     doc_ids=list({"testing_vcl_k2000","testing_prp_excalibur","testing_env_tourmontparnass"})
+#     doc_ids=list({"testing_chr_mimi","testing_chr_donald","testing_chr_dingo"})
+#     doc_ids=list({"testing_shot_op-001"})
+    doc_ids=list({"testing_seq_op"})
     
     for doc_id in doc_ids:
         core.hkasset.createAsset(db, doc_id, "ceci est l'asset %s" % doc_id)
@@ -126,11 +129,11 @@ def testTask():
     core.hktask.createAssetTask(db, "testing_env_mickey_rig_main" , "ceci est la tache rig") 
     core.hktask.createAssetTask(db, "testing_env_mickey_mod_main" , "ceci est la tache mod") 
 
-    core.hktask.createShotTask(db, "testing_sq02_sh100_lit_main" , "ceci est la tache lit") 
-    core.hktask.createShotTask(db, "testing_sq02_sh100_dmp_main" , "ceci est la tache dmp") 
-    core.hktask.createShotTask(db, "testing_sq02_sh100_lay_main" , "ceci est la tache lay") 
-    core.hktask.createShotTask(db, "testing_sq02_sh100_cam_main" , "ceci est la tache cam") 
-    core.hktask.createShotTask(db, "testing_sq02_sh100_cmp_main" , "ceci est la tache cmp")
+#     core.hktask.createShotTask(db, "testing_sq02_sh100_lit_main" , "ceci est la tache lit") 
+#     core.hktask.createShotTask(db, "testing_sq02_sh100_dmp_main" , "ceci est la tache dmp") 
+#     core.hktask.createShotTask(db, "testing_sq02_sh100_lay_main" , "ceci est la tache lay") 
+#     core.hktask.createShotTask(db, "testing_sq02_sh100_cam_main" , "ceci est la tache cam") 
+#     core.hktask.createShotTask(db, "testing_sq02_sh100_cmp_main" , "ceci est la tache cmp")
     
 def testRepository():
     db = utils.dataBase.getDataBase()
@@ -163,13 +166,16 @@ def testPush():
 def testPull():
     db = utils.dataBase.getDataBase()
     core.hkrepository.pull(db, "testing_sq02_sh100_lit_main")
+
+# db = utils.dataBase.getDataBase()
     
+testProject()
 # testAsset()
     
 # testTask()
-db = utils.dataBase.getDataBase()
 
-testSequence()
+# testAsset()
+# testSequence()
 # testCreateWs()
 # core.hkasset.lsAsset(db, "testing_chr_mickey")
 

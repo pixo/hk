@@ -52,10 +52,8 @@ import pipeline.utils.dataBase as dataBase
 
 def lsAsset ( db, doc_id ):
     doc_id = doc_id.split("_")
-    project,typ,asset = doc_id[0], doc_id[1], doc_id[2]
-    startkey = u"%s_%s_%s" % ( project, typ, asset )
-    endkey = u"%s_%s_%s\u0fff" % ( project, typ, asset )
-    return dataBase.lsDb(db, typ, startkey, endkey)
+    project, typ, asset = doc_id[0], doc_id[1], doc_id[2]
+    return dataBase.lsDb(db, typ, doc_id)
 
 def createAsset( db = None, doc_id = "", description = "", overdoc = dict() ):
     """
@@ -73,7 +71,7 @@ def createAsset( db = None, doc_id = "", description = "", overdoc = dict() ):
     name = "%s_%s" % ( typ, asset )
     
     """ Check the asset doesn't exist """
-    asset_ls = lsAsset ( db, doc_id)
+    asset_ls = dataBase.lsDb(db, typ, doc_id) # lsAsset ( db, doc_id)
     if not ( name in asset_ls ) :
         """ Create the asset structure """
         doc = {
@@ -98,3 +96,10 @@ def createAsset( db = None, doc_id = "", description = "", overdoc = dict() ):
     else:        
         print "createAsset: %s already exist" % name
         return False
+        
+def createShot( db = None, doc_id = "", cut_in = 1, cut_out = 100,
+                description = "No description" ):
+    
+    overdoc = {"cut_in": cut_in,
+               "cut_out": cut_out}    
+    createAsset ( db, doc_id, description, overdoc )

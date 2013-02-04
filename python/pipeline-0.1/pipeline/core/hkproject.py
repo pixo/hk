@@ -6,9 +6,9 @@ Created on Jan 11, 2013
 import os,time
 
 def lsProjects(db, project=""):
-    startkey = u"%s" % ( project )
     endkey = u"%s\u0fff" % ( project )
-    view = db.view("_design/%s/_view/%s" % ("homeworks","project"), startkey=startkey, endkey=endkey)
+    view = db.view("_design/%s/_view/%s" % ("homeworks","project"),
+                   startkey=project, endkey=endkey)
     proj_ls = list()
     
     for row in view.rows:
@@ -17,7 +17,7 @@ def lsProjects(db, project=""):
         
     return proj_ls
     
-def createProject( db, name = "NewProject", overdoc=dict() ):
+def createProject( db, name = "NewProject", description = "Default", overdoc=dict() ):
     
     proj_ls = lsProjects ( db, name )
     
@@ -26,7 +26,9 @@ def createProject( db, name = "NewProject", overdoc=dict() ):
         "_id": "%s" % name,
         "type": "project",
         "name": name,
-        "shot_task":"layout,lighting,render,comp,compout",
+        "description" : description,
+        #TODO:Task list
+        "task":"layout,lighting,render,comp,compout",
         "creator": os.getenv ( "USER" ),
         "created": time.strftime ( "%Y %b %d %H:%M:%S", time.gmtime() )
         }

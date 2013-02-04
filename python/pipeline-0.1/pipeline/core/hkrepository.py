@@ -13,7 +13,6 @@ def hashfile(filepath):
     
     try:
         sha1.update(f.read())
-        
     finally:
         f.close()
         
@@ -67,7 +66,7 @@ def getIdFromPath(db,user_file=""):
         print "getDocIdFromUserFile: doc_id not in db "
         return False
     
-def pull( db = None, doc_id = "", ver = "latest", progressbar = False ):
+def pull( db = None, doc_id = "", ver = "latest", progressbar = False, msgbar = False ):
     """Get the files from the repository """
     if db == None:
         db = dataBase.getDataBase()
@@ -96,7 +95,10 @@ def pull( db = None, doc_id = "", ver = "latest", progressbar = False ):
             fulldst = os.path.join(dst,file)
             shutil.copyfile(os.path.join(src,file),
                             fulldst)
-            print "Pulled: %s" % fulldst
+            msg = "Pulled: %s" % fulldst
+            print msg 
+            if msgbar :
+                msgbar(msg)
             if progressbar :
                 progress_value += progress_step
                 progressbar.setProperty("value", progress_value)
@@ -104,17 +106,20 @@ def pull( db = None, doc_id = "", ver = "latest", progressbar = False ):
 #         shutil.copytree ( src, dst, ignore = shutil.ignore_patterns('*.sha1') )
         return True
     else :
-        print "File already exist, please rename or remove it : %s" % dst
+        msg = "File already exist, please rename or remove it : %s" % dst
+        if msgbar :
+            msgbar(msg)
+        print msg
         return False 
 
-def push( db = "", doc_id = "", src_ls = list(), comments = "",
-          progressbar = False, rename = True):
+def push( db = "", doc_id = "", src_ls = list(), description = "",
+          progressbar = False, msgbar = False, rename = True):
     """
     push() Put the datas into the repository 
     db, type couch.db.Server
     doc_id, type string
     src_ls, type list of string
-    comments, type string
+    description, type string
     """
         
     """ Check the src_ls type is a list """
@@ -122,6 +127,7 @@ def push( db = "", doc_id = "", src_ls = list(), comments = "",
         src_ls = list ( [ src_ls ] )
     """ Get a copy of the document to work on """
     doc = db [ doc_id ]
+    wspace = getWorkspaceFromId(db, doc_id) + os.sep
     
     """ Get a copy of the copied document "versions" attribute """
     ver_attr = doc [ "versions" ]
@@ -150,7 +156,8 @@ def push( db = "", doc_id = "", src_ls = list(), comments = "",
         if os.path.exists ( src ) :
             
             """ Because some peoples use to name directories with points """
-            file_name = os.path.basename(src)
+            file_space = os.path.dirname( src ).replace( wspace, "" )
+            file_name =  os.path.join( file_space, os.path.basename ( src ) )
             
             """ Get extension(s) ,UDIMs and frames are commonly separated 
                 with this char """
@@ -184,7 +191,6 @@ def push( db = "", doc_id = "", src_ls = list(), comments = "",
             files_attr.append ( dst_file )
             
         else:
-            #TODO:Add an exception here
             print "Warning: %s doesn't exist" % src
             return False
     
@@ -192,7 +198,7 @@ def push( db = "", doc_id = "", src_ls = list(), comments = "",
     fileinfo = {
                 "creator" : os.getenv ( "USER" ),
                 "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.gmtime()),
-                "comments" : comments ,
+                "description" : description ,
                 "path" : path_attr ,
                 "files" : files_attr
                 }
@@ -215,13 +221,21 @@ def push( db = "", doc_id = "", src_ls = list(), comments = "",
 
     """Copy the data to the repository"""
     os.makedirs ( dst_dir, 0775 )
+    print "push():"
     for key in push_dict:
         if progressbar :
             progress_value += progress_step
             progressbar.setProperty("value", progress_value)
             
-        shutil.copyfile ( key, push_dict[key] )
-        print "push(): %s" % push_dict[key]
+        dirname = os.path.dirname(push_dict[key])
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+        
+        shutil.copy( key, push_dict[key] )
+        msg = "%s" % push_dict[key]
+        print msg
+        if msgbar :
+            msgbar(msg)
     
     print progress_value
     """ Push the info into the db """

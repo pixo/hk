@@ -32,6 +32,8 @@ import pipeline.core as core
 from pipeline.core import hkrepository
 from pushPullUi import UiPush,UiPushLs
 
+#TODO:Ajout icon asset manager en face du nom de projet
+
 class UiCreateOnDb(object):
     
     
@@ -39,9 +41,9 @@ class UiCreateOnDb(object):
         print "push button clicked"
         
     def plainTextEditChanged( self ):        
-        comments = self.plainTextEdit.toPlainText()
+        descriptions = self.plainTextEdit.toPlainText()
         
-        if comments == "" :
+        if descriptions == "" :
             self.pushButton.setEnabled(False)
         else :
             self.pushButton.setEnabled(True) 
@@ -50,7 +52,7 @@ class UiCreateOnDb(object):
         self.pushButton.clicked.connect ( self.pushButtonClicked )
         self.plainTextEdit.textChanged.connect ( self.plainTextEditChanged )
                 
-    def setupUi(self, Form, typ = ("Type","typ")):
+    def setupUi(self, Form, typ = ( "Type", "typ" ) ):
         self.typ = typ
         Form.setObjectName("Form")
         Form.resize(486, 429)
@@ -93,7 +95,8 @@ class UiCreateOnDb(object):
 
 class UiCreateAsset(UiCreateOnDb):
         
-    def pushButtonClicked(self):       
+    def pushButtonClicked(self):
+        self.label_status.setText("")
         project = utils.system.getProjectName()
         dbtyp = self.typ[1]
         name = self.lineEdit.text()
@@ -109,20 +112,22 @@ class UiCreateAsset(UiCreateOnDb):
             return
             
         description = self.plainTextEdit.toPlainText()    
-        asset_id = "%s_%s_%s" % ( project, dbtyp, name )
-        core.hkasset.createAsset(doc_id = asset_id, description = description)
-        self.label_status.setText("%s created" % asset_id)
+        doc_id = "%s_%s_%s" % ( project, dbtyp, name )
+        doc = core.hkasset.createAsset ( doc_id = doc_id, description = description)
+        if doc :
+            self.label_status.setText("%s created" % doc_id)
         
 class UiCreateTask(UiCreateOnDb):
         
-    def pushButtonClicked(self):       
-        project = utils.system.getProjectName()
+    def pushButtonClicked(self):
+        self.label_status.setText("")   
         dbtyp = self.typ[1]
         name = self.lineEdit.text()
         description = self.plainTextEdit.toPlainText()    
-        doc_id = "%s_%s_%s" % ( project, dbtyp, name )
-        core.hktask.createAssetTask(doc_id = doc_id, description = description)
-        self.label_status.setText("%s created" % doc_id)
+        doc_id = "%s_%s" % ( dbtyp, name )
+        doc = core.hktask.createTask(doc_id = doc_id, description = description)
+        if doc : 
+            self.label_status.setText("%s created" % doc_id)
     
     
 class UiMainVizor(object):
@@ -131,25 +136,45 @@ class UiMainVizor(object):
     ccpath = os.path.join(os.getenv( "HK_PIPELINE"), "pipeline","creative")
     project = os.getenv ( "HK_PROJECT" )
         
-    def searchLineChanged(self, lineEdit, treeWidget):
+    def searchLine_a_Changed ( self, lineEdit, treeWidget ) :
         it = QtGui.QTreeWidgetItemIterator(treeWidget)
         text = self.lineEdit_a.text()
         
-        while it.value():
+        while it.value () :
             item = it.value()
-            if not item.parent():
+            if not item.parent() :
                 if filter != "" :
                     itemtext = item.text(0)
                     if itemtext.find(text)>=0:
                         item.setHidden (False)
-                    else:
+                    else :
                         item.setHidden (True)
-                else:
+                else :
                     item.setHidden (False)       
             it.next()
+            
+    def searchLine_b_Changed ( self, lineEdit, treeWidget ) :
+        it = QtGui.QTreeWidgetItemIterator(treeWidget)
+        text = self.lineEdit_b.text()
+        
+        while it.value () :
+            item = it.value()
+            if item.hktype == "fork" :
+                if filter != "" :
+                    itemtext = item.text(0)
+                    if itemtext.find(text) >=0 :
+                        item.setHidden ( False )
+                    else :
+                        item.setHidden ( True )
+                else :
+                    item.setHidden ( False )       
+            it.next()
                 
-    def searchLine(self):
-        self.searchLineChanged(self.lineEdit_a, self.treeWidget_a)
+    def searchLine_a ( self ) :
+        self.searchLine_a_Changed(self.lineEdit_a, self.treeWidget_a)
+        
+    def searchLine_b ( self ) :
+        self.searchLine_b_Changed(self.lineEdit_b, self.treeWidget_a)
                 
     def itemExpanded(self,item):
         print item.text(0)
@@ -161,7 +186,6 @@ class UiMainVizor(object):
         pass
     
     def comboTypeChange(self):
-        typ = self.comboBox_a.currentText()
         print self.comboBox_a.currentText()      
         
     def itemClicked(self, item):
@@ -178,7 +202,8 @@ class UiMainVizor(object):
     def signalConnect(self):
         self.comboBox_a.currentIndexChanged.connect(self.comboTypeChange)
         self.comboBox_b.currentIndexChanged.connect(self.comboTaskChange)
-        self.lineEdit_a.textChanged.connect(self.searchLine)
+        self.lineEdit_a.textChanged.connect(self.searchLine_a)
+        self.lineEdit_b.textChanged.connect(self.searchLine_b)
         self.treeWidget_a.itemExpanded.connect(self.itemExpanded)
         self.treeWidget_a.itemClicked.connect(self.itemClicked)
         self.treeWidget_a.customContextMenuRequested.connect(self.contextMenuEvent)
@@ -186,7 +211,8 @@ class UiMainVizor(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowTitle("asset manager")
-        MainWindow.resize(564, 682)
+        MainWindow.resize(600, 700)
+        
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout_2 = QtGui.QHBoxLayout(self.centralwidget)
@@ -198,8 +224,19 @@ class UiMainVizor(object):
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setSizeConstraint(QtGui.QLayout.SetDefaultConstraint)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.horizontalLayout_6 = QtGui.QHBoxLayout()
+        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        self.label_proj = QtGui.QLabel(self.centralwidget)
+        self.label_proj.setObjectName("label_proj")
+        self.horizontalLayout_6.addWidget(self.label_proj)
+        self.verticalLayout.addLayout(self.horizontalLayout_6)
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.label_filter = QtGui.QLabel(self.centralwidget)
+        self.label_filter.setEnabled(True)
+        self.label_filter.setMaximumSize(QtCore.QSize(16, 16))
+        self.label_filter.setObjectName("label_filter")
+        self.horizontalLayout_4.addWidget(self.label_filter)
         self.comboBox_a = QtGui.QComboBox(self.centralwidget)
         self.comboBox_a.setObjectName("comboBox_a")
         self.horizontalLayout_4.addWidget(self.comboBox_a)
@@ -210,36 +247,19 @@ class UiMainVizor(object):
         self.horizontalLayout_5 = QtGui.QHBoxLayout()
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
         self.label = QtGui.QLabel(self.centralwidget)
+        self.label.setMaximumSize(QtCore.QSize(16, 16))
         self.label.setObjectName("label")
         self.horizontalLayout_5.addWidget(self.label)
         self.lineEdit_a = QtGui.QLineEdit(self.centralwidget)
         self.lineEdit_a.setObjectName("lineEdit_a")
         self.horizontalLayout_5.addWidget(self.lineEdit_a)
+        self.lineEdit_b = QtGui.QLineEdit(self.centralwidget)
+        self.lineEdit_b.setObjectName("lineEdit_b")
+        self.horizontalLayout_5.addWidget(self.lineEdit_b)
         self.verticalLayout.addLayout(self.horizontalLayout_5)
         self.treeWidget_a = QtGui.QTreeWidget(self.centralwidget)
         self.treeWidget_a.setAlternatingRowColors(True)
         self.treeWidget_a.setObjectName("treeWidget_a")
-        self.treeWidget_a.headerItem().setText(0,"asset")
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setWeight(75)
-        font.setItalic(False)
-        font.setBold(True)
-         
-#         item_1 = QtGui.QTreeWidgetItem(item_0)
-#         item_1 = QtGui.QTreeWidgetItem(item_0)
-#         item_2 = QtGui.QTreeWidgetItem(item_1)
-#         font = QtGui.QFont()
-#         font.setItalic(True)
-#         item_2 = QtGui.QTreeWidgetItem(item_1)
-#         font = QtGui.QFont()
-#         font.setItalic(True)
-#         item_2 = QtGui.QTreeWidgetItem(item_1)
-#         font = QtGui.QFont()
-#         font.setItalic(True)
-#         item_1 = QtGui.QTreeWidgetItem(item_0)
-#         item_1 = QtGui.QTreeWidgetItem(item_0)
- 
         self.verticalLayout.addWidget(self.treeWidget_a)
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.verticalLayout_2 = QtGui.QVBoxLayout()
@@ -248,15 +268,15 @@ class UiMainVizor(object):
         self.labelImage.setMinimumSize(QtCore.QSize(300, 300))
         self.labelImage.setObjectName("labelImage")
         self.verticalLayout_2.addWidget(self.labelImage)
-        self.plainTextEdit_comment = QtGui.QPlainTextEdit(self.centralwidget)
-        self.plainTextEdit_comment.setReadOnly(True)
-        self.plainTextEdit_comment.setObjectName("plainTextEdit_comment")
-        self.verticalLayout_2.addWidget(self.plainTextEdit_comment)
+        self.plainTextEdit_description = QtGui.QPlainTextEdit(self.centralwidget)
+        self.plainTextEdit_description.setObjectName("plainTextEdit_description")
+        self.verticalLayout_2.addWidget(self.plainTextEdit_description)
         self.horizontalLayout.addLayout(self.verticalLayout_2)
         self.verticalLayout_main.addLayout(self.horizontalLayout)
         self.horizontalLayout_3 = QtGui.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.progressBar = QtGui.QProgressBar(self.centralwidget)
+        self.progressBar.setEnabled(True)
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName("progressBar")
         self.horizontalLayout_3.addWidget(self.progressBar)
@@ -266,37 +286,83 @@ class UiMainVizor(object):
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-
-        self.label.setPixmap(os.path.join ( self.ccpath, "search.png" ))
-        self.treeWidget_a.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.createWidget()
-        self.signalConnect()
+                    
+        self.customUi()
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        
+    def customUi ( self ):
+        
+        self.progressBar.setHidden(True)
+        self.label.setPixmap ( os.path.join ( self.ccpath, "search.png" ) )
+        self.label_proj.setText("""<html><head/><body><p><span style=\" font-size:12pt;
+                                    font-weight:600;\">Asset Manager </span><span style=\" font-size:12pt;
+                                    \"/><span style=\" font-size:12pt;font-weight:600;
+                                    \">:</span><span style=\" font-size:12pt;
+                                    \"> '%s'</span></p></body></html>""" % self.project)
+        self.label_filter.setPixmap( os.path.join ( self.ccpath, "filter.png" ) )
+        empty = os.path.join( os.getenv ( "HK_PIPELINE" ), "pipeline",
+                                        "creative", "hk_title_medium.png" )
+        self.labelImage.setPixmap( empty )
+        self.treeWidget_a.setContextMenuPolicy( QtCore.Qt.CustomContextMenu )
+        self.treeWidget_a.headerItem().setText ( 0, "asset" )
+        self.plainTextEdit_description.setReadOnly(True)
+        self.createWidget ()
+        self.signalConnect ()
 
 
 class UiAssetVizor(UiMainVizor):
-    #TODO:create list of tasks per asset
-    #TODO:support sequence and shot
     
     pushls = ("texture",
               "render",
               "compout")
+    
+    effect_task = {
+                   "particle" : "pcl",
+                   "fluid" : "fld",
+                   "dynamic" : "dyn"
+                   }
+    
+    material_task = {
+                     "shader" : "shd",
+                     "override" : "ovr"
+                     }
         
-    asset_task={"surface":"sur",
-                "model":"mod",
-                "texture":"tex",
-                "rig":"rig",
-                "sculpt":"sct",
-                "retopo":"rtp"}
+    shot_task =   {
+                   "layout" : "lay",
+                   "lighting" : "lit",
+                   "render" : "rdr",
+                   "compositing" : "cmp",
+                   "compout" : "out",
+                   "matte-paint" : "dmp",
+                   "camera" : "cam",
+                   "effect" : "vfx"
+                   }
     
-    typ_dict = {"character":("chr",asset_task),
-                "vehicle":("vcl",asset_task),
-                "prop":("prp",asset_task),
-                "environment":("env",asset_task),
-                "effect":("vfx",asset_task),
-                "material":("mtl",asset_task)}
+    sequence_task = shot_task
+        
+    asset_task = {
+                  "surface" : "sur",
+                  "model" : "mod",
+                  "texture" : "tex",
+                  "rig" : "rig",
+                  "sculpt" : "sct",
+                  "retopo" : "rtp"
+                  }
     
-    def createAsset(self):
+    typ_dict = {
+                "character": ( "chr", asset_task ),
+                "vehicle": ( "vcl", asset_task ),
+                "prop": ( "prp", asset_task ),
+                "environment": ( "env", asset_task ),
+                "effect" : ( "vfx", effect_task ),
+                "material" : ( "mtl", material_task ),
+                "shot" : ( "shot", shot_task ),
+                "sequence" : ( "seq", sequence_task )
+                }
+    ccpath = os.path.join(os.getenv( "HK_PIPELINE"), "pipeline","creative")
+    icon_empty = os.path.join ( ccpath, "empty.png" )
+    
+    def createAsset ( self ) :
         self.createAssetWin = UiCreateAsset()
         nicename = self.comboBox_a.currentText()
         typ = self.typ_dict[nicename][0]
@@ -304,112 +370,181 @@ class UiAssetVizor(UiMainVizor):
         self.createAssetWin.setupUi(self.createAssetWidget, (nicename, typ) )
         self.createAssetWidget.show()
         
-    def createTask(self):
-        typ = self.comboBox_a.currentText()
+    def createTask ( self ) :
         item = self.treeWidget_a.currentItem()
-        item_parent = item.parent()
-        asset = item_parent.text(0)
-        task = self.typ_dict[typ][1][item.text(0)]
-        doc_id = "%s_%s_%s" % (self.typ_dict[typ][0],asset,task)
-        nicename = "%s %s %s fork" % (typ, asset, item.text(0))
+        doc_id = item.hkid
+        nicename = doc_id
+        
         self.createTaskWin = UiCreateTask()   
         self.createTaskWidget=QtGui.QWidget()
         self.createTaskWin.setupUi(self.createTaskWidget, (nicename, doc_id) )
         self.createTaskWidget.show()
         
-    def pushVersion(self):        
+    def pushVersion ( self ) :
         item = self.treeWidget_a.currentItem()
         task = item.parent().text(0) 
-        doc_id = item.doc_id
+        doc_id = item.hkid
+        
         if task in self.pushls:
-            self.pushVersionWin = UiPushLs()
+            self.pushVersionWin = UiPushLs ()
         else:
-            self.pushVersionWin = UiPush()
+            self.pushVersionWin = UiPush ()
 
-        self.pushVersionWidget=QtGui.QWidget()
-        self.pushVersionWin.setupUi(self.pushVersionWidget, self.db, doc_id)
-        self.pushVersionWidget.show()
+        self.pushVersionWidget = QtGui.QWidget()
+        self.pushVersionWin.setupUi ( self.pushVersionWidget, self.db, doc_id )
+        self.pushVersionWidget.show ()
     
-    def pullVersion(self):
-        #TODO:link the main progress bar
+    def pullVersion ( self ) :
+        self.progressBar.setHidden(False)
         item = self.treeWidget_a.currentItem()
-        doc_id = item.parent().doc_id
-        ver = int(item.text(0)) 
-        hkrepository.pull(self.db, doc_id = doc_id, ver = ver ) #, progressbar)
+        doc_id = item.parent().hkid
+        ver = int ( item.text ( 0 ) )
+        self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str(ver) ) )
+        pull = hkrepository.pull (self.db, doc_id = doc_id, ver = ver ,
+                                  progressbar = self.progressBar,
+                                  msgbar = self.statusbar.showMessage)
+        if pull :
+            self.statusbar.showMessage("%s %s pulled" % ( doc_id, str(ver) ))
+        
+        self.progressBar.setHidden ( True )
     
-    def createWorkspace(self):
+    def createWorkspace ( self ) :
         item = self.treeWidget_a.currentItem()
-        hkrepository.createWorkspace ( doc_id = item.doc_id )
+        hkrepository.createWorkspace ( self.db, doc_id = item.hkid )
 
-    def contextMenuAsset(self,item):
-        menu = QtGui.QMenu()
-        action = menu.addAction('Create new asset')
-        action.triggered.connect(self.createAsset)
-        menu.exec_(QtGui.QCursor.pos())
+    def contextMenuAsset ( self, item ) :
+        menu = QtGui.QMenu ()
+        icon_new = QtGui.QIcon ( os.path.join ( self.ccpath, "add.png" ) )
+        icon_refresh = QtGui.QIcon ( os.path.join ( self.ccpath, "refresh.png" ) ) 
+        action = menu.addAction ( icon_new, 'Create new %s' % self.comboBox_a.currentText() )
+        action.triggered.connect (  self.createAsset )       
+        refresh = menu.addAction ( icon_refresh, 'Refresh' )
+        refresh.triggered.connect ( self.refreshBranch )
+        menu.exec_( QtGui.QCursor.pos() )
          
-    def contextMenuTask(self,item):
-        menu = QtGui.QMenu()
-        action = menu.addAction('New %s %s fork' % 
+    def contextMenuTask ( self, item ) :
+        menu = QtGui.QMenu ()
+        icon_new = QtGui.QIcon ( os.path.join ( self.ccpath, "add.png" ) )
+        icon_refresh = QtGui.QIcon ( os.path.join ( self.ccpath, "refresh.png" ) ) 
+        action = menu.addAction ( icon_new, 'New %s %s fork' % 
                                 ( item.parent().text(0), item.text(0) ) )
-        action.triggered.connect( self.createTask )
-        menu.exec_(QtGui.QCursor.pos())
+        action.triggered.connect ( self.createTask )
+        refresh = menu.addAction( icon_refresh, 'Refresh' )
+        refresh.triggered.connect( self.refreshBranch )
+        menu.exec_ ( QtGui.QCursor.pos () )
         
-    def contextMenuFork(self,item):
-        menu = QtGui.QMenu()
-        item = self.treeWidget_a.currentItem()
-        path = core.hkrepository.getWorkspaceFromId(doc_id = item.doc_id)
+    def contextMenuFork ( self, item ) :
+        item = self.treeWidget_a.currentItem ()       
+        menu = QtGui.QMenu ()
+        icon_new = QtGui.QIcon ( os.path.join ( self.ccpath, "add.png" ) )
+        icon_push = QtGui.QIcon ( os.path.join ( self.ccpath, "push.png" ) )
         
-        if os.path.exists(path):
-            action = menu.addAction('Push a new version')
-            action.triggered.connect( self.pushVersion )
+        doc_id = item.hkid
+        path = core.hkrepository.getWorkspaceFromId ( doc_id = doc_id )
+        
+        if os.path.exists ( path ) :
+            action = menu.addAction ( icon_push, 'Push a new %s %s %s version' % 
+                                      ( item.parent().parent().text(0),
+                                        item.parent().text(0), item.text(0)) )
+            action.triggered.connect ( self.pushVersion )
         else:
-            action = menu.addAction('Create workspace')
-            action.triggered.connect( self.createWorkspace )
-            
-        menu.exec_(QtGui.QCursor.pos())
+            action = menu.addAction ( icon_new, 'Create workspace' )
+            action.triggered.connect ( self.createWorkspace )
+                    
+        menu.exec_ ( QtGui.QCursor.pos () )
         
-    def contextMenuVersion(self,item):
-        print item.text(0)
-        menu = QtGui.QMenu()
-        action = menu.addAction ( 'Pull version %s' % item.text (0) )
+    def contextMenuVersion ( self, item ) :
+        menu = QtGui.QMenu ()
+        icon_pull = QtGui.QIcon ( os.path.join ( self.ccpath, "pull.png" ) )
+        action = menu.addAction ( icon_pull, 'Pull version %s' % item.text (0) )
         action.triggered.connect ( self.pullVersion )
         menu.exec_( QtGui.QCursor.pos () )
         
     def contextMenuEvent(self):
-        item = self.treeWidget_a.currentItem()
-        
+        item = self.treeWidget_a.currentItem ()
         if not item:
-            self.contextMenuAsset(item)
+            self.contextMenuAsset ( item )
             
         else :
             item_type = item.hktype
             
+            if item_type == "sequence" :
+                print "ma bite"
+                
             if item_type == "asset" :
-                self.contextMenuAsset(item)
+                self.contextMenuAsset ( item )
                 
             elif item_type == "task" :
-                self.contextMenuTask(item)
+                self.contextMenuTask ( item )
                 
             elif item_type == "fork" :
-                self.contextMenuFork(item)
+                self.contextMenuFork ( item )
                 
             elif item_type == "version" :
-                self.contextMenuVersion(item)
+                self.contextMenuVersion ( item )
                 
             elif item_type == "None" :
                 pass
             
-    def itemExpandedAsset(self,item):
-        itChildCount = item.childCount ()      
-         
-        if not (itChildCount > 1) :
-            item.removeChild ( item.child(0) )
-            icon_empty = os.path.join ( self.ccpath, "empty.png" )
-            task_dict = self.typ_dict [ self.comboBox_a.currentText() ][1]
+    def refreshBranch ( self ):
+        item = self.treeWidget_a.currentItem ()
+        item.takeChildren()
+        icon_empty = os.path.join ( self.ccpath, "hk_title.png" )
+        item_none = QtGui.QTreeWidgetItem( item )
+        item_none.hktype = "none"
+        item_none.setText ( 0, "Empty" )
+        item_none.setIcon ( 0, QtGui.QIcon(icon_empty ) )
+        self.itemExpanded(item)
             
-            for task in task_dict:
+    def itemExpandedSequence ( self, item ) :
+        itChildCount = item.childCount ()
+        if not (itChildCount > 1) :
+            icon_empty = os.path.join ( self.ccpath, "empty.png" )
+            startkey = item.hkid.replace("seq","shot")
+            shot_ls = utils.dataBase.lsDb ( self.db, "shot", startkey )
+
+            if len(shot_ls)>0:
+                item.removeChild(item.child(0))
+             
+            for shot in shot_ls:
                 itemChild = QtGui.QTreeWidgetItem ( item )
+                itemChild.setFont(0,item.font(0))
+                itemChild.setText (0, shot.split("_")[1])
+                icon=os.path.join ( self.ccpath,"shot.png" )
+                itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
+                itemChild.hktype = "asset"
+                itemChild.hkbranch = shot
+                itemChild.hkid = ( "%s_%s" ) % ( self.project, shot )
+                 
+                item_none = QtGui.QTreeWidgetItem( itemChild )
+                item_none.hktype = "none"
+                item_none.hkbranch = shot
+                item_none.setText ( 0, "Empty" )
+                item_none.setIcon ( 0, QtGui.QIcon(icon_empty ) )
+                 
+            order=QtCore.Qt.AscendingOrder    
+            item.sortChildren ( 0, order )
+            
+            if ( item.childCount () > 1 ) and ( item.child(0).hktype == "none" ) :
+                item.removeChild ( item.child(0) )
+        self.filterTree ()       
+            
+    def itemExpandedAsset ( self, item ) :
+         
+        if item.child(0).hktype == "none" :
+            icon_empty = os.path.join ( self.ccpath, "empty.png" )
+            task_dict = self.typ_dict [ self.comboBox_a.currentText () ][1]
+            font = item.font(0)
+            font.setPointSize ( 9.5 ) 
+            if len ( task_dict ) > 0 :
+                brush = QtGui.QBrush(QtGui.QColor(50, 50, 50))
+                item.removeChild ( item.child (0) )
+            
+            for task in task_dict :
+                itemChild = QtGui.QTreeWidgetItem ( item )
+                itemChild.setForeground(0,brush)
                 itemChild.setText (0, task)
+                itemChild.setFont( 0, font)
                 icon=os.path.join ( self.ccpath,task + ".png" )
                 itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
                 itemChild.hktype = "task"
@@ -421,182 +556,196 @@ class UiAssetVizor(UiMainVizor):
                 item_none.hkbranch = task
                 item_none.setText ( 0, "Empty" )
                 item_none.setIcon ( 0, QtGui.QIcon(icon_empty ) )
-                item_none.setHidden = True
                 
             order=QtCore.Qt.AscendingOrder    
             item.sortChildren(0, order)
             
         self.filterTree()
             
-    def itemExpandedTask(self,item):
-        if item.child(0).hktype == "none" : 
-            task_dict = self.typ_dict[self.comboBox_a.currentText()][1]   
-            task = task_dict[item.text(0)]
+    def itemExpandedTask ( self, item ) :
+        if item.child(0).hktype == "none" :
+            task_dict = self.typ_dict [ self.comboBox_a.currentText () ][1]
+            task = task_dict [ item.text (0) ]
             parentId = item.parent().hkid
-            startkey = "%s_%s_%s" % (self.project, parentId, task)
-            itNameLs = utils.dataBase.lsDb(self.db, "asset_task", startkey)
-            icon_empty=os.path.join(self.ccpath,"empty.png")
+            startkey = "%s_%s" % ( parentId, task )
+            itNameLs = utils.dataBase.lsDb ( self.db, "asset_task", startkey )
+            icon_empty = os.path.join ( self.ccpath, "empty.png" )
             
-            if len(itNameLs)>0:
-                item.removeChild(item.child(0))           
+            if len ( itNameLs ) > 0 :
+                item.removeChild ( item.child (0) )         
             
             for itName in itNameLs:
-                itemChild = QtGui.QTreeWidgetItem(item)
-                itemChild.setText(0,itName.split("_")[-1])
+                itemChild = QtGui.QTreeWidgetItem ( item )
+                itemChild.setText(0,itName.split ( "_" ) [-1] )
                 itemChild.hktype = "fork"
                 itemChild.hkbranch = item.hkbranch
-                icon = os.path.join(self.ccpath,"fork.png")
-                itemChild.setIcon(0,QtGui.QIcon(icon))
-                itemChild.versions = dict()
-                itemChild.hkid = itName
-                itemChild.doc_id = "%s_%s" % (self.project,itName)
-                itemChild.dbdoc = self.db[itemChild.doc_id]
+                icon = os.path.join ( self.ccpath, "fork.png" )
+                itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
+                itemChild.versions = dict ()
+                itemChild.hkid = "%s_%s" % ( self.project, itName )
+                itemChild.dbdoc = self.db [ itemChild.hkid ]
                 
-                item_none = QtGui.QTreeWidgetItem(itemChild)
+                item_none = QtGui.QTreeWidgetItem ( itemChild )
                 item_none.hktype = "none"
                 item_none.hkbranch = "empty"
-                item_none.setText(0,"Empty")
-                item_none.setIcon(0,QtGui.QIcon(icon_empty))
-                item_none.setText(0,"Empty")
+                item_none.setText ( 0, "Empty" )
+                item_none.setIcon ( 0, QtGui.QIcon ( icon_empty ) )
+                item_none.setText ( 0, "Empty" )
                 item_none.setHidden = True
-                
-            order=QtCore.Qt.AscendingOrder    
-            item.sortChildren(0, order)
+
+            order = QtCore.Qt.AscendingOrder    
+            item.sortChildren ( 0, order )
         
-    def itemExpandedFork(self,item):
+    def itemExpandedFork ( self, item ) :
         
         if item.child(0).hktype == "none" :
             font = QtGui.QFont ()
             font.setItalic ( True )
-            
+#             font.setPointSize(8.7)
+#             font.setBold(True)
             if item.versions == dict ():
-                item.versions = item.dbdoc["versions"]
-                         
+                item.versions = item.dbdoc [ "versions" ]
                 if len ( item.versions ) > 0:
+                    brush = QtGui.QBrush(QtGui.QColor(0, 45, 0))
                     
                     for ver in item.versions :
                         itemChild = QtGui.QTreeWidgetItem ( item )
                         itemChild.setFont ( 0, font )
+                        itemChild.setForeground ( 0, brush )
                         icon = os.path.join ( self.ccpath, "file.png" )
                         itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
                         itemChild.setText ( 0, "%03d" % float ( ver ) )
                         itemChild.hkbranch = item.hkbranch
                         itemChild.hktype = "version"
-                        itemChild.info = item.versions[ver]
+                        itemChild.info = item.versions [ ver ]
                         
-                    order=QtCore.Qt.DescendingOrder
+                    order = QtCore.Qt.DescendingOrder
                     item.sortChildren ( 0, order )
                     item.removeChild ( item.child ( 0 ) )
         
-    def itemExpanded(self,item):
-        if item.hktype == "asset":
-            self.itemExpandedAsset(item)
+    def itemExpanded ( self, item ) :
+        
+        if item.hktype == "sequence" :
+            self.itemExpandedSequence ( item )
+            
+        elif item.hktype == "asset":
+            self.itemExpandedAsset ( item )
             
         elif item.hktype == "task" :
-            self.itemExpandedTask(item)
+            self.itemExpandedTask ( item )
             
         elif item.hktype == "fork" :
-            self.itemExpandedFork(item)
+            self.itemExpandedFork ( item )
                             
     def itemClickedVersion( self, item ):
                 
         """Set the data to the plain text"""
-        creator  = "Creator:\t%s\n" % item.info['creator']
-        created  = "\nCreated:\t%s\n" % item.info['created']
-        comments = "\nComments:\n\t%s\n" % item.info['comments']
+        creator  = "Creator:\t%s\n" % item.info [ 'creator' ]
+        created  = "\nCreated:\t%s\n" % item.info [ 'created' ]
+        description = "\nDescription:\n\t%s\n" % item.info [ 'description' ]
         
         path = os.path.expandvars( item.info["path"] )
-        pathinfo = "\nPath:\n\t%s\n" % os.path.expandvars(item.info["path"])
+        pathinfo = "\nPath:\n\t%s\n" % os.path.expandvars( item.info [ "path" ] )
         
-        files ="\n\t".join( map( str, item.info["files"] ) )
+        files ="\n\t".join ( map ( str, item.info [ "files" ] ) )
         files = "\nFiles:\n\t%s\n" % files
          
-        infos=creator+created+comments+pathinfo+files
-        self.plainTextEdit_comment.setPlainText(infos)
+        infos = creator + created + description + pathinfo + files
+        self.plainTextEdit_description.setPlainText ( infos )
         """Set the screenshot"""
-        screenshot = "%s_%s.jpg" % (self.project,item.parent().hkid)
-        screenshot = os.path.join(path, screenshot)
+        screenshot = "%s_%s.jpg" % ( self.project, item.parent().hkid )
+        screenshot = os.path.join( path, screenshot )
         
-        if not os.path.exists(screenshot):
-            empty = os.path.join(os.getenv( "HK_PIPELINE"), "pipeline",
-                                            "creative", "empty.gif" )
+        if not os.path.exists ( screenshot ) :
+            empty = os.path.join( os.getenv ( "HK_PIPELINE" ), "pipeline",
+                                            "creative", "hk_title_medium.png" )
             self.labelImage.setPixmap( empty )
-
+            
     def itemClickedFork( self, item ):
                 
         """Set the data to the plain text"""
-        creator  = "Creator:\t%s\n" % item.dbdoc['creator']
-        created  = "\nCreated:\t%s\n" % item.dbdoc['created']
-        state = "\nState:\t%s\n" % item.dbdoc['state']
-        description = "\nDescription:\n\t%s\n" % item.dbdoc['description']
+        creator  = "Creator:\t%s\n" % item.dbdoc [ 'creator' ]
+        created  = "\nCreated:\t%s\n" % item.dbdoc [ 'created' ]
+        state = "\nState:\t%s\n" % item.dbdoc [ 'state' ]
+        description = "\nDescription:\n\t%s\n" % item.dbdoc [ 'description' ]
           
-        infos = creator+created+state+description
-        self.plainTextEdit_comment.setPlainText(infos)  
+        infos = creator + created + state + description
+        self.plainTextEdit_description.setPlainText ( infos )  
         
     def itemClicked(self, item):
        
         if item.hktype == "fork":
-            self.itemClickedFork(item)
+            self.itemClickedFork ( item )
             
-        elif item.hktype == "version":
-            self.itemClickedVersion(item)
+        elif item.hktype == "version" :
+            self.itemClickedVersion ( item )
             
         else:
-            self.plainTextEdit_comment.setPlainText("")
+            self.plainTextEdit_description.setPlainText ( "" )
             
-    def setComboTask(self,task_dict):
-        self.comboBox_b.clear()
-        icon = os.path.join(self.ccpath,"cross.png")
-        self.comboBox_b.addItem(QtGui.QIcon(icon),"No filter")
+        if hasattr(item, "hkid") :
+            self.statusbar.showMessage(item.hkid)
+        else:
+            self.statusbar.showMessage("")
+            
+    def setComboTask ( self, task_dict ) :
+        self.comboBox_b.clear ()
+        icon = os.path.join ( self.ccpath, "cross.png" )
+        self.comboBox_b.addItem ( QtGui.QIcon ( icon ), "No filter" )
         
-        for key in task_dict:
-            icon=os.path.join(self.ccpath,key+".png")
-            self.comboBox_b.addItem(QtGui.QIcon(icon),key)
+        for key in task_dict :
+            icon = os.path.join ( self.ccpath, key + ".png" )
+            self.comboBox_b.addItem ( QtGui.QIcon ( icon ), key )
         
-    def filterTree(self):
-        currFilter = self.comboBox_b.currentText()            
-        it = QtGui.QTreeWidgetItemIterator(self.treeWidget_a)
-        while it.value():
-            item = it.value()                
+    def filterTree ( self ):
+        currFilter = self.comboBox_b.currentText ()            
+        it = QtGui.QTreeWidgetItemIterator ( self.treeWidget_a )
+        while it.value () :
+            item = it.value ()                
             if not item.hkbranch == "root":
-                if item.parent().hkbranch == "root":
-                    if item.parent().isExpanded ():
-                        if (item.hkbranch == currFilter) or (currFilter == "No filter") :
-                            item.setHidden(False)
+                if item.parent ().hktype == "asset":
+                    if item.parent ().isExpanded ():
+                        if ( item.hkbranch == currFilter ) or ( currFilter == "No filter" ) :
+                            item.setHidden ( False )
                         else:
                             item.setHidden(True)
-                
             it.next()
             
     def comboTypeChange(self):                    
-        currtext = self.comboBox_a.currentText()
-        finded = self.comboBox_a.findText("Please select ...")
-        if finded >= 0 : 
-            item = self.comboBox_a.removeItem(finded)
-            
-        self.typ = self.typ_dict[currtext][0]
-        self.setComboTask ( self.typ_dict[ currtext ][1] )
+        currtext = self.comboBox_a.currentText ()
+        finded = self.comboBox_a.findText ( "Please select ..." )
         
-        startkey = "%s_%s" % (self.project,self.typ)
-        asset_ls = utils.dataBase.lsDb(self.db, self.typ, startkey)
-        icon_empty=os.path.join(self.ccpath,"empty.png")
-        #TODO:Optimize instead of deleting items hide by type,                
-        self.treeWidget_a.clear()
+        if finded >= 0 : 
+            item = self.comboBox_a.removeItem ( finded )
+            
+        self.typ = self.typ_dict [ currtext ] [0]
+        self.setComboTask ( self.typ_dict [ currtext ] [1] )
+        hktype = "sequence"
+        
+        startkey = "%s" % ( self.project )
+        if self.typ != "seq" : 
+            startkey = startkey + "_" + self.typ
+            hktype = "asset"
+            
+        obj_ls = utils.dataBase.lsDb ( self.db, self.typ, startkey )
+        icon_empty = os.path.join ( self.ccpath, "empty.png" )             
+        self.treeWidget_a.clear ()
                 
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        font.setWeight(75)
-        font.setItalic(False)
-        font.setBold(True)
+        font = QtGui.QFont ()
+        font.setPointSize ( 10 )
+        font.setWeight ( 75 )
+        font.setItalic ( False )
+        font.setBold ( True )
+        
          
-        for asset in asset_ls:
-            item_asset = QtGui.QTreeWidgetItem(self.treeWidget_a)
-            item_asset.setFont(0,font)
-            item_asset.setText(0,"%s" % asset.split("_")[-1])
-            icon=os.path.join(self.ccpath,currtext+".png")
-            item_asset.setIcon(0,QtGui.QIcon(icon))
-            item_asset.hktype = "asset"
-            item_asset.hkid = asset
+        for asset in obj_ls :
+            item_asset = QtGui.QTreeWidgetItem ( self.treeWidget_a )
+            item_asset.setFont ( 0, font )
+            item_asset.setText ( 0, "%s" % asset.split ( "_" ) [-1] )
+            icon = os.path.join ( self.ccpath, currtext + ".png" )
+            item_asset.setIcon ( 0, QtGui.QIcon ( icon ) )
+            item_asset.hktype = hktype
+            item_asset.hkid = "%s_%s" % ( self.project, asset )
             item_asset.hkbranch = "root"
             
             item_none = QtGui.QTreeWidgetItem ( item_asset )
@@ -605,29 +754,29 @@ class UiAssetVizor(UiMainVizor):
             item_none.hktype = "none"
             item_none.hkbranch = "empty"
             
-        self.filterTree()
+        self.filterTree ()
                 
-    def comboTaskChange(self):
-        self.filterTree()
+    def comboTaskChange ( self ) :
+        self.filterTree ()
         
-    def createWidget(self):
+    def createWidget ( self ) :
         """Create the type combobox"""
-        icon = os.path.join(self.ccpath,"combobox.png")
-        self.comboBox_a.addItem(QtGui.QIcon(icon),"Please select ...")
-        for key in self.typ_dict:
-            icon=os.path.join(self.ccpath,key+".png")
-            self.comboBox_a.addItem(QtGui.QIcon(icon),key)
+        icon = os.path.join ( self.ccpath, "combobox.png" )
+        self.comboBox_a.addItem ( QtGui.QIcon ( icon ), "Please select ..." )
+        for key in self.typ_dict :
+            icon = os.path.join ( self.ccpath, key + ".png" )
+            self.comboBox_a.addItem ( QtGui.QIcon ( icon ), key )
 
     
 
 # Create a Qt application
 app = QtGui.QApplication(sys.argv)
-
+ 
 main=QtGui.QMainWindow()
 setupui=UiAssetVizor()
 setupui.setupUi(main)
 main.show()
-
+ 
 # Enter Qt application main loop
 app.exec_()
 sys.exit()
