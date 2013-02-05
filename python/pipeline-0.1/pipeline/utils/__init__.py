@@ -1,2 +1,2 @@
-import dataBase
-import system
+from dataBase import *
+from system import *

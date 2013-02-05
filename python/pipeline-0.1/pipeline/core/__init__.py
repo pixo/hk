@@ -1,4 +1,4 @@
-import hkasset
-import hkproject
-import hkrepository
-import hktask
+from  asset import *
+from project import *
+from repository import *
+from task import *
