@@ -1,2 +1,2 @@
-from UiAssetManager import *
-from UiReferencer import *
+from assetManager import *
+from referencer import *

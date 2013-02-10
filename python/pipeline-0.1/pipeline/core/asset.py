@@ -48,12 +48,12 @@ task: length is 5
 @author: pixo
 '''
 import os, time
-import pipeline.utils.dataBase as dataBase
+import pipeline.utils as utils
 
 def lsAsset ( db, doc_id ):
     doc_id = doc_id.split("_")
     project, typ, asset = doc_id[0], doc_id[1], doc_id[2]
-    return dataBase.lsDb(db, typ, doc_id)
+    return utils.lsDb(db, typ, doc_id)
 
 def createAsset( db = None, doc_id = "", description = "", overdoc = dict() ):
     """
@@ -64,14 +64,14 @@ def createAsset( db = None, doc_id = "", description = "", overdoc = dict() ):
     """
 
     if db == None:
-        db = dataBase.getDataBase()
+        db = utils.getDataBase()
         
     """ Get datas from doc_id """
     project, typ, asset = doc_id.split ( "_" )
     name = "%s_%s" % ( typ, asset )
     
     """ Check the asset doesn't exist """
-    asset_ls = dataBase.lsDb(db, typ, doc_id) # lsAsset ( db, doc_id)
+    asset_ls = utils.lsDb(db, typ, doc_id) # lsAsset ( db, doc_id)
     if not ( name in asset_ls ) :
         """ Create the asset structure """
         doc = {
@@ -103,3 +103,4 @@ def createShot( db = None, doc_id = "", cut_in = 1, cut_out = 100,
     overdoc = {"cut_in": cut_in,
                "cut_out": cut_out}    
     createAsset ( db, doc_id, description, overdoc )
+    

@@ -3,15 +3,16 @@ Created on Jan 19, 2013
 
 @author: pixo
 '''
-import itertools
-import re
-import os
+import itertools, re, os
 
 def getRootPath():
     return os.getenv("HK_ROOT")
 
 def getProjectsPath():
     return os.getenv("HK_PROJECTS_PATH")
+
+def getCCPath():
+    return os.path.join(os.getenv( "HK_PIPELINE"), "pipeline","creative")
 
 def getProjectName():
     return os.getenv("HK_PROJECT") 
@@ -78,4 +79,3 @@ def lsSeq(path, recursive = True):
         resultDict['\n'.join(map(str, groups))] = itemDict[key]
         
     return resultDict
-
