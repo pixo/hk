@@ -5,7 +5,8 @@ Created on Jan 8, 2013
 '''
 import os, time, shutil, hashlib
 import pipeline.utils as utils
- 
+
+#rewrite less db based
 def hashTime():
     sha1 = hashlib.sha1(str(time.time()))
     return sha1.hexdigest()
@@ -255,6 +256,7 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
     for file in files_attr:
         print os.path.join( repo , file)
          
+    """Return the published directory"""
     return repo
 
 def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) :
@@ -278,9 +280,7 @@ def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) 
         dirname = os.path.dirname ( files[file] )
         if not os.path.exists ( dirname ) :
             os.makedirs(dirname)
-        shutil.copy ( file, files[file] )
-            
-            
+        shutil.copy ( file, files[file] )       
     
 
 def pushFile ( user_files = list (), description="", db = "", doc_id = False, rename = True ):

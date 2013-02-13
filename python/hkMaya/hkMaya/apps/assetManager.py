@@ -9,6 +9,7 @@ import pipeline.apps as apps
 import pipeline.utils as utils
 import pipeline.core as core
 import hkMaya.cmds as hkcmds
+import hkMaya.system as system
 import glob
 
 
@@ -28,8 +29,9 @@ def pushMaya ( db = None, doc_id = "", description = "",
     if hkcmds.saveFile ( filename, selection, msgbar ) :
         repo = core.push ( db, doc_id, filename, description, progressbar,
                            msgbar, rename )
-         
         core.transfer ( screenshot, repo, doc_id )
+        system.exportAsset ( os.path.join ( repo, doc_id + extension ), repo )
+        
         msgbar ( "Done" )
         
 def pullMaya (db = None, doc_id = "", ver = "latest" ):
@@ -66,8 +68,9 @@ class UiPushMaya(apps.UiPush3dPack):
  
 class UiMayaAM(apps.UiAssetManager):
      
-     
+    defaultfilter = "ma"
     launcher = "maya"
+    defaultsuffix = "mb"
          
     def pushVersion ( self ) :
         item = self.treeWidget_a.currentItem()
@@ -76,20 +79,19 @@ class UiMayaAM(apps.UiAssetManager):
         self.pushVersionWidget = UiPushMaya ( None, self.db, doc_id, item )
         self.pushVersionWidget.show ()
       
-#     def pullVersion ( self ) :
-#         print "pullVersion"
-# #         self.progressBar.setHidden ( False )
-#         item = self.treeWidget_a.currentItem ()
-#         doc_id = item.parent().hkid
-#         ver = int ( item.text ( 0 ) )
-#         self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str ( ver ) ) )
-#     
-#         path = os.path.expandvars(core.getAssetPath(self.db, doc_id, ver))
-#         files = glob.glob(os.path.join(path,"*.ma"))
-#         files.extend(glob.glob(os.path.join(path,"*.mb")))
-#         
-#         hkcmds.openFile(files[0])
-#         self.statusbar.showMessage("%s pulled" % files[0] )
+    def importVersion ( self ) :
+#         self.progressBar.setHidden ( False )
+        item = self.treeWidget_a.currentItem ()
+        doc_id = item.parent().hkid
+        ver = int ( item.text ( 0 ) )
+        self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str ( ver ) ) )
+     
+        path = os.path.expandvars(core.getAssetPath(self.db, doc_id, ver))
+        files = glob.glob(os.path.join(path,"*.ma"))
+        files.extend(glob.glob(os.path.join(path,"*.mb")))
+         
+        hkcmds.importFile(files[0])
+        self.statusbar.showMessage("%s pulled" % files[0] )
         
         
     def pullVersion ( self ) :
@@ -98,21 +100,17 @@ class UiMayaAM(apps.UiAssetManager):
         doc_id = item.parent().hkid
         ver = int ( item.text ( 0 ) )
         self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str(ver) ) )
-        #TODO:REWRITE PULL with glob
         pull = core.pull (self.db, doc_id = doc_id, ver = ver , extension = ".mb",
                                   progressbar = self.progressBar,
                                   msgbar = self.statusbar.showMessage)
         if pull :
             hkcmds.openFile(pull[0])
             self.statusbar.showMessage("%s %s pulled" % ( doc_id, str(ver) ))
-        
+         
         self.progressBar.setHidden ( True )
         
-#         self.progressBar.setHidden ( True )
-
-
-# # app = QtGui.QApplication ( sys.argv )    
-# # main = UiMayaAM()
-# # main.show()
-# # app.exec_()
-# # sys.exit()
+    def openFile ( self, fname ) :
+        hkcmds.openFile ( fname )
+        
+    def saveFile ( self, fname ) :
+        hkcmds.saveFile ( fname )

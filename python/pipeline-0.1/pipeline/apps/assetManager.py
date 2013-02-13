@@ -116,10 +116,12 @@ class UiPush ( QtGui.QWidget ) :
         self.listWidget_file.clicked.connect( self.liswidget_clicked)
         self.checkBox.clicked.connect(self.checkBoxClicked)
         
-    def setupUi( self, Form, db, doc_id):
-        Form.setObjectName("Form")
-        Form.resize(600, 600)
-        self.verticalLayout_2 = QtGui.QVBoxLayout(Form)
+    def __init__( self, parent = None, db = None, doc_id = "" ):
+        super ( UiPush, self ).__init__( parent )
+        
+        self.setObjectName("Form")
+        self.resize(600, 600)
+        self.verticalLayout_2 = QtGui.QVBoxLayout(self)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.verticalLayout_main = QtGui.QVBoxLayout()
         self.verticalLayout_main.setObjectName("verticalLayout_main")
@@ -127,34 +129,34 @@ class UiPush ( QtGui.QWidget ) :
         self.horizontalLayout_center.setObjectName("horizontalLayout_center")
         self.verticalLayout_file = QtGui.QVBoxLayout()
         self.verticalLayout_file.setObjectName("verticalLayout_file")
-        self.label_proj = QtGui.QLabel(Form)
+        self.label_proj = QtGui.QLabel(self)
         self.label_proj.setObjectName("label_proj")
         self.verticalLayout_file.addWidget(self.label_proj)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.checkBox = QtGui.QCheckBox(Form)
+        self.checkBox = QtGui.QCheckBox(self)
         self.checkBox.setObjectName("checkBox")
         self.horizontalLayout.addWidget(self.checkBox)
-        self.label_search = QtGui.QLabel(Form)
+        self.label_search = QtGui.QLabel(self)
         self.label_search.setMaximumSize(QtCore.QSize(16, 16))
         self.label_search.setObjectName("label_search")
         self.horizontalLayout.addWidget(self.label_search)
-        self.lineEdit_file = QtGui.QLineEdit(Form)
+        self.lineEdit_file = QtGui.QLineEdit(self)
         self.lineEdit_file.setObjectName("lineEdit_file")
         self.horizontalLayout.addWidget(self.lineEdit_file)
         self.verticalLayout_file.addLayout(self.horizontalLayout)
-        self.listWidget_file = QtGui.QListWidget(Form)
+        self.listWidget_file = QtGui.QListWidget(self)
         self.listWidget_file.setMinimumSize(QtCore.QSize(300, 0))
         self.listWidget_file.setObjectName("listWidget_file")
         self.verticalLayout_file.addWidget(self.listWidget_file)
         self.horizontalLayout_center.addLayout(self.verticalLayout_file)
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
-        self.label_description = QtGui.QLabel(Form)
+        self.label_description = QtGui.QLabel(self)
         self.label_description.setAlignment(QtCore.Qt.AlignCenter)
         self.label_description.setObjectName("label_description")
         self.verticalLayout.addWidget(self.label_description)
-        self.plainTextEdit_description = QtGui.QPlainTextEdit(Form)
+        self.plainTextEdit_description = QtGui.QPlainTextEdit(self)
         self.plainTextEdit_description.setMinimumSize(QtCore.QSize(300, 0))
         self.plainTextEdit_description.setObjectName("plainTextEdit_description")
         self.verticalLayout.addWidget(self.plainTextEdit_description)
@@ -162,7 +164,7 @@ class UiPush ( QtGui.QWidget ) :
         self.verticalLayout_main.addLayout(self.horizontalLayout_center)
         self.horizontalLayout_bottom = QtGui.QHBoxLayout()
         self.horizontalLayout_bottom.setObjectName("horizontalLayout_bottom")
-        self.progressBar = QtGui.QProgressBar(Form)
+        self.progressBar = QtGui.QProgressBar(self)
         self.progressBar.setMinimumSize(QtCore.QSize(550, 0))
         self.progressBar.setProperty("value", 0)
         self.progressBar.setTextVisible(True)
@@ -172,12 +174,12 @@ class UiPush ( QtGui.QWidget ) :
         self.horizontalLayout_bottom.addWidget(self.progressBar)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_bottom.addItem(spacerItem)
-        self.pushButton = QtGui.QPushButton(Form)
+        self.pushButton = QtGui.QPushButton(self)
         self.pushButton.setMaximumSize(QtCore.QSize(60, 16777215))
         self.pushButton.setObjectName("pushButton")
         self.horizontalLayout_bottom.addWidget(self.pushButton)
         self.verticalLayout_main.addLayout(self.horizontalLayout_bottom)
-        self.labelStatus = QtGui.QLabel(Form)
+        self.labelStatus = QtGui.QLabel(self)
         self.labelStatus.setText("")
         self.labelStatus.setObjectName("labelStatus")
         self.verticalLayout_main.addWidget(self.labelStatus)
@@ -186,7 +188,7 @@ class UiPush ( QtGui.QWidget ) :
         #Default setup
         self.db = db
         self.doc_id = doc_id
-        Form.setWindowTitle ( "Asset Pusher" )
+        self.setWindowTitle ( "Asset Pusher" )
         
         self.label_proj.setText ( """<html><head/><body><p><span style=\" 
                                 font-size:12pt; font-weight:600;\">Asset Push :
@@ -208,7 +210,7 @@ class UiPush ( QtGui.QWidget ) :
         self.pushButton.setIcon(icon_push)
         self.createWidgetList()
         self.signalConnect()
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        QtCore.QMetaObject.connectSlotsByName(self)
            
 class UiPushLs(UiPush):
     
@@ -265,8 +267,8 @@ class UiPush3dPack ( QtGui.QWidget ) :
     screenshot = os.path.join ( CC_PATH, "hk_title_medium.png" )
     
     def __init__( self, parent = None, db = None, doc_id = "", item = "" ):
-        
         super ( UiPush3dPack, self ).__init__( parent )
+        
         self.setObjectName("Form")
         self.resize(394, 666)
         self.verticalLayout_2 = QtGui.QVBoxLayout(self)
@@ -402,7 +404,7 @@ class UiCreateOnDb ( QtGui.QWidget ) :
                 
                 
     def __init__(self, parent=None, typ = ( "Type", "typ" )):
-        super(UiMainManager, self).__init__(parent)
+        super(UiCreateOnDb, self).__init__(parent)
         
         self.typ = typ
         self.setObjectName("Form")
@@ -485,6 +487,9 @@ class UiMainManager(QtGui.QMainWindow):
     db = utils.getDataBase()
     launcher = "terminal"
         
+    def init ( self ) :
+        pass
+    
     def searchLine_a_Changed ( self, lineEdit, treeWidget ) :
         it = QtGui.QTreeWidgetItemIterator(treeWidget)
         text = self.lineEdit_a.text()
@@ -541,7 +546,6 @@ class UiMainManager(QtGui.QMainWindow):
         print "item clicked"
                 
     def contextMenuEvent(self):
-        itCurr=self.treeWidget_a.currentItem()
         menu = QtGui.QMenu()
         menu.addAction('Add')
         menu.addAction('Delete')
@@ -642,6 +646,7 @@ class UiMainManager(QtGui.QMainWindow):
                     
         self.customUi ()
         QtCore.QMetaObject.connectSlotsByName(self)
+        self.init()
         
     def customUi ( self ):
         self.progressBar.setHidden(True)
@@ -664,7 +669,8 @@ class UiMainManager(QtGui.QMainWindow):
 
 class UiAssetManager(UiMainManager):
     
-    
+    fileFilters = "Maya (*.ma *.mb);;Wavefront (*.obj *.Obj *.OBJ)"
+    defaultsuffix = "obj"
     pushls = ("texture",
               "render",
               "compout")
@@ -717,11 +723,13 @@ class UiAssetManager(UiMainManager):
     
     def createAsset ( self ) :
         
-        self.createAssetWin = UiCreateAsset()
         nicename = self.comboBox_a.currentText()
         typ = self.typ_dict[nicename][0]
-        self.createAssetWidget=QtGui.QWidget()
-        self.createAssetWin.setupUi(self.createAssetWidget, (nicename, typ) )
+        
+        self.createAssetWidget = UiCreateAsset(typ = (nicename, typ))
+        
+#         self.createAssetWidget=QtGui.QWidget()
+#         self.createAssetWin.setupUi(self.createAssetWidget, (nicename, typ) )
         self.createAssetWidget.show()
         
     def createTask ( self ) :
@@ -729,9 +737,9 @@ class UiAssetManager(UiMainManager):
         doc_id = item.hkid
         nicename = doc_id
         
-        self.createTaskWin = UiCreateTask()   
-        self.createTaskWidget=QtGui.QWidget()
-        self.createTaskWin.setupUi(self.createTaskWidget, (nicename, doc_id) )
+        self.createTaskWidget = UiCreateTask(typ = (nicename, doc_id))   
+#         self.createTaskWidget=QtGui.QWidget()
+#         self.createTaskWin.setupUi(self.createTaskWidget, (nicename, doc_id) )
         self.createTaskWidget.show()
         
     def pushVersion ( self ) :
@@ -740,13 +748,11 @@ class UiAssetManager(UiMainManager):
         doc_id = item.hkid
         
         if task in self.pushls:
-            self.pushVersionWin = UiPushLs ()
+            self.pushVersionWin = UiPushLs (db = self.db, doc_id = doc_id)
         else:
-            self.pushVersionWin = UiPush ()
+            self.pushVersionWin = UiPush ( db = self.db, doc_id = doc_id )
 
-        self.pushVersionWidget = QtGui.QWidget()
-        self.pushVersionWin.setupUi ( self.pushVersionWidget, self.db, doc_id )
-        self.pushVersionWidget.show ()
+        self.pushVersionWin.show()
     
     def pullVersion ( self ) :
         self.progressBar.setHidden ( False )
@@ -761,6 +767,41 @@ class UiAssetManager(UiMainManager):
             self.statusbar.showMessage("%s %s pulled" % ( doc_id, str(ver) ))
         
         self.progressBar.setHidden ( True )
+        
+    def importVersion ( self ) :
+        print "importVersion"
+        
+    def openFileDialog ( self ) :
+        item = self.treeWidget_a.currentItem()
+        doc = item.dbdoc
+        path = doc [ "file_system" ].replace ( "/", os.sep )
+        path = os.path.join ( os.getenv("HK_USER_REPOSITORY_PATH"), path )
+        fdialog = QtGui.QFileDialog ()
+        fdialog.setDefaultSuffix ( self.defaultsuffix )
+        fname = fdialog.getOpenFileName ( self, caption = 'Open file from workspace',
+                                          dir = path, filter = self.fileFilters )
+        self.openFile ( fname[0] )
+        
+    def openFile(self,fname):
+        print fname
+        
+    def saveFileDialog ( self ) :
+        item = self.treeWidget_a.currentItem()
+        doc = item.dbdoc
+        path = doc [ "file_system" ].replace ( "/", os.sep )
+        path = os.path.join ( os.getenv("HK_USER_REPOSITORY_PATH"), path )
+        
+        fdialog = QtGui.QFileDialog()
+        fdialog.setDefaultSuffix ( self.defaultsuffix )
+        fdialog.setConfirmOverwrite ( True )
+        fname = fdialog.getSaveFileName ( self, caption = 'Save file to workspace',
+                                        dir = path, filter = self.fileFilters )
+        self.saveFile ( fname[0] )
+        
+        
+    def saveFile(self,fname):
+        print fname
+    
     
     def createWorkspace ( self ) :
         item = self.treeWidget_a.currentItem()
@@ -789,18 +830,25 @@ class UiAssetManager(UiMainManager):
         
     def contextMenuFork ( self, item ) :
         item = self.treeWidget_a.currentItem ()       
-        menu = QtGui.QMenu ()
+        menu = QtGui.QMenu ()   
         icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
         icon_push = QtGui.QIcon ( os.path.join ( CC_PATH, "push.png" ) )
+        icon_open = QtGui.QIcon ( os.path.join ( CC_PATH, "open.png" ) )
+        icon_saveas = QtGui.QIcon ( os.path.join ( CC_PATH, "save.png" ) )
         
         doc_id = item.hkid
         path = core.getWorkspaceFromId ( doc_id = doc_id )
         
         if os.path.exists ( path ) :
-            action = menu.addAction ( icon_push, 'Push a new %s %s %s version' % 
+            actionPush = menu.addAction ( icon_push, 'Push a new %s %s %s version' % 
                                       ( item.parent().parent().text(0),
                                         item.parent().text(0), item.text(0)) )
-            action.triggered.connect ( self.pushVersion )
+            actionPush.triggered.connect ( self.pushVersion )
+            actionOpen = menu.addAction ( icon_open, 'Open from Workspace' )
+            actionOpen.triggered.connect ( self.openFileDialog )
+            actionSaveas = menu.addAction ( icon_saveas, 'Save to Workspace' )
+            actionSaveas.triggered.connect ( self.saveFileDialog )
+            
         else:
             action = menu.addAction ( icon_new, 'Create workspace' )
             action.triggered.connect ( self.createWorkspace )
@@ -810,8 +858,13 @@ class UiAssetManager(UiMainManager):
     def contextMenuVersion ( self, item ) :
         menu = QtGui.QMenu ()
         icon_pull = QtGui.QIcon ( os.path.join ( CC_PATH, "pull.png" ) )
-        action = menu.addAction ( icon_pull, 'Pull version %s' % item.text (0) )
-        action.triggered.connect ( self.pullVersion )
+        action_pull = menu.addAction ( icon_pull, 'Pull version %s' % item.text (0) )
+        action_pull.triggered.connect ( self.pullVersion )
+        
+        icon_import = QtGui.QIcon ( os.path.join ( CC_PATH, "import.png" ) )
+        action_import = menu.addAction ( icon_import, 'Import version %s' % item.text (0) )
+        action_import.triggered.connect ( self.importVersion )
+        
         menu.exec_( QtGui.QCursor.pos () )
         
     def contextMenuEvent(self):
@@ -1131,4 +1184,5 @@ def systemAM():
     app.exec_()
     sys.exit()
     
-# systemAM()
+if __name__ == '__main__':
+    systemAM()

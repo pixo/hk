@@ -26,21 +26,25 @@ def saveFile ( filename = "", exportsel = False, msgbar = None ) :
             
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
     base, ext = os.path.splitext ( filename )
-    cmds.file ( filename, force=True, options="v=0;",
-                type = extension[ext], pr = True, es = exportsel, ea = (not exportsel))
+    if ext == "" :
+        ext = ".ma"
+         
+    cmds.file ( filename, force=True, options="v=0;", type = extension[ext],
+                pr = True, es = exportsel, ea = (not exportsel))
     
     return os.path.exists ( filename )
+
+def saveSelected ( filename = "", msgbar = None ) :
+    saveFile ( filename, True, msgbar )
 
 def openFile(filename):
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
     base, ext = os.path.splitext ( filename )
-# # file -import -type "mayaBinary" -ra true -mergeNamespacesOnClash true -namespace ":" -options "v=0;"  -pr -loadReferenceDepth "all" "/home/pixo/mabite.mb";
-#     cmds.file ( filename, i=True, options="v=0;", type = extension[ext],
-#                 ra=True, mergeNamespacesOnClash=True, namespace=":", pr=True,
-#                 loadReferenceDepth="all" )
-
- 
-#     file -f -options "v=0;"  -typ "mayaBinary" -o "/home/pixo/mabite.mb";
     cmds.file ( filename, f=True, options="v=0;", type = extension[ext], o = True )
-
-
+    
+def importFile(filename):
+    extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
+    base, ext = os.path.splitext ( filename )
+    cmds.file ( filename, i=True, options="v=0;", type = extension[ext],
+                ra=True, mergeNamespacesOnClash=True, namespace=":", pr=True,
+                loadReferenceDepth="all" )
