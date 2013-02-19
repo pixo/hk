@@ -28,7 +28,7 @@ def createProject( db, name = "NewProject", description = "Default", overdoc=dic
         "name": name,
         "description" : description,
         #TODO:Task list
-        "task":"layout,lighting,render,comp,compout",
+        "task":"layout,lighting,render,compositing,compout",
         "creator": os.getenv ( "USER" ),
         "created": time.strftime ( "%Y %b %d %H:%M:%S", time.gmtime() )
         }

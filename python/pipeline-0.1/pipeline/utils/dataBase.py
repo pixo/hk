@@ -12,9 +12,12 @@ class ProjectNoSet(Exception):
 def getDataBase():
     serveradress = os.getenv("HK_DB_SERVER")
     databasename = os.getenv("HK_DB")
+    
     if databasename==None :
         raise ProjectNoSet("Project not set")
+    
     server = couchdb.Server(serveradress)
+    
     return server[databasename]
 
 def lsDb( db = None, view = "", startkey = "", endkey = "" ):

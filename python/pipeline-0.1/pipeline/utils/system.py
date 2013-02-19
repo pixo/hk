@@ -3,7 +3,7 @@ Created on Jan 19, 2013
 
 @author: pixo
 '''
-import itertools, re, os
+import itertools, re, os, glob
 
 def getRootPath():
     return os.getenv("HK_ROOT")
@@ -18,27 +18,33 @@ def getProjectName():
     return os.getenv("HK_PROJECT") 
 
 def extractNumber(name):
-    # Match the last number in the name and return it as a string,
-    # including leading zeroes (that's important for formatting below).
-    return re.findall(r"\d+", name.split(".")[-2])[0]
-    
+    sp = name.split(".")[1] 
+    result = re.findall(r"\d+", sp)
+    if len ( result ) > 0 :
+        return result[0]
+    else:
+        return "0"
+        
 def collapseGroup(group, root = os.sep):
 
     if len(group) == 1:
-        return group[0][1]
+        result = os.path.basename(group[0][1])
+        return result
     
     if root[-1] != os.sep :
         root = root + os.sep
     
-    first = extractNumber(group[0][1])
-    last = extractNumber(group[-1][1])
-    length = len(str(int(last)))    
-    prefix = re.findall(r"\d+.\w+$", group[0][1])[0]
-    ext = prefix.split(".")[-1]
-    base = group[0][1].replace(prefix, '').split(root)[-1]
+    part = group[0][1].split(".")
+    
+    first = extractNumber ( group [0][1] )
+    last = extractNumber ( group [-1][1] )
+    length = len ( str ( int (last) ) )
+    prefix = re.findall ( r"\d+.\w+$", group[0][1] )[0]
+    ext = part [-1]
+    base = group[0][1].replace ( part[1], "####" )
+    base = base.split ( root )[-1]
 
-    result= "%s####%s[%s-%s]" % (base, ".%s" % ext,
-                                first[-length:],last[-length:])
+    result = "%s[%s-%s]" % ( base, first[-length:],last[-length:])
     return result
 
 def lsSeq(path, recursive = True):
@@ -73,9 +79,10 @@ def lsSeq(path, recursive = True):
                 itemDict[base].append(fullpath)
         
     for key in itemDict :
-        groups = [collapseGroup(tuple( group), path ) \
+        groups = [ collapseGroup ( tuple ( group ), path ) \
                   for i, group in itertools.groupby(enumerate(itemDict[key]),
                   lambda(index, name):index - int(extractNumber(name)))]
         resultDict['\n'.join(map(str, groups))] = itemDict[key]
         
     return resultDict
+        

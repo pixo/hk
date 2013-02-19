@@ -9,7 +9,7 @@ import maya.OpenMaya as api
 import maya.OpenMayaUI as apiUI
 import os
 
-def screenshot ( filename = "" ) :
+def doScreenshot ( filename = "" ) :
     image = api.MImage ()
     view = apiUI.M3dView.active3dView ()
     view.readColorBuffer ( image, True )
@@ -25,7 +25,8 @@ def saveFile ( filename = "", exportsel = False, msgbar = None ) :
             return False
             
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
-    base, ext = os.path.splitext ( filename )
+    ext = os.path.splitext ( filename )[-1]
+    
     if ext == "" :
         ext = ".ma"
          
@@ -39,12 +40,13 @@ def saveSelected ( filename = "", msgbar = None ) :
 
 def openFile(filename):
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
-    base, ext = os.path.splitext ( filename )
+    ext = os.path.splitext ( filename )[-1]
     cmds.file ( filename, f=True, options="v=0;", type = extension[ext], o = True )
     
 def importFile(filename):
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
-    base, ext = os.path.splitext ( filename )
+    ext = os.path.splitext ( filename )[-1]
     cmds.file ( filename, i=True, options="v=0;", type = extension[ext],
                 ra=True, mergeNamespacesOnClash=True, namespace=":", pr=True,
                 loadReferenceDepth="all" )
+    

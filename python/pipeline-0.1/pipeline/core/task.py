@@ -68,14 +68,7 @@ def createTask ( db = None, doc_id = "", description = "", overdoc = dict() ):
     project, typ, asset, task, fork = doc_id.split ( "_" )
     asset_id = "%s_%s_%s" % ( project, typ, asset )
     name = "%s_%s_%s_%s" % ( typ, asset, task, fork )
-    filesystem = "%s/%s_%s/%s_%s_%s/%s_%s_%s_%s" % (typ,typ,asset,typ,asset,
-                                                    task,typ,asset,task,fork)
-    if typ == "shot":
-        seqid = "seq_%s" % asset.split("-")[0]
-        shotid = "shot_%s" % asset
-        taskid= "%s_%s" % ( shotid, task )
-        forkid= "%s_%s" % (taskid, fork)
-        filesystem = "%s/%s/%s/%s/%s" % ( "seq", seqid, shotid, taskid, forkid )
+    filesystem = "%s/%s/%s/%s" % (typ,asset,task,fork)
     
     """ Check if the asset exist """
     asset_ls = utils.lsDb ( db, typ, asset_id )

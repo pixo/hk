@@ -71,7 +71,7 @@ def createAsset( db = None, doc_id = "", description = "", overdoc = dict() ):
     name = "%s_%s" % ( typ, asset )
     
     """ Check the asset doesn't exist """
-    asset_ls = utils.lsDb(db, typ, doc_id) # lsAsset ( db, doc_id)
+    asset_ls = utils.lsDb(db, typ, doc_id)
     if not ( name in asset_ls ) :
         """ Create the asset structure """
         doc = {
@@ -99,8 +99,10 @@ def createAsset( db = None, doc_id = "", description = "", overdoc = dict() ):
         
 def createShot( db = None, doc_id = "", cut_in = 1, cut_out = 100,
                 description = "No description" ):
-    
-    overdoc = {"cut_in": cut_in,
-               "cut_out": cut_out}    
+
+    overdoc = {"seq" : doc_id.split("_")[2].split("-")[0],
+               "cut_in": cut_in,
+               "cut_out": cut_out}
+     
     createAsset ( db, doc_id, description, overdoc )
     

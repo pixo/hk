@@ -3,30 +3,31 @@ Created on Jan 8, 2013
 
 @author: pixo
 '''
-import os, time, shutil, hashlib
+import os, time, shutil, hashlib, re, glob, commands
 import pipeline.utils as utils
+import pipeline
 
 #rewrite less db based
-def hashTime():
-    sha1 = hashlib.sha1(str(time.time()))
-    return sha1.hexdigest()
+def hashTime () :
+    sha1 = hashlib.sha1 ( str ( time.time () ) )
+    return sha1.hexdigest ()
      
-def hashFile(filepath):
-    sha1 = hashlib.sha1()
-    f = open(filepath, 'rb')
+def hashFile ( filepath ) :
+    sha1 = hashlib.sha1 ()
+    f = open ( filepath, 'rb' )
      
     try:
-        sha1.update(f.read())
+        sha1.update ( f.read () )
     finally:
-        f.close()
+        f.close ()
          
-    return sha1.hexdigest()
+    return sha1.hexdigest ()
  
 def compareHashFile( firstfile, secondfile ):
-    if not (os.path.exists(firstfile) and os.path.exists(secondfile)) :
+    if not ( os.path.exists ( firstfile ) and os.path.exists ( secondfile ) ) :
         return False
          
-    if hashFile(firstfile) == hashFile(secondfile):
+    if hashFile ( firstfile ) == hashFile ( secondfile ):
         return True
      
     else :
@@ -34,11 +35,11 @@ def compareHashFile( firstfile, secondfile ):
  
 def getWorkspaceFromId(db = None, doc_id = ""):
     if db == None:
-        db = utils.getDataBase()
+        db = utils.getDataBase ()
      
-    doc = db[doc_id]
+    doc = db [ doc_id ]
     path = doc [ "file_system" ].replace ( "/", os.sep )
-    path = os.path.join ( os.getenv("HK_USER_REPOSITORY_PATH"), path )
+    path = os.path.join ( os.getenv ( "HK_USER_REPOSITORY_PATH" ), path )
     return path
  
 def createWorkspace(db = None, doc_id = ""):
@@ -46,28 +47,24 @@ def createWorkspace(db = None, doc_id = ""):
     if db == None :
         db = utils.getDataBase()
          
-    path = getWorkspaceFromId(db, doc_id)
-    if os.path.exists(path):
-        print("createWorkspace(): %s already exist" % path )
+    path = getWorkspaceFromId ( db, doc_id )
+    if os.path.exists ( path ) :
+        print ( "createWorkspace(): %s already exist" % path )
         return False
      
-    os.makedirs(path, 0775)
-    print("createWorkspace(): %s created" % path )
+    os.makedirs ( path, 0775 )
+    print ( "createWorkspace(): %s created" % path )
     return path
  
-def getIdFromPath(db,user_file=""):
+def getIdFromPath(db,path=""):
     """Get doc_id from path , firstly to push in cli """
-    user_file = os.path.expandvars(user_file)
+    path = os.path.expandvars(path)
     user_repo = os.getenv ( "HK_USER_REPOSITORY_PATH" ) + os.sep
-    user_file = user_file.replace ( user_repo , "" )
-    user_file = user_file.replace ( user_file.split(os.sep)[0] + os.sep, "" )
-    doc_id = "%s_%s" % ( os.getenv ( "HK_PROJECT" ), 
-                         os.path.dirname ( user_file ).replace ( os.sep, "_" ) )
-    if doc_id in db:
-        return db [ doc_id ]
-    else:
-        print "getDocIdFromUserFile: doc_id not in db "
-        return False
+    path = path.replace ( user_repo , "" )
+    part = path.split(os.sep)
+    doc_id = "%s_%s_%s_%s_%s" % ( os.getenv ( "HK_PROJECT" ), part[0],part[1],part[2],part[3] )
+    
+    return doc_id
      
 def getAssetPath ( db = None, doc_id = "", ver = "latest" ):
     doc = db [ doc_id ]
@@ -77,7 +74,30 @@ def getAssetPath ( db = None, doc_id = "", ver = "latest" ):
         ver = len ( ver_attr )
         
     return ver_attr[ str ( ver ) ] [ "path" ]
- 
+
+def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) :
+    """ Check the src_ls type is a list """
+    if type ( sources ) == str :
+        sources = list ( [ sources ] )
+                 
+    """ check if the source file exists in the repository """
+    files = dict()
+    
+    for src in sources :
+        
+        if os.path.exists ( src ) :
+            basename = os.path.basename ( src )
+            filename = basename.replace ( basename.split(".")[0], doc_id )
+            files [src] = os.path.join ( destination, filename )
+        else:
+            print "Warning: %s doesn't exist" % src
+           
+    for file in files:                
+        dirname = os.path.dirname ( files[file] )
+        if not os.path.exists ( dirname ) :
+            os.makedirs(dirname)
+        shutil.copy ( file, files[file] )
+         
 def pull( db = None, doc_id = "", ver = "latest", extension = "",progressbar = False,
           msgbar = False ):
      
@@ -128,18 +148,19 @@ def pull( db = None, doc_id = "", ver = "latest", extension = "",progressbar = F
                 print msg
                 if msgbar :
                     msgbar(msg)
-            
-
-                 
+                             
             if progressbar :
                 progress_value += progress_step
                 progressbar.setProperty("value", progress_value)
              
         return pulled
+    
     else :
         msg = "File already exist, please rename or remove it : %s" % dst
+        
         if msgbar :
             msgbar(msg)
+            
         print msg
         return False 
 
@@ -197,6 +218,7 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
         """ Creating the full file name """
         if rename:
             dst_file = doc_id + file_ext
+            
         else:
             dst_file = file_name
               
@@ -232,8 +254,9 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
     path_attr = os.path.join ( dst_dir, "%03d" % ver )
     repo = os.path.expandvars ( path_attr )
     """Rename the temp dir"""
-    os.rename( tmp_dir, repo ) 
-     
+    os.rename( tmp_dir, repo )
+    os.system( "chmod -R 555  %s" % repo )
+         
     """ Create the new version data for the "versions" document's attribute """
     fileinfo = {
                 "creator" : os.getenv ( "USER" ),
@@ -259,41 +282,156 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
     """Return the published directory"""
     return repo
 
-def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) :
-    """ Check the src_ls type is a list """
-    if type ( sources ) == str :
-        sources = list ( [ sources ] )
-                 
-    """ check if the source file exists in the repository """
-    files = dict()
-    
-    for src in sources :
-        
-        if os.path.exists ( src ) :
-            basename = os.path.basename ( src )
-            filename = basename.replace ( basename.split(".")[0], doc_id )
-            files [src] = os.path.join ( destination, filename )
-        else:
-            print "Warning: %s doesn't exist" % src
-           
-    for file in files:                
-        dirname = os.path.dirname ( files[file] )
-        if not os.path.exists ( dirname ) :
-            os.makedirs(dirname)
-        shutil.copy ( file, files[file] )       
-    
-
-def pushFile ( user_files = list (), description="", db = "", doc_id = False, rename = True ):
+def pushFile ( files = list (), description="", db = "", doc_id = False, rename = True ):
      
     if db == None :
         db = utils.getDataBase()
          
-    if type(user_files) == str:
-        user_files = list([user_files])
+    if type(files) == str:
+        files = list([files])
 
     if not doc_id:
-        doc_id = getIdFromPath ( db, user_files[0] )
+        doc_id = getIdFromPath ( db, files[0] )
     
-    return push ( db = db , doc_id = doc_id , src_ls = user_files ,
-           description =  description, progressbar = False,
-           msgbar = False, rename = rename )
+    return push ( db = db , doc_id = doc_id , src_ls = files ,
+                  description =  description, progressbar = False,
+                  msgbar = False, rename = rename )
+
+
+def getTextureAttr ( path ):
+    textureType = utils.getTextureType()
+    fname = os.path.basename ( path )
+    for typ in textureType :
+        pattern = "%s\d*.\d\d\d\d" % typ
+        if len(re.findall ( pattern, fname )):
+            return ( typ, textureType[typ] )
+        
+    return (False, False)
+
+def textureBuild ( path = "", texfilter = "triangle" ):
+    """Guerilla texture build"""
+    file, ext = os.path.splitext ( path )
+    tex = file + ".tex"
+    cmd = """render --buildtex --in %s --mode "ww" --filter %s --out %s""" % ( path, texfilter, tex )
+    os.system ( cmd )
+    print "buildtex: building %s" % tex
+   
+def textureOptimise ( path ):
+    
+    fname = os.path.basename(path)
+    texattr = getTextureAttr ( path )[1]
+    
+    if texattr :
+        #Default texture attributes
+        texchannel = texattr[0]
+        texdepth = texattr[1]
+        texbgcolor = texattr[2]
+        texcompress = texattr[3]
+        texfilter = texattr[4]
+        
+        #Current image attributes
+        cmd_identify = "identify %s" % path
+        imgattr = commands.getoutput ( cmd_identify ).split("\n")[-1]
+        imgattr = imgattr.split(" ")
+        imgdepth = imgattr[4]
+        imgformat = imgattr[1]
+        imgres = imgattr[2]
+        
+        if texcompress :
+            cmd_compress = "mogrify -compress Zip %s" % path
+            os.system(cmd_compress)
+            print "compress 'Deflate': %s" % fname
+            
+        elif texbgcolor != "" :
+            cmd_alpharm = """mogrify -background "%s" -flatten +matte %s""" % ( path, texbgcolor )
+            os.system(cmd_alpharm)
+            print "remove alpha: %s" % fname
+            
+        if texchannel == "R" : 
+            cmd_channel = "mogrify -channel R -separate %s" % path
+            os.system(cmd_channel)
+            print "grayscale: %s" % fname
+             
+        if texdepth.find(imgdepth) < 0 : 
+            print "warning: wrong depth '%s', %s should be '%s'  " % (imgdepth, fname, texdepth)
+            
+        #TODO:Add tiff format warning
+        
+        textureBuild ( path, texfilter )
+         
+            
+    else:
+        print "Can't find the '%s' texture type" % fname
+    
+def textureExport ( path = "",progressbar = False ):
+    files = glob.glob ( os.path.join ( path, "*.tif" ) )
+    #TODO: support progressbar for textures optimisation
+    for file in files :
+        textureOptimise ( file )
+        
+    return True
+
+def textureCheck ( doc_id = "", files = list() ) :
+    textureType = utils.getTextureType()
+    to_push = list()
+    not_pushed = list(files)
+        
+    for file in files :
+        fname = os.path.basename(file)
+        
+        for typ in textureType :
+            simpTex = "%s_%s\d*.\d\d\d\d.tif$" % ( doc_id, typ )
+            animTex = "%s_%s\d*.\d\d\d\d.\d\d\d\d.tif$" % ( doc_id, typ )
+            pattern = "%s|%s" % ( simpTex, animTex )
+            
+            if re.findall ( pattern, fname ) :
+                to_push.append ( file )
+                not_pushed.remove(file)
+
+    return not_pushed
+
+def texturePush ( db = None, doc_id = "", files = list(), description = "",
+                  progressbar = False, msgbar = False, rename = False ) :
+    
+    texCheck = textureCheck ( doc_id, files )
+    
+    if len ( texCheck ) == 0 :  
+        pushed = push ( db, doc_id, files, description, progressbar, msgbar, rename )
+        os.system( "chmod -R 775  %s" % pushed )
+        textureExport ( pushed )
+        os.system( "chmod -R 555  %s" % pushed )
+        
+        return pushed
+    
+    else :
+        for tex in texCheck :
+            print ( "%s is wrong" % tex )
+            
+        simptex = "%s_%s.%s.%s" % ( doc_id, "<type>", "<udim>", "tif" )
+        animtex = "%s_%s.%s.%s.%s" % ( doc_id, "<type>", "<udim>","<frame>", "tif")
+        print "expect: %s or %s " % ( simptex , animtex)
+        
+        return False
+    
+def assetExport ( source = "", destination = "", obj=True, abc=True, gproject = True ):
+        
+    fname = os.path.basename(source)
+    name,ext = os.path.splitext(fname)
+    
+    if obj :
+        fobj = os.path.join( destination, name + ".obj" )
+        objExportCmd = """ maya -batch -file %s  -command "loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/objExport.so\\"; file -force -options \\"groups=1;ptgroups=1;materials=0;smoothing=1;normals=1\\" -type \\"OBJexport\\" -pr -ea \\"%s\\"; " """ % ( source, fobj )   
+        os.system( objExportCmd )
+     
+    if abc :
+        fabc = os.path.join( destination, name + ".abc" )
+        abcExportCmd = """ maya -batch -file %s  -command "loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/AbcExport.so\\"; AbcExport -j \\"-frameRange 1 1 -file %s\\";" """ % ( source, fabc )
+        os.system( abcExportCmd )
+    
+    if gproject :
+        fgproject = os.path.join( destination, name + ".gproject" )
+        gprojectExportCmd = """ maya -batch -file %s  -command "loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/guerilla2013.so\\"; GuerillaExport -m 1 -a 1 -pf \\"%s\\";file -f -save; " """ % ( source, fgproject )
+        os.system ( gprojectExportCmd )
+            
+    return True
+
