@@ -9,21 +9,22 @@ import couchdb
 class ProjectNoSet(Exception):
     pass
 
-def getDataBase():
-    serveradress = os.getenv("HK_DB_SERVER")
-    databasename = os.getenv("HK_DB")
+def getDataBase( dbname = False, serveradress = False):
     
-    if databasename==None :
-        raise ProjectNoSet("Project not set")
+    if not serveradress :
+        serveradress = os.getenv ( "HK_DB_SERVER" )
     
-    server = couchdb.Server(serveradress)
+    if not dbname :
+        dbname = os.getenv ( "HK_DB" )
+        
+    server = couchdb.Server ( serveradress )
     
-    return server[databasename]
+    return server [ dbname ]
 
 def lsDb( db = None, view = "", startkey = "", endkey = "" ):
     
     if db == None:
-        db = getDataBase()
+        db = getDataBase ()
         
     if endkey == "":
         endkey = startkey + "\u0fff"

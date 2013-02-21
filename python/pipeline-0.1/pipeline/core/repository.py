@@ -32,48 +32,50 @@ def compareHashFile( firstfile, secondfile ):
      
     else :
         return False
- 
-def getWorkspaceFromId(db = None, doc_id = ""):
-    if db == None:
-        db = utils.getDataBase ()
-     
-    doc = db [ doc_id ]
-    path = doc [ "file_system" ].replace ( "/", os.sep )
-    path = os.path.join ( os.getenv ( "HK_USER_REPOSITORY_PATH" ), path )
+
+def getWorkspaceFromId ( doc_id = "" ):
+    """Get user asset workspace from doc_id"""    
+    path = doc_id.replace ( "_", os.sep )
+    path = os.path.join ( os.getenv ( "HK_USER_REPO" ), path )
     return path
  
-def createWorkspace(db = None, doc_id = ""):
+def createWorkspace( doc_id = ""):
     """Create the entity directory in the user repository  """
-    if db == None :
-        db = utils.getDataBase()
-         
-    path = getWorkspaceFromId ( db, doc_id )
+    path = getWorkspaceFromId ( doc_id )
     if os.path.exists ( path ) :
         print ( "createWorkspace(): %s already exist" % path )
         return False
-     
+    
     os.makedirs ( path, 0775 )
     print ( "createWorkspace(): %s created" % path )
     return path
  
-def getIdFromPath(db,path=""):
+def getIdFromPath ( path = "" ):
     """Get doc_id from path , firstly to push in cli """
     path = os.path.expandvars(path)
-    user_repo = os.getenv ( "HK_USER_REPOSITORY_PATH" ) + os.sep
+    user_repo = os.getenv ( "HK_USER_REPO" ) + os.sep
     path = path.replace ( user_repo , "" )
     part = path.split(os.sep)
     doc_id = "%s_%s_%s_%s_%s" % ( os.getenv ( "HK_PROJECT" ), part[0],part[1],part[2],part[3] )
     
     return doc_id
      
-def getAssetPath ( db = None, doc_id = "", ver = "latest" ):
-    doc = db [ doc_id ]
-    ver_attr = doc [ "versions" ]
-    """Check which version to import"""
+def getAssetPath ( doc_id = "", ver = "latest", local = False ):
     if ver == "latest" :
-        ver = len ( ver_attr )
+        ver = getLastVersion(doc_id)
         
-    return ver_attr[ str ( ver ) ] [ "path" ]
+    path = doc_id.replace ( "_", os.sep )
+    
+    if local :
+        path = os.path.join(os.getenv("HK_USER_REPO"),path,"%03d" % float(ver))
+    else:
+        path = os.path.join(os.getenv("HK_REPO"),path,"%03d" % float(ver))
+    
+    return path
+
+def getLastVersion ( doc_id ):
+    #TODO:get latest asset version with Filesystem
+    return True 
 
 def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) :
     """ Check the src_ls type is a list """
@@ -98,20 +100,15 @@ def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) 
             os.makedirs(dirname)
         shutil.copy ( file, files[file] )
          
-def pull( db = None, doc_id = "", ver = "latest", extension = "",progressbar = False,
-          msgbar = False ):
+def pull ( doc_id = "", ver = "latest", extension = "",progressbar = False,
+           msgbar = False ):
      
     """Get the files from the repository """
-    if db == None:
-        db = utils.getDataBase()
-     
-    """ Get asset files path """
-    src = getAssetPath ( db, doc_id, ver )
-    dst = src.replace ( "$HK_REPOSITORY_PATH", "$HK_USER_REPOSITORY_PATH" )
-    """ Expand paths """
-    src = os.path.expandvars ( src )
-    dst = os.path.expandvars ( dst )
-     
+    
+    """ Get asset local, network path """
+    src = getAssetPath ( doc_id = doc_id, ver = ver )
+    dst = getAssetPath ( doc_id = doc_id, ver = ver, local = True )
+         
     if not os.path.exists ( dst ):
         os.makedirs(dst, 0775)
          
@@ -186,23 +183,18 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
             file_list.append(src)
         else:
             print "Warning: %s doesn't exist" % src
-             
-    """ Get a copy of the document to work on """
-    fs = db [ doc_id ][ "file_system" ]
-     
+              
     """ Get root destination directory to push files """
-    dst_dir =os.path.join ( "$HK_REPOSITORY_PATH", fs )
-    dst_dir = dst_dir.replace ( "/", os.sep )
+    dst_dir = os.path.join ( os.getenv("HK_REPO"), doc_id.replace ( "_", os.sep ) )
      
     """ Get temporary destination directory to push files """
-    tmp_dir = os.path.expandvars(dst_dir)
-    tmp_dir = os.path.join ( tmp_dir, str( hashTime () ) )
+    tmp_dir = os.path.join ( dst_dir, str( hashTime () ) )
              
     """ Copy all the files in the destination directory """
     progress_value = 0
     progress_step = 100.0/len(file_list)
     files_attr = list()
-    wspace = getWorkspaceFromId(db, doc_id)
+    wspace = getWorkspaceFromId( doc_id )
              
     """ Iterate over all the provided source files """
     for src in file_list :
@@ -291,7 +283,7 @@ def pushFile ( files = list (), description="", db = "", doc_id = False, rename 
         files = list([files])
 
     if not doc_id:
-        doc_id = getIdFromPath ( db, files[0] )
+        doc_id = getIdFromPath ( files[0] )
     
     return push ( db = db , doc_id = doc_id , src_ls = files ,
                   description =  description, progressbar = False,
@@ -299,7 +291,7 @@ def pushFile ( files = list (), description="", db = "", doc_id = False, rename 
 
 
 def getTextureAttr ( path ):
-    textureType = utils.getTextureType()
+    textureType = utils.getTextureTypes()
     fname = os.path.basename ( path )
     for typ in textureType :
         pattern = "%s\d*.\d\d\d\d" % typ
@@ -353,9 +345,11 @@ def textureOptimise ( path ):
             print "grayscale: %s" % fname
              
         if texdepth.find(imgdepth) < 0 : 
-            print "warning: wrong depth '%s', %s should be '%s'  " % (imgdepth, fname, texdepth)
+            print "warning: wrong depth '%s', %s should be '%s'  " % ( imgdepth, fname, texdepth )
             
-        #TODO:Add tiff format warning
+        #TODO: Check if tiff format warning is working
+        if imgformat != "TIFF":
+            print "warning: wrong format '%s', %s should be '%s'  " % ( imgformat, fname, "TIFF" )
         
         textureBuild ( path, texfilter )
          
@@ -372,7 +366,7 @@ def textureExport ( path = "",progressbar = False ):
     return True
 
 def textureCheck ( doc_id = "", files = list() ) :
-    textureType = utils.getTextureType()
+    textureType = utils.getTextureTypes()
     to_push = list()
     not_pushed = list(files)
         

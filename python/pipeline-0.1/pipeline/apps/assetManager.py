@@ -64,7 +64,7 @@ class UiPush ( QtGui.QWidget ) :
         self.searchLineChanged(self.lineEdit_file, self.listWidget_file)
         
     def createWidgetList( self ):
-        self.workspace = core.getWorkspaceFromId ( self.db, self.doc_id )
+        self.workspace = core.getWorkspaceFromId ( self.doc_id )
         lsdir = os.listdir ( self.workspace )
         dictpath = dict()
         
@@ -232,7 +232,7 @@ class UiPushLs ( UiPush ) :
     
     def createWidgetList( self ):
         self.checkBox.setVisible ( True )
-        self.workspace = core.getWorkspaceFromId ( self.db, self.doc_id )        
+        self.workspace = core.getWorkspaceFromId ( self.doc_id )        
         self.dictpath = utils.lsSeq ( self.workspace )
         
         lspath = list ()
@@ -700,6 +700,8 @@ class UiAssetManager(UiMainManager):
     fileFilters = "Maya (*.ma *.mb);;Wavefront (*.obj *.Obj *.OBJ)"
     defaultsuffix = "obj"
     
+    
+    #TODO:Find a way tp generalize the following task and asset stuff
     pushls = ("texture",
               "render",
               "compout")
@@ -728,7 +730,8 @@ class UiAssetManager(UiMainManager):
                    }
     
     sequence_task = shot_task
-        
+    
+    #TODO:Replace by utils.getTaskTypes ()
     asset_task = {
                   "surface" : "sur",
                   "model" : "mod",
@@ -738,6 +741,7 @@ class UiAssetManager(UiMainManager):
                   "retopo" : "rtp"
                   }
     
+    #TODO:Replace by utils.getAssetTypes ()
     typ_dict = {
                 "character": ( "chr", asset_task ),
                 "vehicle": ( "vcl", asset_task ),
@@ -785,9 +789,8 @@ class UiAssetManager(UiMainManager):
         doc_id = item.parent().hkid
         ver = int ( item.text ( 0 ) )
         self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str(ver) ) )
-        pull = core.pull (self.db, doc_id = doc_id, ver = ver ,
-                                  progressbar = self.progressBar,
-                                  msgbar = self.statusbar.showMessage)
+        pull = core.pull ( doc_id = doc_id, ver = ver, progressbar = self.progressBar,
+                           msgbar = self.statusbar.showMessage)
         if pull :
             self.statusbar.showMessage("%s %s pulled" % ( doc_id, str(ver) ))
         
@@ -828,7 +831,7 @@ class UiAssetManager(UiMainManager):
     
     def createWorkspace ( self ) :
         item = self.treeWidget_a.currentItem()
-        core.createWorkspace ( self.db, doc_id = item.hkid )
+        core.createWorkspace ( item.hkid )
 
     def contextMenuAsset ( self, item ) :
         menu = QtGui.QMenu ()
@@ -860,7 +863,7 @@ class UiAssetManager(UiMainManager):
         icon_saveas = QtGui.QIcon ( os.path.join ( CC_PATH, "save.png" ) )
         
         doc_id = item.hkid
-        path = core.getWorkspaceFromId ( doc_id = doc_id )
+        path = core.getWorkspaceFromId ( doc_id )
         
         if os.path.exists ( path ) :
             actionPush = menu.addAction ( icon_push, 'Push a new %s %s %s version' % 

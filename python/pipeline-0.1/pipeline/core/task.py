@@ -84,7 +84,6 @@ def createTask ( db = None, doc_id = "", description = "", overdoc = dict() ):
         """ Create the task structure """
         
         doc = {
-            "file_system" : filesystem,
             "type" : "%s_%s" % (typ,task),
             "task" : task,
             "_id" : doc_id,

@@ -20,8 +20,10 @@ def getProjectName():
 def extractNumber(name):
     sp = name.split(".")[1] 
     result = re.findall(r"\d+", sp)
+    
     if len ( result ) > 0 :
         return result[0]
+    
     else:
         return "0"
         

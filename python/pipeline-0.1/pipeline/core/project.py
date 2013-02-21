@@ -4,6 +4,7 @@ Created on Jan 11, 2013
 @author: pixo
 '''
 import os,time
+import pipeline.utils as utils
 
 def lsProjects(db, project=""):
     endkey = u"%s\u0fff" % ( project )
@@ -20,6 +21,8 @@ def lsProjects(db, project=""):
 def createProject( db, name = "NewProject", description = "Default", overdoc=dict() ):
     
     proj_ls = lsProjects ( db, name )
+    assets = utils.getAssetTypes()
+    tasks = utils.getTaskTypes()
     
     if not ( name in proj_ls ):
         doc = {
@@ -27,14 +30,15 @@ def createProject( db, name = "NewProject", description = "Default", overdoc=dic
         "type": "project",
         "name": name,
         "description" : description,
-        #TODO:Task list
-        "task":"layout,lighting,render,compositing,compout",
+        "assets_type": assets,
+        "tasks_type": tasks,
         "creator": os.getenv ( "USER" ),
         "created": time.strftime ( "%Y %b %d %H:%M:%S", time.gmtime() )
         }
+        
         doc.update( overdoc )
         _id, _rev = db.save( doc )
-        print "Project %r created as Document(%r)" % (name, _id)
+        print "Project %r created" % (name, _id)
         return True
     
     else :

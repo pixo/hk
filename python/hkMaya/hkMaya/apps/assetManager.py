@@ -13,15 +13,17 @@ import glob, os
 
 CC_PATH = utils.getCCPath()
 PROJECT = utils.getProjectName()
-
+#TODO: Create Project UI (it should push the project view)
 #TODO: Remove GuerillaNode when importing an asset
 
 def pushMaya ( db = None, doc_id = "", description = "", item = None,
                screenshot = "", msgbar = False, progressbar = False,
                selection = False, rename = True, extension = ".mb") :
-    filename = os.path.join ( "/tmp", "%s%s" % ( core.hashTime (), extension ) ) 
-    if hkcmds.saveFile ( filename, selection, msgbar ) :
-        repo = core.push ( db, doc_id, filename, description, progressbar,
+    
+    fname = os.path.join ( "/tmp", "%s%s" % ( core.hashTime (), extension ) )
+    
+    if hkcmds.saveFile ( fname, selection, msgbar ) :
+        repo = core.push ( db, doc_id, fname, description, progressbar,
                            msgbar, rename )
         core.transfer ( screenshot, repo, doc_id )
         core.assetExport ( os.path.join ( repo, doc_id + extension ), repo )
@@ -32,7 +34,7 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
     return False
 
 def pullMaya (db = None, doc_id = "", ver = "latest" ):
-    path = os.path.expandvars ( core.getAssetPath ( db, doc_id, ver ) )
+    path = core.getAssetPath ( doc_id, ver )
     files = glob.glob ( os.path.join ( path, "*.ma" ) )
     files.extend ( glob.glob ( os.path.join ( path, "*.mb" ) ) )
     hkcmds.openFile ( files[0] )
@@ -109,7 +111,7 @@ class UiMayaAM(apps.UiAssetManager):
         ver = int ( item.text ( 0 ) )
         self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str ( ver ) ) )
      
-        path = os.path.expandvars(core.getAssetPath(self.db, doc_id, ver))
+        path = core.getAssetPath ( doc_id, ver )
         files = glob.glob(os.path.join(path,"*.ma"))
         files.extend(glob.glob(os.path.join(path,"*.mb")))
          
@@ -124,9 +126,9 @@ class UiMayaAM(apps.UiAssetManager):
         ver = int ( item.text ( 0 ) )
         self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str(ver) ) )
         
-        pull = core.pull (self.db, doc_id = doc_id, ver = ver , extension = ".mb",
-                                  progressbar = self.progressBar,
-                                  msgbar = self.statusbar.showMessage)
+        pull = core.pull ( doc_id = doc_id, ver = ver , extension = ".mb",
+                           progressbar = self.progressBar,
+                           msgbar = self.statusbar.showMessage)
         if pull :
             hkcmds.openFile ( pull [ 0 ] )
             self.statusbar.showMessage("%s %s pulled" % ( doc_id, str(ver) ))

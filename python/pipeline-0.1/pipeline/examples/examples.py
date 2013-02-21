@@ -8,32 +8,40 @@ normal = norm
 displace = disp
 mask = mask
 '''
+from pipeline.core.project import createProject
+from pipeline.utils.dataBase import getDataBase
 
-import glob, re
+# import glob, re
+# 
+# tex = list(("testing_ch_mickey_tex_diff.1001.tif",
+#        "testing_ch_mickey_tex_spec.1001.tif",
+#        "testing_ch_mickey_tex_norm.1001.tif",
+#        "testing_ch_mickey_tex_norm2.1001.tif",
+#        "testing_ch_mickey_tex_spic2.1001.tif"))
+# 
+# asset ="testing_ch_mickey_tex"
+# 
+# def textureCheck ( doc_id = "", files = list() ) :
+#     textureType = ( "diff", "roug", "spec", "bump", "norm", "disp" )
+#     
+#     to_push = list()
+#     not_pushed = list(files)
+#         
+#     for file in files :
+#         for typ in textureType :
+#     
+#             pattern = "%s_%s\d*.\d*.tif$" % ( asset, typ )
+#             
+#             if re.findall ( pattern, file ) :
+#                 to_push.append ( file )
+#                 not_pushed.remove(file)
+# 
+#     return to_push
+#     
+# textureCheck ( asset, tex )
 
-tex = list(("testing_ch_mickey_tex_diff.1001.tif",
-       "testing_ch_mickey_tex_spec.1001.tif",
-       "testing_ch_mickey_tex_norm.1001.tif",
-       "testing_ch_mickey_tex_norm2.1001.tif",
-       "testing_ch_mickey_tex_spic2.1001.tif"))
+db = getDataBase ()
+name = "spare"
+description = "Projects done during my spare times"
 
-asset ="testing_ch_mickey_tex"
-
-def textureCheck ( doc_id = "", files = list() ) :
-    textureType = ("diff","roug","spec","bump","norm","disp")
-    
-    to_push = list()
-    not_pushed = list(files)
-        
-    for file in files :
-        for typ in textureType :
-    
-            pattern = "%s_%s\d*.\d*.tif$" % ( asset, typ )
-            
-            if re.findall ( pattern, file ) :
-                to_push.append ( file )
-                not_pushed.remove(file)
-
-    return to_push
-    
-textureCheck ( asset, tex )
+createProject(db, name, description)
