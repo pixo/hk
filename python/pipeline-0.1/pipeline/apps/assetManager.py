@@ -33,8 +33,8 @@ import pipeline.core as core
 CC_PATH = utils.getCCPath()
 PROJECT = utils.getProjectName()
 
-#TODO:create ui for shot creation
-
+#TODO: create ui for shot creation
+#TODO: preview obj with meshlab
 
 class UiPush ( QtGui.QWidget ) :
 
@@ -506,7 +506,7 @@ class UiCreateTask(UiCreateOnDb):
     
 class UiMainManager(QtGui.QMainWindow):
         
-    db = utils.getDataBase()
+    db = utils.getDb()
     launcher = "terminal"
         
     def init ( self ) :
@@ -701,7 +701,7 @@ class UiAssetManager(UiMainManager):
     defaultsuffix = "obj"
     
     
-    #TODO:Find a way tp generalize the following task and asset stuff
+    #TODO:find a way to generalize the following task and asset stuff
     pushls = ("texture",
               "render",
               "compout")
@@ -731,7 +731,7 @@ class UiAssetManager(UiMainManager):
     
     sequence_task = shot_task
     
-    #TODO:Replace by utils.getTaskTypes ()
+    #TODO:replace by utils.getTaskTypes ()
     asset_task = {
                   "surface" : "sur",
                   "model" : "mod",
@@ -741,7 +741,7 @@ class UiAssetManager(UiMainManager):
                   "retopo" : "rtp"
                   }
     
-    #TODO:Replace by utils.getAssetTypes ()
+    #TODO:replace by utils.getAssetTypes ()
     typ_dict = {
                 "character": ( "chr", asset_task ),
                 "vehicle": ( "vcl", asset_task ),

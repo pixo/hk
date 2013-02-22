@@ -62,7 +62,7 @@ def createTask ( db = None, doc_id = "", description = "", overdoc = dict() ):
     """
     
     if db == None:
-        db = utils.getDataBase()
+        db = utils.getDb()
         
     """ Get datas from doc_id """
     project, typ, asset, task, fork = doc_id.split ( "_" )
@@ -94,7 +94,7 @@ def createTask ( db = None, doc_id = "", description = "", overdoc = dict() ):
             "description" : description,
             "versions" : dict(),
             "creator" : os.getenv ( "USER" ),
-            "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.gmtime() ),
+            "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.localtime() ),
             "state" : "na"
             }
         doc.update(overdoc)

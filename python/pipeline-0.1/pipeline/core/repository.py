@@ -10,7 +10,7 @@ import pipeline
 #rewrite less db based
 def hashTime () :
     sha1 = hashlib.sha1 ( str ( time.time () ) )
-    return sha1.hexdigest ()
+    return str ( sha1.hexdigest () )
      
 def hashFile ( filepath ) :
     sha1 = hashlib.sha1 ()
@@ -60,22 +60,33 @@ def getIdFromPath ( path = "" ):
     
     return doc_id
      
-def getAssetPath ( doc_id = "", ver = "latest", local = False ):
-    if ver == "latest" :
-        ver = getLastVersion(doc_id)
-        
+def getRootAssetPath ( doc_id = "", local = False):
+    """Return root path of an asset from the doc_id"""
     path = doc_id.replace ( "_", os.sep )
-    
     if local :
-        path = os.path.join(os.getenv("HK_USER_REPO"),path,"%03d" % float(ver))
+        path = os.path.join(os.getenv ( "HK_USER_REPO" ), path )
     else:
-        path = os.path.join(os.getenv("HK_REPO"),path,"%03d" % float(ver))
+        path = os.path.join(os.getenv ( "HK_REPO"), path )
+        
+    return path
+    
+def getAssetVersions ( doc_id ):
+    path = getRootAssetPath ( doc_id )
+    versions = os.listdir(path)
+    versions.sort()
+    
+    return versions 
+
+def getAssetPath ( doc_id = "", ver = "last", local = False ):
+    if ver == "last" :
+        ver = getAssetVersions ( doc_id = doc_id, local = local )
+        ver = ver[-1]
+         
+    path = getRootAssetPath ( doc_id = "", local = local )
+    path = os.path.join ( path, ver )
     
     return path
 
-def getLastVersion ( doc_id ):
-    #TODO:get latest asset version with Filesystem
-    return True 
 
 def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) :
     """ Check the src_ls type is a list """
@@ -128,7 +139,7 @@ def pull ( doc_id = "", ver = "latest", extension = "",progressbar = False,
             if not os.path.exists ( dirname ):
                 os.makedirs( dirname , 0775 )
                   
-            #TODO:Check the file exist ,increment it if it exists 
+            #TODO:check the file exist ,increment it if it exists
             if extension != "":
                 if os.path.splitext(fulldst)[-1] == extension:
                     shutil.copyfile( file, fulldst)
@@ -185,10 +196,10 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
             print "Warning: %s doesn't exist" % src
               
     """ Get root destination directory to push files """
-    dst_dir = os.path.join ( os.getenv("HK_REPO"), doc_id.replace ( "_", os.sep ) )
+    dst_dir = getRootAssetPath ( doc_id )
      
     """ Get temporary destination directory to push files """
-    tmp_dir = os.path.join ( dst_dir, str( hashTime () ) )
+    tmp_dir = os.path.join ( dst_dir, hashTime () )
              
     """ Copy all the files in the destination directory """
     progress_value = 0
@@ -200,6 +211,7 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
     for src in file_list :
         """ Because some peoples use to name directories with points """
         file_space = os.path.dirname( src )
+        """file space in case we need to publish directories """
         file_space = file_space.replace( wspace, "" )
         file_name =  os.path.join( file_space, os.path.basename ( src ) )
           
@@ -226,7 +238,7 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
         shutil.copy( src, tmp_file )
         msg = "%s" % tmp_file
           
-        """ Store the name for the database so we avoid to call 
+        """ Store the files names in a list to avoid to call 
             the database for each source file """
         files_attr.append ( dst_file )
          
@@ -252,7 +264,7 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
     """ Create the new version data for the "versions" document's attribute """
     fileinfo = {
                 "creator" : os.getenv ( "USER" ),
-                "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.gmtime()),
+                "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.localtime()),
                 "description" : description ,
                 "path" : path_attr ,
                 "files" : files_attr
@@ -277,7 +289,7 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
 def pushFile ( files = list (), description="", db = "", doc_id = False, rename = True ):
      
     if db == None :
-        db = utils.getDataBase()
+        db = utils.getDb()
          
     if type(files) == str:
         files = list([files])
@@ -347,13 +359,12 @@ def textureOptimise ( path ):
         if texdepth.find(imgdepth) < 0 : 
             print "warning: wrong depth '%s', %s should be '%s'  " % ( imgdepth, fname, texdepth )
             
-        #TODO: Check if tiff format warning is working
+        #TODO:check if tiff format warning is working
         if imgformat != "TIFF":
             print "warning: wrong format '%s', %s should be '%s'  " % ( imgformat, fname, "TIFF" )
         
         textureBuild ( path, texfilter )
          
-            
     else:
         print "Can't find the '%s' texture type" % fname
     
@@ -408,20 +419,23 @@ def texturePush ( db = None, doc_id = "", files = list(), description = "",
         return False
     
 def assetExport ( source = "", destination = "", obj=True, abc=True, gproject = True ):
-        
+    
     fname = os.path.basename(source)
     name,ext = os.path.splitext(fname)
     
+    #TODO:create mayaToObj()
     if obj :
         fobj = os.path.join( destination, name + ".obj" )
         objExportCmd = """ maya -batch -file %s  -command "loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/objExport.so\\"; file -force -options \\"groups=1;ptgroups=1;materials=0;smoothing=1;normals=1\\" -type \\"OBJexport\\" -pr -ea \\"%s\\"; " """ % ( source, fobj )   
         os.system( objExportCmd )
-     
+    
+    #TODO:create mayaToAbc() 
     if abc :
         fabc = os.path.join( destination, name + ".abc" )
         abcExportCmd = """ maya -batch -file %s  -command "loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/AbcExport.so\\"; AbcExport -j \\"-frameRange 1 1 -file %s\\";" """ % ( source, fabc )
         os.system( abcExportCmd )
     
+    #TODO:create mayaToGproject()
     if gproject :
         fgproject = os.path.join( destination, name + ".gproject" )
         gprojectExportCmd = """ maya -batch -file %s  -command "loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/guerilla2013.so\\"; GuerillaExport -m 1 -a 1 -pf \\"%s\\";file -f -save; " """ % ( source, fgproject )

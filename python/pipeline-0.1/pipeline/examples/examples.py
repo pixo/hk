@@ -8,8 +8,8 @@ normal = norm
 displace = disp
 mask = mask
 '''
-from pipeline.core.project import createProject
-from pipeline.utils.dataBase import getDataBase
+import pipeline.core as  core
+import pipeline.utils as utils
 
 # import glob, re
 # 
@@ -40,8 +40,11 @@ from pipeline.utils.dataBase import getDataBase
 #     
 # textureCheck ( asset, tex )
 
-db = getDataBase ()
-name = "spare"
-description = "Projects done during my spare times"
+# name = "spare"
+# description = "Projects done during my spare times"
+# 
+# createProject(db, name, description)
 
-createProject(db, name, description)
+# core.createProject ( "bln", "The Belanus project is created to test 3dcoat and mari" )
+
+core.getAssetVersions("testing_chr_mickey_mod_main")

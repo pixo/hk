@@ -30,7 +30,7 @@ def getTextureTypes () :
 
 def getAssetTypes ():
     #TODO:Asset list
-    res = list ( ( "model" ) )
+    res = list ( {"model"} )
     
     return res
 

@@ -18,30 +18,27 @@ def lsProjects(db, project=""):
         
     return proj_ls
     
-def createProject( db, name = "NewProject", description = "Default", overdoc=dict() ):
+def createProject( name = "NewProject", description = "Default", overdoc=dict(), 
+                   serveradress = "http://admin:admin@127.0.0.1:5984/" ):
     
-    proj_ls = lsProjects ( db, name )
     assets = utils.getAssetTypes()
     tasks = utils.getTaskTypes()
     
-    if not ( name in proj_ls ):
-        doc = {
-        "_id": "%s" % name,
-        "type": "project",
-        "name": name,
-        "description" : description,
-        "assets_type": assets,
-        "tasks_type": tasks,
-        "creator": os.getenv ( "USER" ),
-        "created": time.strftime ( "%Y %b %d %H:%M:%S", time.gmtime() )
-        }
-        
-        doc.update( overdoc )
-        _id, _rev = db.save( doc )
-        print "Project %r created" % (name, _id)
-        return True
+    doc = {
+            "_id": "%s" % name,
+            "type": "project",
+            "name": name,
+            "description" : description,
+            "assets_type": assets,
+            "tasks_type": tasks,
+            "creator": os.getenv ( "USER" ),
+            "created": time.strftime ( "%Y %b %d %H:%M:%S", time.localtime() )
+            }
+    doc.update( overdoc )
     
-    else :
-        print "Project %r already exist" % name
-        return None
+    db = utils.createDb ( name, serveradress )
+    _id, _rev = db.save( doc )
     
+    #TODO:add project environment creation
+    print "Project %s created" % (name)
+    return db   

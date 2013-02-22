@@ -64,7 +64,7 @@ def createAsset( db = None, doc_id = "", description = "", overdoc = dict() ):
     """
 
     if db == None:
-        db = utils.getDataBase()
+        db = utils.getDb()
         
     """ Get datas from doc_id """
     project, typ, asset = doc_id.split ( "_" )
@@ -81,7 +81,7 @@ def createAsset( db = None, doc_id = "", description = "", overdoc = dict() ):
             "name" : name,
             "description" : description,
             "creator" : os.getenv ( "USER" ),
-            "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.gmtime() ),
+            "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.localtime() ),
             "state" : "na"
             }
         
