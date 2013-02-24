@@ -13,7 +13,7 @@ import glob, os
 
 CC_PATH = utils.getCCPath()
 PROJECT = utils.getProjectName()
-#TODO:create Project UI (it should push the project view)
+
 #TODO:remove GuerillaNode when importing an asset
 
 def pushMaya ( db = None, doc_id = "", description = "", item = None,

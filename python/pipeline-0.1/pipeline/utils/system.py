@@ -5,11 +5,19 @@ Created on Jan 19, 2013
 '''
 import itertools, re, os, glob
 
+def createFile ( file, content ) :
+    if os.path.exists ( file ) :
+        return False
+    
+    file = open ( file, 'w' )
+    file.write ( content )
+    file.close ()
+
 def getRootPath():
     return os.getenv("HK_ROOT")
 
-def getProjectsPath():
-    return os.getenv("HK_PROJECTS_PATH")
+def getRepo():
+    return os.getenv("HK_REPO")
 
 def getCCPath():
     return os.path.join(os.getenv( "HK_PIPELINE"), "pipeline","creative")
@@ -26,7 +34,7 @@ def extractNumber(name):
     
     else:
         return "0"
-        
+
 def collapseGroup(group, root = os.sep):
 
     if len(group) == 1:
@@ -87,4 +95,3 @@ def lsSeq(path, recursive = True):
         resultDict['\n'.join(map(str, groups))] = itemDict[key]
         
     return resultDict
-        

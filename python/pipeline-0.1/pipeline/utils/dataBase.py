@@ -6,33 +6,44 @@ Created on Jan 6, 2013
 import os
 import couchdb
 
-class ProjectNoSet(Exception):
+class ProjectNoSet ( Exception ) :
     pass
 
-def getDb( dbname = False, serveradress = False):
+def getDesign () :
+    return "AssetManager"
+
+def getServer () :
+    return os.getenv ( "HK_DB_SERVER" )
+
+def getDb ( dbname = "" , serveradress = "" ) :
     
-    if not serveradress :
-        serveradress = os.getenv ( "HK_DB_SERVER" )
+    if serveradress == "" :
+        serveradress = getServer ()
     
-    if not dbname :
+    if dbname == "" :
         dbname = os.getenv ( "HK_DB" )
         
     server = couchdb.Server ( serveradress )
     
-    return server [ dbname ]
+    if dbname in server :
+        return server [ dbname ]
+    else :
+        return False
 
-def lsDb( db = None, view = "", startkey = "", endkey = "" ):
+def lsDb( db = None , view = "", startkey = "", endkey = "" ):
     
-    if db == None:
+    if db == None :
         db = getDb ()
         
     if endkey == "":
         endkey = startkey + "\u0fff"
-        
-    view = db.view ( "_design/%s/_view/%s" % ( "homeworks", view ),
+    
+    design = getDesign()    
+    view = db.view ( "_design/%s/_view/%s" % ( design, view ),
                     startkey = startkey, endkey = endkey )
     
     doc_ls = list()
+    
     for row in view.rows:
         doc_ls.append(row["value"]["name"])
         

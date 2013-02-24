@@ -39,12 +39,21 @@ import pipeline.utils as utils
 #     return to_push
 #     
 # textureCheck ( asset, tex )
+import os
+name = "testing"
+description = "test"
+db = utils.getDb ()
 
-# name = "spare"
-# description = "Projects done during my spare times"
-# 
-# createProject(db, name, description)
+server=os.getenv("HK_DB_SERVER")
+core.createProject (name = name, description=description, serveradress= server)
 
-# core.createProject ( "bln", "The Belanus project is created to test 3dcoat and mari" )
+# description = "The Belanus project is created to test 3dcoat and mari"
+# serveradress = utils.getServer()
+# core.createProject ( name="bln", description=description, serveradress=serveradress, dbname="projects")
 
-core.getAssetVersions("testing_chr_mickey_mod_main")
+# core.getAssetVersions("testing_chr_mickey_mod_main")
+
+# yop = utils.getDb ( dbname = "projects", serveradress = "http://admin:admin@127.0.0.1:5984/" )
+# print yop
+
+# utils.createProjEnv("testing")

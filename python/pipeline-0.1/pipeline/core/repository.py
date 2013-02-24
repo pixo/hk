@@ -7,7 +7,6 @@ import os, time, shutil, hashlib, re, glob, commands
 import pipeline.utils as utils
 import pipeline
 
-#rewrite less db based
 def hashTime () :
     sha1 = hashlib.sha1 ( str ( time.time () ) )
     return str ( sha1.hexdigest () )
@@ -32,11 +31,48 @@ def compareHashFile( firstfile, secondfile ):
      
     else :
         return False
+ 
+def getIdFromPath ( path = "" ):
+    """Get doc_id from path , firstly to push in cli """
+    path = os.path.expandvars(path)
+    user_repo = os.getenv ( "HK_USER_REPO" ) + os.sep
+    path = path.replace ( user_repo , "" )
+    part = path.split(os.sep)
+    doc_id = "%s_%s_%s_%s_%s" % ( utils.getProjectName(), part[0],part[1],
+                                  part[2], part[3] )
+    return doc_id
+     
+def getRootAssetPath ( doc_id = "", local = False):
+    """Return root path of an asset from the doc_id"""
+    path = doc_id.replace ( "_", os.sep )
+    if local :
+        root = os.getenv ( "HK_USER_REPO" )
+    else:
+        root = os.getenv ( "HK_REPO" )
+        
+    path = os.path.join(root, path )
+    return path
+    
+def getAssetVersions ( doc_id ):
+    path = getRootAssetPath ( doc_id )
+    versions = os.listdir(path)
+    versions.sort()
+    
+    return versions
+
+def getAssetPath ( doc_id = "", ver = "last", local = False ):
+    if ver == "last" :
+        ver = getAssetVersions ( doc_id = doc_id, local = local )
+        ver = ver[-1]
+         
+    path = getRootAssetPath ( doc_id = doc_id, local = local )
+    path = os.path.join ( path, "%03d" % float(ver) )
+    
+    return path
 
 def getWorkspaceFromId ( doc_id = "" ):
-    """Get user asset workspace from doc_id"""    
-    path = doc_id.replace ( "_", os.sep )
-    path = os.path.join ( os.getenv ( "HK_USER_REPO" ), path )
+    """Get user asset workspace from doc_id"""
+    path = getRootAssetPath ( doc_id, True )
     return path
  
 def createWorkspace( doc_id = ""):
@@ -49,44 +85,6 @@ def createWorkspace( doc_id = ""):
     os.makedirs ( path, 0775 )
     print ( "createWorkspace(): %s created" % path )
     return path
- 
-def getIdFromPath ( path = "" ):
-    """Get doc_id from path , firstly to push in cli """
-    path = os.path.expandvars(path)
-    user_repo = os.getenv ( "HK_USER_REPO" ) + os.sep
-    path = path.replace ( user_repo , "" )
-    part = path.split(os.sep)
-    doc_id = "%s_%s_%s_%s_%s" % ( os.getenv ( "HK_PROJECT" ), part[0],part[1],part[2],part[3] )
-    
-    return doc_id
-     
-def getRootAssetPath ( doc_id = "", local = False):
-    """Return root path of an asset from the doc_id"""
-    path = doc_id.replace ( "_", os.sep )
-    if local :
-        path = os.path.join(os.getenv ( "HK_USER_REPO" ), path )
-    else:
-        path = os.path.join(os.getenv ( "HK_REPO"), path )
-        
-    return path
-    
-def getAssetVersions ( doc_id ):
-    path = getRootAssetPath ( doc_id )
-    versions = os.listdir(path)
-    versions.sort()
-    
-    return versions 
-
-def getAssetPath ( doc_id = "", ver = "last", local = False ):
-    if ver == "last" :
-        ver = getAssetVersions ( doc_id = doc_id, local = local )
-        ver = ver[-1]
-         
-    path = getRootAssetPath ( doc_id = "", local = local )
-    path = os.path.join ( path, ver )
-    
-    return path
-
 
 def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) :
     """ Check the src_ls type is a list """
@@ -417,7 +415,7 @@ def texturePush ( db = None, doc_id = "", files = list(), description = "",
         print "expect: %s or %s " % ( simptex , animtex)
         
         return False
-    
+       
 def assetExport ( source = "", destination = "", obj=True, abc=True, gproject = True ):
     
     fname = os.path.basename(source)

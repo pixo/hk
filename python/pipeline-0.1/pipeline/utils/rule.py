@@ -25,17 +25,14 @@ def getTextureTypes () :
             "norm": ( "RGB", "8-bit", "rgb(127,127,255)", True, "triangle" ),
             "normback": ("RGB","8-bit","rgb(127,127,255)",True, "triangle" ),
             "disp": ( "R", "16-bit 32-bit", False, True, "bspline" ) }
-    
     return res
 
 def getAssetTypes ():
     #TODO:Asset list
     res = list ( {"model"} )
-    
     return res
 
 def getTaskTypes ():
     #TODO:Task list
     res = list ( ( "layout","lighting","render","compositing","compout" ) )
-    
     return res

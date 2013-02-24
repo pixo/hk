@@ -33,6 +33,7 @@ import pipeline.core as core
 CC_PATH = utils.getCCPath()
 PROJECT = utils.getProjectName()
 
+#TODO: create ui for project creation
 #TODO: create ui for shot creation
 #TODO: preview obj with meshlab
 
@@ -506,7 +507,7 @@ class UiCreateTask(UiCreateOnDb):
     
 class UiMainManager(QtGui.QMainWindow):
         
-    db = utils.getDb()
+    db = utils.getDb ()
     launcher = "terminal"
         
     def init ( self ) :
@@ -797,7 +798,7 @@ class UiAssetManager(UiMainManager):
         self.progressBar.setHidden ( True )
         
     def importVersion ( self ) :
-        print "importVersion"
+        print "importVersion()"
         
     def openFileDialog ( self ) :
         item = self.treeWidget_a.currentItem()
@@ -902,7 +903,7 @@ class UiAssetManager(UiMainManager):
             item_type = item.hktype
             
             if item_type == "sequence" :
-                print "ma bite"
+                print "contextMenuEvent(): sequence"
                 
             if item_type == "asset" :
                 self.contextMenuAsset ( item )
