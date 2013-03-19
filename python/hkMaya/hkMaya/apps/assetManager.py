@@ -23,10 +23,12 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
     fname = os.path.join ( "/tmp", "%s%s" % ( core.hashTime (), extension ) )
     
     if hkcmds.saveFile ( fname, selection, msgbar ) :
-        repo = core.push ( db, doc_id, fname, description, progressbar,
+        destination = core.push ( db, doc_id, fname, description, progressbar,
                            msgbar, rename )
-        core.transfer ( screenshot, repo, doc_id )
-        core.assetExport ( os.path.join ( repo, doc_id + extension ), repo )
+        core.transfer ( screenshot, destination, doc_id )
+        source = os.path.join ( destination, doc_id + extension )
+        assetExportCmd = "hk-asset-export -i %s " % source
+        os.system ( assetExportCmd )
         msgbar ( "Done" )
         
         return True
@@ -99,12 +101,6 @@ class UiMayaAM(apps.UiAssetManager):
     launcher = "maya"
     defaultsuffix = "mb"
          
-    def pushVersion ( self ) :
-        item = self.treeWidget_a.currentItem ()
-        doc_id = item.hkid
-        self.pushVersionWidget = UiPushMaya ( None, self.db, doc_id, item )
-        self.pushVersionWidget.show ()
-      
     def importVersion ( self ) :
         item = self.treeWidget_a.currentItem ()
         doc_id = item.parent().hkid
@@ -117,7 +113,12 @@ class UiMayaAM(apps.UiAssetManager):
          
         hkcmds.importFile(files[0])
         self.statusbar.showMessage("%s pulled" % files[0] )
-        
+
+    def pushVersion ( self ) :
+        item = self.treeWidget_a.currentItem ()
+        doc_id = item.hkid
+        self.pushVersionWidget = UiPushMaya ( None, self.db, doc_id, item )
+        self.pushVersionWidget.show ()
         
     def pullVersion ( self ) :
         self.progressBar.setHidden ( False )
@@ -134,4 +135,7 @@ class UiMayaAM(apps.UiAssetManager):
             self.statusbar.showMessage("%s %s pulled" % ( doc_id, str(ver) ))
          
         self.progressBar.setHidden ( True )
+        
+    def openFile ( self, fname ) :
+        hkcmds.openFile ( fname )
         

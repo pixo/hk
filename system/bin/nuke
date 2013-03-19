@@ -1,0 +1,4 @@
+#!/bin/bash
+export PYTHONPATH=$HK_COUCHDB:$PYTHONPATH
+echo "Running hk-nuke $HK_NUKE_VER..."
+/usr/local/Nuke$HK_NUKE_VER/nuke $*

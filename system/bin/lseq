@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+
+import pipeline.utils as utils
+import os
+
+if __name__ == '__main__':
+	res = utils.lsSeq ( os.path.abspath( os.curdir ), recursive = False)
+	for k in res:
+		print "%s" % k

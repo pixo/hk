@@ -5,34 +5,49 @@ Created on Feb 17, 2013
 '''
 
 def getTextureTypes () :
-    
-    res = { "diff": ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle" ),
-            "diffback": ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle" ),
-            "roug": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle" ),
-            "rougback": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle" ),
-            "spec": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle" ),
-            "specback": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle" ), 
-            "emis": ( "RGB", "8-bit", "rgb(0,0,0)", True, "triangle" ),
-            "emisback" : ( "RGB", "8-bit", "rgb(0,0,0)", True, "triangle" ),
+    return {"diff": ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
+            "diffback": ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
+            "droug": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1" ),
+            "drougback": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
+            "spec": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
+            "specback": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"), 
+            "sroug": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1" ),
+            "srougback": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
+            "emis": ( "RGB", "8-bit", "rgb(0,0,0)", True, "triangle", "1"),
+            "emisback" : ( "RGB", "8-bit", "rgb(0,0,0)", True, "triangle", "1"),
             "mask": ( "R", "8-bit", "rgb(0,0,0)", "Triangle" ),
-            "maskback": ( "R", "8-bit", "rgb(0,0,0)", True, "triangle" ),
-            "albe": ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle" ),
-            "albeback": ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle" ),
-            "ssss": ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle" ),
-            "ssssback": ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle" ),
-            "bump": ( "R", "8-bit 16-bit","rgb(127,127,127)",True, "bspline" ),
-            "bumpback": ( "R", "8-bit 16-bit", "rgb(127,127,127)", True, "bspline" ),
-            "norm": ( "RGB", "8-bit", "rgb(127,127,255)", True, "triangle" ),
-            "normback": ("RGB","8-bit","rgb(127,127,255)",True, "triangle" ),
-            "disp": ( "R", "16-bit 32-bit", False, True, "bspline" ) }
-    return res
+            "maskback": ( "R", "8-bit", "rgb(0,0,0)", True, "triangle", "1"),
+            "albe": ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "sRGB"),
+            "albeback": ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "sRGB"),
+            "ssss": ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
+            "ssssback": ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
+            "bump": ( "R", "8-bit 16-bit","rgb(127,127,127)",True, "bspline", "1"),
+            "bumpback": ( "R", "8-bit 16-bit", "rgb(127,127,127)", True, "bspline", "1"),
+            "norm": ( "RGB", "8-bit", "rgb(127,127,255)", True, "triangle", "1"),
+            "normback": ("RGB","8-bit","rgb(127,127,255)",True, "triangle", "1"),
+            "disp": ( "R", "16-bit 32-bit", False, True, "bspline", "1")}
 
 def getAssetTypes ():
-    #TODO:Asset list
-    res = list ( {"model"} )
-    return res
-
-def getTaskTypes ():
-    #TODO:Task list
-    res = list ( ( "layout","lighting","render","compositing","compout" ) )
-    return res
+    return {'chr': 'character',
+            'env': 'environment',
+            'mtl': 'material',
+            'prp': 'prop',
+            'seq': 'sequence',
+            'shot': 'shot',
+            'vcl': 'vehicle',
+            'vfx': 'effect'}
+        
+def getTaskTypes ():                    
+    return {'bsh': 'bashcomp',
+            'cam': 'camera',
+            'cmp': 'comp',
+            'dmp': 'mattepaint',
+            'lay': 'layout',
+            'lit': 'lighting',
+            'mod': 'modeling',
+            'ren': 'render',
+            'rig': 'rig',
+            'rtp': 'retopo',
+            'sct': 'sculpt',
+            'sur': 'surfacing',
+            'tex': 'texture'}

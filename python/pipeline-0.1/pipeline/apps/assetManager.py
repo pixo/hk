@@ -30,10 +30,18 @@ from PySide import QtCore, QtGui
 import pipeline.utils as utils
 import pipeline.core as core
 
-CC_PATH = utils.getCCPath()
-PROJECT = utils.getProjectName()
+try :
+    CC_PATH = utils.getCCPath()
+except:
+    CC_PATH = "/tmp"
+    print "assetManager module: Can't set CC_PATH \n set CC_PATH > /tmp"
 
-#TODO: create ui for project creation
+try :
+    PROJECT = utils.getProjectName()
+except:
+    PROJECT = "temp"
+    print "assetManager module: Can't set PROJECT \n set PROJECT > temp"
+
 #TODO: create ui for shot creation
 #TODO: preview obj with meshlab
 
@@ -107,8 +115,7 @@ class UiPush ( QtGui.QWidget ) :
         self.labelStatus.setText ( "Done" )
         
     def descriptionChanged( self ):        
-        textdoc = self.plainTextEdit_description.document()
-        description = textdoc.toPlainText()
+        description = self.plainTextEdit_description.toPlainText()
         
         if description == "" :
             self.pushButton.setEnabled ( False )
@@ -802,9 +809,9 @@ class UiAssetManager(UiMainManager):
         
     def openFileDialog ( self ) :
         item = self.treeWidget_a.currentItem()
-        doc = item.dbdoc
-        path = doc [ "file_system" ].replace ( "/", os.sep )
-        path = os.path.join ( os.getenv("HK_USER_REPOSITORY_PATH"), path )
+        hkid = item.hkid
+        path = hkid.replace("_",os.sep)
+        path = os.path.join ( os.getenv("HK_USER_REPO"), path )
         fdialog = QtGui.QFileDialog ()
         fdialog.setDefaultSuffix ( self.defaultsuffix )
         fname = fdialog.getOpenFileName ( self, caption = 'Open file from workspace',
@@ -816,10 +823,9 @@ class UiAssetManager(UiMainManager):
         
     def saveFileDialog ( self ) :
         item = self.treeWidget_a.currentItem()
-        doc = item.dbdoc
-        path = doc [ "file_system" ].replace ( "/", os.sep )
-        path = os.path.join ( os.getenv("HK_USER_REPOSITORY_PATH"), path )
-        
+        hkid = item.hkid
+        path = hkid.replace("_",os.sep)
+        path = os.path.join ( os.getenv("HK_USER_REPO"), path )
         fdialog = QtGui.QFileDialog()
         fdialog.setDefaultSuffix ( self.defaultsuffix )
         fdialog.setConfirmOverwrite ( True )

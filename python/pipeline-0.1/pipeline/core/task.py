@@ -68,8 +68,7 @@ def createTask ( db = None, doc_id = "", description = "", overdoc = dict() ):
     project, typ, asset, task, fork = doc_id.split ( "_" )
     asset_id = "%s_%s_%s" % ( project, typ, asset )
     name = "%s_%s_%s_%s" % ( typ, asset, task, fork )
-    filesystem = "%s/%s/%s/%s" % (typ,asset,task,fork)
-    
+        
     """ Check if the asset exist """
     asset_ls = utils.lsDb ( db, typ, asset_id )
     

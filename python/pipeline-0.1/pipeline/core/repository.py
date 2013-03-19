@@ -37,9 +37,8 @@ def getIdFromPath ( path = "" ):
     path = os.path.expandvars(path)
     user_repo = os.getenv ( "HK_USER_REPO" ) + os.sep
     path = path.replace ( user_repo , "" )
-    part = path.split(os.sep)
-    doc_id = "%s_%s_%s_%s_%s" % ( utils.getProjectName(), part[0],part[1],
-                                  part[2], part[3] )
+    part = path.split ( os.sep )
+    doc_id = "%s_%s_%s_%s_%s" % ( part[0],part[1], part[2], part[3], part[4] )
     return doc_id
      
 def getRootAssetPath ( doc_id = "", local = False):
@@ -102,12 +101,14 @@ def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) 
             files [src] = os.path.join ( destination, filename )
         else:
             print "Warning: %s doesn't exist" % src
-           
+    
+    os.system( "chmod 775  %s" % destination )
     for file in files:                
         dirname = os.path.dirname ( files[file] )
         if not os.path.exists ( dirname ) :
             os.makedirs(dirname)
         shutil.copy ( file, files[file] )
+    os.system( "chmod -R 555  %s" % destination )
          
 def pull ( doc_id = "", ver = "latest", extension = "",progressbar = False,
            msgbar = False ):
@@ -310,10 +311,17 @@ def getTextureAttr ( path ):
         
     return (False, False)
 
-def textureBuild ( path = "", texfilter = "triangle" ):
+def textureBuild ( path = "", texfilter = None ):
     """Guerilla texture build"""
+    #TODO: Add Gamma support
+    if texfilter == None: 
+        texattr = getTextureAttr ( path )[1]
+        texfilter = texattr[4]
+        texgamma = texattr[5]
+        
     file, ext = os.path.splitext ( path )
     tex = file + ".tex"
+    #TODO:call the project render binary with HK_GUERILLAVER
     cmd = """render --buildtex --in %s --mode "ww" --filter %s --out %s""" % ( path, texfilter, tex )
     os.system ( cmd )
     print "buildtex: building %s" % tex
@@ -360,17 +368,16 @@ def textureOptimise ( path ):
         #TODO:check if tiff format warning is working
         if imgformat != "TIFF":
             print "warning: wrong format '%s', %s should be '%s'  " % ( imgformat, fname, "TIFF" )
-        
-        textureBuild ( path, texfilter )
-         
+                 
     else:
         print "Can't find the '%s' texture type" % fname
     
-def textureExport ( path = "",progressbar = False ):
+def textureExport ( path = "", progressbar = False ):
     files = glob.glob ( os.path.join ( path, "*.tif" ) )
     #TODO: support progressbar for textures optimisation
     for file in files :
         textureOptimise ( file )
+        textureBuild ( file )
         
     return True
 
@@ -388,8 +395,9 @@ def textureCheck ( doc_id = "", files = list() ) :
             pattern = "%s|%s" % ( simpTex, animTex )
             
             if re.findall ( pattern, fname ) :
+                print "textureCheck: OK %s" % file
                 to_push.append ( file )
-                not_pushed.remove(file)
+                not_pushed.remove(file)               
 
     return not_pushed
 
@@ -408,36 +416,48 @@ def texturePush ( db = None, doc_id = "", files = list(), description = "",
     
     else :
         for tex in texCheck :
-            print ( "%s is wrong" % tex )
+            print ( "texturePush(): %s is wrong" % tex )
             
         simptex = "%s_%s.%s.%s" % ( doc_id, "<type>", "<udim>", "tif" )
         animtex = "%s_%s.%s.%s.%s" % ( doc_id, "<type>", "<udim>","<frame>", "tif")
-        print "expect: %s or %s " % ( simptex , animtex)
+        print "texturePush(): expect %s or %s " % ( simptex , animtex)
         
         return False
        
-def assetExport ( source = "", destination = "", obj=True, abc=True, gproject = True ):
-    
+def assetExport ( source = "", destination = "", obj=True, abc=True, gproject = True ):    
     fname = os.path.basename(source)
-    name,ext = os.path.splitext(fname)
+    name, ext = os.path.splitext(fname)
+    mayaver = os.getenv("HK_MAYA_VER")
+    mayap = "/usr/autodesk/maya%s-x64/bin/maya" % mayaver
+    os.system( "chmod 775 %s %s"% ( source, destination ) )
+        
+    fobj = objcmd = fabc = abccmd = fgpj = gpjcmd = ""
     
-    #TODO:create mayaToObj()
-    if obj :
+    if not obj == None :
         fobj = os.path.join( destination, name + ".obj" )
-        objExportCmd = """ maya -batch -file %s  -command "loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/objExport.so\\"; file -force -options \\"groups=1;ptgroups=1;materials=0;smoothing=1;normals=1\\" -type \\"OBJexport\\" -pr -ea \\"%s\\"; " """ % ( source, fobj )   
-        os.system( objExportCmd )
+        objcmd = """ loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/objExport.so\\"; file -force -options \\"groups=1;ptgroups=1;materials=0;smoothing=1;normals=1\\" -type \\"OBJexport\\" -pr -ea \\"%s\\"; """ % fobj   
     
-    #TODO:create mayaToAbc() 
-    if abc :
+    if not abc == None :
         fabc = os.path.join( destination, name + ".abc" )
-        abcExportCmd = """ maya -batch -file %s  -command "loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/AbcExport.so\\"; AbcExport -j \\"-frameRange 1 1 -file %s\\";" """ % ( source, fabc )
-        os.system( abcExportCmd )
+        abccmd = """ loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/AbcExport.so\\"; AbcExport -j \\"-frameRange 1 1 -file %s\\"; """ % fabc
     
-    #TODO:create mayaToGproject()
-    if gproject :
-        fgproject = os.path.join( destination, name + ".gproject" )
-        gprojectExportCmd = """ maya -batch -file %s  -command "loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/guerilla2013.so\\"; GuerillaExport -m 1 -a 1 -pf \\"%s\\";file -f -save; " """ % ( source, fgproject )
-        os.system ( gprojectExportCmd )
-            
-    return True
+    if not gproject == None :
+        fgpj = os.path.join( destination, name + ".gproject" )
+        gpjcmd = """ loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/guerilla2013.so\\"; GuerillaExport -m 1 -a 1 -pf \\"%s\\";file -f -save; """ % fgpj
+        fgpj = os.path.join( destination, name + ".g*" )
 
+    cmd = """%s -batch -file %s -command "%s %s %s" """ % ( mayap, source, objcmd, abccmd, gpjcmd )
+    chmodLock = "chmod 555 %s %s %s %s %s"% ( fobj, fabc, fgpj, source, destination )
+    
+    os.system( cmd )
+    os.system( chmodLock )
+    return True
+    
+def mayaToObj (source, destination) :
+    assetExport ( source, destination, True, None, None )
+    
+def mayaToAbc (source, destination) :
+    assetExport(source, destination, None, True, None)
+
+def mayaToGuerilla (source, destination) :
+    assetExport(source, destination, None, None, True)

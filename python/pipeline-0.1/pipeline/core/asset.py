@@ -1,50 +1,5 @@
 '''
-Created on Jan 10, 2013
-
-ASSET tasks:
-    modeling        : mod    
-    texturing         : tex
-    rigging         : rig
-    surfacing        : srf
-    layouting        : lay
-    lighting         : lit
-    compositing        : cmp
-    matte-painting     : dmp
-
-ASSET type list:
-    character        : chr
-    vehicle            : vcl
-    prop             : prp
-    environment     : env
-    ??? camera            : cam ??? not sure about this let see later
-    freetype         : ***
-
-Filename and id rules:
-    project_asset-type_asset_task_fork
-    
-    project
-    asset_id = project_asset-type_asset
-    name = asset-type_asset_task_fork
-
-ID example:
-    character:
-    testing_chr_mickey_tex_main
-
-    shot:
-    testing_seq01_sht001_lgt_main
-
-    Filesystem example:
-    chr/chr_mickey/chr_mickey_tex/chr_mickey_tex_ma
-    seq100/seq100_sht100/seq100_sht100_lighting/seq100_sht100_lighting_main
-
-asset: length is 3
-    testing_chr_mickey
-    testing_seq100_sht100
-
-task: length is 5
-    testing_chr_mickey_tex_main
-    testing_seq100_sht100_lighting_main
-    
+Created on Jan 10, 2013    
 @author: pixo
 '''
 import os, time

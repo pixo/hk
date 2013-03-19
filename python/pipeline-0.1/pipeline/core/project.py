@@ -6,7 +6,7 @@ Created on Jan 11, 2013
 import os,time
 import pipeline.utils as utils
 
-def createProjEnv ( name = "", dbname = "" ):
+def createProjectEnv ( name = "", dbname = "" ):
     
     if dbname == "":
         dbname = "projects"
@@ -21,13 +21,13 @@ export HK_DB_SERVER="http://$HK_DB_USER@127.0.0.1:5984/"
 #export HK_DB_SERVER="https://$HK_DB_USER@homeworks.iriscouch.com"
 
 export HK_PIPELINE_VER=0.1
-export HK_MARI_VER=2.0
-export HK_COAT_VER=4
+export HK_MARI_VER=2.0v1
+export HK_COAT_VER=4-BETA12B
 export HK_MUDBOX_VER=2013
 export HK_MAYA_VER=2013
-export HK_HOUDINI_VER=12
-export HK_GUERILLA_VER=0.15.1
-export HK_NUKE_VER=7
+export HK_HOUDINI_VER=12.5
+export HK_GUERILLA_VER=0.15.2
+export HK_NUKE_VER=7.0v2
 
 #Set dev env
 alias ~~='cd $HK_HOME'
@@ -38,11 +38,13 @@ if $HK_DEV_MODE
         devmode="DEV-"
         logpath="$HK_USER_CODE_PATH"
         export HK_PIPELINE="$HK_USER_CODE_PATH/python/pipeline-$HK_PIPELINE_VER"
-        pythonpath="$HK_PIPELINE:$HK_USER_CODE_PATH/python/couchdb-python:$HK_USER_CODE_PATH/python/json:$HK_USER_CODE_PATH/python/pyside-qt4.8+1.1.2/PySide:$HK_USER_CODE_PATH/python/hkMaya"
+        export HK_COUCHDB="$HK_USER_CODE_PATH/python/couchdb-python"
+        pythonpath="$HK_PIPELINE:$HK_USER_CODE_PATH/python/json:$HK_USER_CODE_PATH/python/pyside-qt4.8+1.1.2/PySide:$HK_USER_CODE_PATH/python/hkMaya"
     else
         logpath="$HK_USER_REPO"
         export HK_PIPELINE="$HK_CODE_PATH/python/pipeline-$HK_PIPELINE_VER"
-        pythonpath="$HK_CODE_PATH/python/pipeline-$HK_PIPELINE_VER:$HK_CODE_PATH/python/couchdb-python:$HK_CODE_PATH/python/json:$HK_CODE_PATH/python/pyside-qt4.8+1.1.2/PySide:$HK_CODE_PATH/python/hkMaya"
+        export HK_COUCHDB="$HK_CODE_PATH/python/couchdb-python"
+        pythonpath="$HK_CODE_PATH/python/pipeline-$HK_PIPELINE_VER:$HK_CODE_PATH/python/json:$HK_CODE_PATH/python/pyside-qt4.8+1.1.2/PySide:$HK_CODE_PATH/python/hkMaya"
 fi
 
 export PYTHONPATH="$pythonpath:$PYTHONPATH"
@@ -58,13 +60,17 @@ fi
 cd $logpath
 """ % ( dbname )
 
-    repo = utils.getRepo ()
-    file = os.path ( repo, name, name+".env" )
-    if utils.createFile(file, env):
-        print "createProjEnv(): %s created " % file
-        return file
+    file = utils.getProjectEnv ( name )
+    
+    if file :
+        if utils.createFile ( file, env ):
+            print "createProjectEnv(): %s created " % file
+            return file
+        else:
+            print "createProjectEnv(): can't create %s " % file
+            return False
     else:
-        "createProjEnv(): can't create %s " % file
+        print "createProjectEnv(): can't get project env %s " % file
         return False
 
 def lsProjects(db, project=""):
@@ -79,29 +85,17 @@ def lsProjects(db, project=""):
         
     return proj_ls
     
-def createProject( name = "", description = "Default", overdoc=dict(), 
-                   serveradress = "", dbname = "projects" ):
+def createProject( name = "", description = "Default", serveradress = "",
+                   dbname = "projects", overdoc = dict () ):
         
     if name == "" :
         print "CreateProject(): Please provide a project name"
         return False
     
-    if serveradress == "":
+    if serveradress == "" or serveradress == None :
         print "CreateProject(): No server adress provided"
         return False
-        
-    db = utils.getDb ( dbname, serveradress )
-    
-    if not db :
-        db = utils.createDb ( dbname, serveradress )
-        
-    else :
-        project = lsProjects ( db, name )
-        
-        if len ( project ) > 0 :
-            print "createProject(): project %s already exist" % name
-            return False 
-        
+                
     assets = utils.getAssetTypes ()
     tasks = utils.getTaskTypes ()
     
@@ -116,9 +110,25 @@ def createProject( name = "", description = "Default", overdoc=dict(),
             "created": time.strftime ( "%Y %b %d %H:%M:%S", time.localtime() )
             }    
     doc.update( overdoc )
-    _id, _rev = db.save( doc )
     
-    #TODO:test createProjEnv
-    createProjEnv( name, dbname )
-    print "Project %s created" % ( name )
-    return db
+    env = createProjectEnv ( name, dbname )
+    
+    if env :
+        db = utils.getDb ( dbname, serveradress )
+        
+        if not db :
+            db = utils.createDb ( dbname, serveradress )
+            
+        else :
+            project = lsProjects ( db, name )
+            
+            if len ( project ) > 0 :
+                print "createProject(): project %s already exist" % name
+                return False
+            
+        _id, _rev = db.save( doc )
+        
+        print "createProject(): Project '%s' created" % ( name )
+        return db
+    else :
+        return False

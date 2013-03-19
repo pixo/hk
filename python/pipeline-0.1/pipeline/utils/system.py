@@ -6,28 +6,55 @@ Created on Jan 19, 2013
 import itertools, re, os, glob
 
 def createFile ( file, content ) :
-    if os.path.exists ( file ) :
+    
+    dir = os.path.dirname ( file )
+    
+    if os.path.exists ( dir ) :
         return False
+    
+    else :
+        os.makedirs ( dir, 0775 )
     
     file = open ( file, 'w' )
     file.write ( content )
     file.close ()
+    return True
 
-def getRootPath():
-    return os.getenv("HK_ROOT")
+def getRootPath () :
+    return os.getenv ( "HK_ROOT" )
 
-def getRepo():
-    return os.getenv("HK_REPO")
+def getRepo () :
+    repo = os.getenv ( "HK_REPO" )
+    if repo == None :
+        root = getRootPath ()
+        repo = os.path.join ( root, "projects" )
+    return repo
 
-def getCCPath():
-    return os.path.join(os.getenv( "HK_PIPELINE"), "pipeline","creative")
+def getProjectEnv ( project = "" ) :
+    if project == "" :
+        project = getProjectName ()
+        
+    repo = getRepo ()
+    if repo : 
+        envfile = os.path.join( repo, project, "config", project + ".env" )
+        return envfile
+    else :
+        print "getProjectEnv():can't get network repository"
+        return False
 
-def getProjectName():
-    return os.getenv("HK_PROJECT") 
+def getCCPath () :
+    return os.path.join ( os.getenv ( "HK_PIPELINE" ), "pipeline", "creative" )
+
+def getProjectName () :
+    return os.getenv ( "HK_PROJECT" ) 
 
 def extractNumber(name):
-    sp = name.split(".")[1] 
-    result = re.findall(r"\d+", sp)
+    try :
+        sp = name.split ( "." ) [1]
+    except IndexError:
+        sp = name
+        
+    result = re.findall ( r"\d+", sp )
     
     if len ( result ) > 0 :
         return result[0]
@@ -95,3 +122,6 @@ def lsSeq(path, recursive = True):
         resultDict['\n'.join(map(str, groups))] = itemDict[key]
         
     return resultDict
+
+def test():
+    print ("test:test")

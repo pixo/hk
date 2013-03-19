@@ -38,7 +38,7 @@ def saveFile ( filename = "", exportsel = False, msgbar = None ) :
 def saveSelected ( filename = "", msgbar = None ) :
     saveFile ( filename, True, msgbar )
 
-def openFile(filename):
+def openFile ( filename ):
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
     ext = os.path.splitext ( filename )[-1]
     cmds.file ( filename, f=True, options="v=0;", type = extension[ext], o = True )

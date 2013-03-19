@@ -1,9 +1,21 @@
 import pipeline.utils as utils
-import glob
-import os
 
-path = "/homeworks/projects/testing/repository/chr/chr_mickey/chr_mickey_mod/chr_mickey_mod_main/039"
-files = glob.glob(os.path.join(path,"*.ma"))
-files.extend(glob.glob(os.path.join(path,"*.mb")))
-print files
-# print utils.lsSeq( "/homeworks/users/pixo/projects/testing/chr/chr_mickey/chr_mickey_tex/chr_mickey_tex_main", True )
+
+asset = utils.getAssetTypes ()
+task = utils.getTaskTypes()
+views = dict()
+views['project']= {'map': 'function(doc) {\n  if(doc.type == "project") {\n    emit(doc.name, doc);\n}\n}'}
+for key in asset:
+    views[key] = {'map': 'function(doc) {\n  if(doc.type == "%s") {\n    emit(doc._id, doc);\n}\n}' % key}
+
+for key in task:
+    views[key] = {'map': 'function(doc) {\n  if(doc.task == "%s") {\n    emit(doc._id, doc);\n}\n}' % key}
+    
+# 'asset_task': {'map': 'function(doc) {\n  if(doc.task && !doc.shot_id) {\n    emit(doc._id, doc);\n}\n}'}
+# 'shot_task': {'map': 'function(doc) {\n  if(doc.task && doc.shot_id) {\n    emit(doc._id, doc);\n}\n}'}
+    
+doc = {
+       "_id" : "_design/AssetManager",
+       "language" : "javascript",
+       "views" : views
+       }

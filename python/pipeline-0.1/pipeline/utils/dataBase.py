@@ -5,6 +5,7 @@ Created on Jan 6, 2013
 '''
 import os
 import couchdb
+import rule
 
 class ProjectNoSet ( Exception ) :
     pass
@@ -17,11 +18,17 @@ def getServer () :
 
 def getDb ( dbname = "" , serveradress = "" ) :
     
-    if serveradress == "" :
+    if serveradress == "" or serveradress == None :
         serveradress = getServer ()
+        if serveradress == "" or serveradress == None :
+            print "getDb(): can't get the server address '%s'" % str(serveradress)
+            return False
     
-    if dbname == "" :
+    if dbname == "" or dbname == None  :
         dbname = os.getenv ( "HK_DB" )
+        if dbname == "" or dbname == None:
+            print "getDb(): wrong dbname '%s'" % str(serveradress)
+            return False
         
     server = couchdb.Server ( serveradress )
     
@@ -29,6 +36,7 @@ def getDb ( dbname = "" , serveradress = "" ) :
         return server [ dbname ]
     else :
         return False
+
 
 def lsDb( db = None , view = "", startkey = "", endkey = "" ):
     
@@ -50,34 +58,27 @@ def lsDb( db = None , view = "", startkey = "", endkey = "" ):
     return doc_ls
 
 def createDbViews (db):
+    asset = rule.getAssetTypes ()
+    task = rule.getTaskTypes()
+    
+    views = dict()
+    views['project']= {'map': 'function(doc) {\n  if(doc.type == "project") {\n    emit(doc.name, doc);\n}\n}'}
+    
+    for key in asset:
+        views[key] = {'map': 'function(doc) {\n  if(doc.type == "%s") {\n    emit(doc._id, doc);\n}\n}' % key}
+    
+    for key in task:
+        views[key] = {'map': 'function(doc) {\n  if(doc.task == "%s") {\n    emit(doc._id, doc);\n}\n}' % key}
+        
+    # 'asset_task': {'map': 'function(doc) {\n  if(doc.task && !doc.shot_id) {\n    emit(doc._id, doc);\n}\n}'}
+    # 'shot_task': {'map': 'function(doc) {\n  if(doc.task && doc.shot_id) {\n    emit(doc._id, doc);\n}\n}'}
+        
     doc = {
            "_id" : "_design/AssetManager",
            "language" : "javascript",
-           "views" : {
-                     'project': {'map': 'function(doc) {\n  if(doc.type == "project") {\n    emit(doc.name, doc);\n}\n}'},
-                     'asset_task': {'map': 'function(doc) {\n  if(doc.task && !doc.shot_id) {\n    emit(doc._id, doc);\n}\n}'},
-                     'shot_task': {'map': 'function(doc) {\n  if(doc.task && doc.shot_id) {\n    emit(doc._id, doc);\n}\n}'},
-                     'shot': {'map': 'function(doc) {\n  if(doc.type == "shot") {\n    emit(doc._id, doc);\n}\n}'},
-                     'seq': {'map': 'function(doc) {\n  if(doc.type == "seq") {\n    emit(doc._id, doc);\n}\n}'},
-                     'tex': {'map': 'function(doc) {\n  if(doc.task == "tex") {\n    emit(doc._id, doc);\n}\n}'},
-                     'prp': {'map': 'function(doc) {\n  if(doc.type == "prp") {\n    emit(doc._id, doc);\n}\n}'},
-                     'rig': {'map': 'function(doc) {\n  if(doc.task == "rig") {\n    emit(doc._id, doc);\n}\n}'},
-                     'sct': {'map': 'function(doc) {\n  if(doc.task == "sct") {\n    emit(doc._id, doc);\n}\n}'},
-                     'rtp': {'map': 'function(doc) {\n  if(doc.task == "rtp") {\n    emit(doc._id, doc);\n}\n}'},
-                     'vcl': {'map': 'function(doc) {\n  if(doc.type == "vcl") {\n    emit(doc._id, doc);\n}\n}'},
-                     'lit': {'map': 'function(doc) {\n  if(doc.task == "lit") {\n    emit(doc._id, doc);\n}\n}'},
-                     'chr': {'map': 'function(doc) {\n  if(doc.type == "chr") {\n    emit(doc._id, doc);\n}\n}'},
-                     'env': {'map': 'function(doc) {\n  if(doc.type == "env") {\n    emit(doc._id, doc);\n}\n}'},
-                     'mtl': {'map': 'function(doc) {\n  if(doc.type == "mtl") {\n    emit(doc._id, doc);\n}\n}'},
-                     'lay': {'map': 'function(doc) {\n  if(doc.task == "lay") {\n    emit(doc._id, doc);\n}\n}'},
-                     'mod': {'map': 'function(doc) {\n  if(doc.task == "mod") {\n    emit(doc._id, doc);\n}\n}'},
-                     'srf': {'map': 'function(doc) {\n  if(doc.task == "srf") {\n    emit(doc._id, doc);\n}\n}'},
-                     'dmp': {'map': 'function(doc) {\n  if(doc.task == "dmp") {\n    emit(doc._id, doc);\n}\n}'},
-                     'cam': {'map': 'function(doc) {\n  if(doc.task == "cam") {\n    emit(doc._id, doc);\n}\n}'},
-                     'vfx': {'map': 'function(doc) {\n  if(doc.type == "vfx") {\n    emit(doc._id, doc);\n}\n}'},
-                     'cmp': {'map': 'function(doc) {\n  if(doc.task == "cmp") {\n    emit(doc._id, doc);\n}\n}'}
-                     }
-           }  
+           "views" : views
+           }
+    
     _id, _rev = db.save (doc )
     return (_id, _rev)
 

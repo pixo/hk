@@ -4,13 +4,18 @@ if [ -n "$HK_ROOT" ]
 	then
 		if [ -z "$HK_PROJECT" ] 
 			then
+
+				export HK_USER_CODE_PATH=$HK_ROOT/users/$USER/codes/debug
+				export HK_CODE_PATH=$HK_ROOT/codes/release
+				project="ADMIN"
+
 				if [ "-d" == $1 ]
 					then
 						devmode=true
-						project=$2
+						adenv="$HK_USER_CODE_PATH/system/config"
 					else
 						devmode=false
-						project=$1
+						adenv="$HK_CODE_PATH/system/config"
 				fi
 
 				if [ -z "$project" ]
@@ -19,13 +24,12 @@ if [ -n "$HK_ROOT" ]
 						exit
 				fi
 
-				export HK_USER_CODE_PATH=$HK_ROOT/users/$USER/codes/debug
-				export HK_CODE_PATH=$HK_ROOT/codes/release
 				export HK_DEV_MODE=$devmode
 				export HK_HOME=$HK_ROOT/users/$USER
 				export HK_REPO="$HK_ROOT/projects"
 				export HK_USER_REPO="$HK_HOME/projects"
-				export HK_PROJECT_ENV="$HK_REPO/$project/config/$project.env"
+				export HK_PROJECT_ENV="$adenv/$project.env"
+				echo $HK_PROJECT_ENV
 
 				if [ -a $HK_PROJECT_ENV ]
 				  	then
