@@ -44,6 +44,7 @@ except:
 
 #TODO: create ui for shot creation
 #TODO: preview obj with meshlab
+#TODO: create ui to add tasks_type or asset_type
 
 class UiPush ( QtGui.QWidget ) :
 
@@ -715,41 +716,52 @@ class UiAssetManager(UiMainManager):
               "compout")
     
     effect_task = {
-                   "particle" : "pcl",
-                   "fluid" : "fld",
-                   "dynamic" : "dyn"
+                   'particle':'pcl',
+                   'fluid':'fld',
+                   'dynamic':'dyn'
                    }
     
     material_task = {
-                     "shader" : "shd",
-                     "override" : "ovr"
+                     'shader':'shd'
+#                      'override' : 'ovr'
                      }
         
-    shot_task =   {
-                   "animation" : "ani",
-                   "layout" : "lay",
-                   "lighting" : "lit",
-                   "render" : "rdr",
-                   "compositing" : "cmp",
-                   "compout" : "out",
-                   "matte-paint" : "dmp",
-                   "camera" : "cam",
-                   "effect" : "vfx"
-                   }
+    shot_task = {
+                'animation':'ani',
+                'bashcomp':'bcmp',
+                'camera':'cam',
+                'composite':'rcmp',
+                'mattepaint':'dmp',
+                'dynamic':'dyn',
+                'fluid':'fld',
+                'layout':'lay',
+                'lighting':'lit',
+                'model':'mod',
+                'particle':'pcl',
+                'render':'ren',
+                'rotoscopy':'rot',
+                'sculpt':'sct',
+                'texture':'tex',
+                'effect':'vfx'
+                }
     
     sequence_task = shot_task
     
     #TODO:replace by utils.getTaskTypes ()
-    asset_task = {
-                  "surface" : "sur",
-                  "model" : "mod",
-                  "texture" : "tex",
-                  "rig" : "rig",
-                  "sculpt" : "sct",
-                  "retopo" : "rtp"
-                  }
+    asset_task ={
+                'bashcomp':'bsh',
+                'comp':'cmp',
+                'mattepaint':'dmp',
+                'model':'mod',
+                'render':'ren',
+                'rig' : 'rig',
+                'retopo':'rtp',
+                'sculpt':'sct',
+                'texture':'tex',
+                'effect':'vfx'
+                }
     
-    #TODO:replace by utils.getAssetTypes ()
+    #TODO:replace by utils.getAssetTypes ()    
     typ_dict = {
                 "character": ( "chr", asset_task ),
                 "vehicle": ( "vcl", asset_task ),
@@ -1009,7 +1021,8 @@ class UiAssetManager(UiMainManager):
             task = task_dict [ item.text (0) ]
             parentId = item.parent().hkid
             startkey = "%s_%s" % ( parentId, task )
-            itNameLs = utils.lsDb ( self.db, "asset_task", startkey )
+#             itNameLs = utils.lsDb ( self.db, "asset_task", startkey )
+            itNameLs = utils.lsDb ( self.db, task, startkey )
             icon_empty = os.path.join ( CC_PATH, "empty.png" )
             
             if len ( itNameLs ) > 0 :

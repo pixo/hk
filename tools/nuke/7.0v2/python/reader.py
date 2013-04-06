@@ -2,8 +2,22 @@ print "hk-nuke: importing reader"
 import nuke,os
 import pipeline.utils as utils
 
-HK_ASSET_TYPE = utils.getAssetTypes ()
-HK_TASK_TYPE = utils.getTaskTypes ()
+def getAssetTypes():
+    params = utils.getAssetTypes ()
+    result = dict()
+    for param in params :
+        result[ params [param] ] = param
+    return result
+
+def getTaskTypes():
+    params = utils.getTaskTypes ()
+    result = dict()
+    for param in params :
+        result[ params [param] ] = param
+    return result
+
+HK_ASSET_TYPE = getAssetTypes ()
+HK_TASK_TYPE = getTaskTypes ()
 
 def hkGetRepo ( space = "network" ) :
     repository = { "network":"HK_REPO", "local":"HK_USER_REPO" }
@@ -17,17 +31,17 @@ def hkGetParams ():
     return ( "type", "asset", "task", "fork", "version", "layer", "aov" )
 
 def hkReadChanged () :
-     n = nuke.thisNode()
-     k = nuke.thisKnob()
-     name = k.name()
-     params = hkGetParams ()
+    n = nuke.thisNode()
+    k = nuke.thisKnob()
+    name = k.name()
+    params = hkGetParams ()
 
-     if name in params :
+    if name in params :
         for i in range ( params.index ( name ), 7 ) :
             param = params[i]
             hkReadUpdate ( param = param )
         
-     elif name == "repository":
+    elif name in ( "repository", "extension" ) :
         hkReadUpdateAll ()
 
 nuke.addKnobChanged ( hkReadChanged )#, nodeClass="ColorCorrect")
@@ -45,6 +59,8 @@ def hkReadUpdate ( node = None, param = "") :
 
     if ( type ( k ) != type ( None ) ) and ( k.Class() == "Enumeration_Knob" ) :
         krepo = n.knob  ( "repository" )
+        kpath = n.knob  ( "path" )
+
         space = krepo.enumName ( int ( krepo.getValue () ) )
         root = hkGetRepo ( space )
         project = hkGetProject ()
@@ -60,7 +76,6 @@ def hkReadUpdate ( node = None, param = "") :
             
             if not ( klastval == None )  :
                 kcurval = kcur.enumName ( int( kcur.getValue () ) )
-                #Add check custom value
                 if not ( kcurval == None ) : 
                     path = os.path.join ( path, kcurval )
             
@@ -93,39 +108,53 @@ def hkReadUpdate ( node = None, param = "") :
                 k.setValues ( updated )
 
         values = k.values ()
+
         if ( len ( values ) > 0 ) and  ( k.enumName ( int ( k.getValue () ) ) == None ) :
             k.setValue ( values[0] )
 
+        kpath.setValue ( hkGetPath ( n ) )
+
+
 def hkReadUpdateAll ( node = None, params = ( "type", "asset", "task", "fork", "version", "layer", "aov" ) ) :
     for param in params :
-        hkReadUpdate ( node=node, param = param )
+        hkReadUpdate ( node = node, param = param )
 
+def hkGetPath ( node = None ) :
 
-def hkReadGetPath ( node = None ) :
     project = hkGetProject ()
     project = project.lower()
     project = project.replace( " ", "" )
 
-    repo = str ( node.knob ( 'repository' ).value() )
-    root = hkGetRepo ( repo )
-    path = os.path.join ( root, project)
-    fname = project
-    params = hkGetParams ()
+    krepo = node.knob ( 'repository' )
+    kextension = node.knob ( 'extension' )
+    
+    if node == None or kextension == None :
+        return
 
-    for param in params:
-        k = node.knob ( param )
-        if k != None :
-            value = str ( k.value() )
+    if krepo != None :
+        repo = str ( krepo.value () )
+        root = hkGetRepo ( repo )
+        path = os.path.join ( root, project)
+        fname = project
+        params = hkGetParams ()
 
-            if value != None :
-                value = value.lower().replace ( " ", "" )
-                fname += "_%s" % value
-                path = os.path.join ( path, value )
+        for param in params:
+            k = node.knob ( param )
+            if k != None :
+                value = str ( k.value () )
 
-    fname += ".%s.exr" % "%04d"
-    path = os.path.join ( path, fname )
+                if value != None and value != "0" :
+                    value = value.lower().replace ( " ", "" )
+                    
+                    if param != "version":
+                        fname += "_%s" % value
+                    
+                    path = os.path.join ( path, value )
 
-    return path
+        fname += ".%s.%s" % ( "%04d", kextension.enumName ( int ( kextension.getValue() ) ) )
+        path = os.path.join ( path, fname )
+
+        return path
     
 def hkWriteRender( node = None ):
     pass
@@ -134,50 +163,86 @@ def hkReadCreate () :
     group = nuke.createNode ( "Group" )
     group [ "name" ].setValue ( "ReadAsset" )
     group.begin ()
-    reader = nuke.createNode ( "Read" )
+    read = nuke.createNode ( "Read" )
     output = nuke.createNode ( "Output" )
     group.end ()
+    
+    assetTab = nuke.Tab_Knob ( "Asset" )
+    settingsTab = nuke.Tab_Knob ( "Settings" )
 
     #Setup file python expression
     params = ( "type", "asset", "task", "fork", "version", "layer", "aov" )
-    filecmd = "[ python hkReadGetPath ( nuke.thisParent() ) ]"
+    filecmd = "[ value parent.path ]"
 
     #Create and setup knobs
+    group.addKnob ( assetTab )
     repository = ( "network", "local" )
     krepo = nuke.Enumeration_Knob ( "repository", "repository", repository ) 
     repoup = "hkReadUpdateAll ()"
     krepoup = nuke.PyScript_Knob ( "repositoryup", "Update", repoup )
-    group.addKnob ( krepo)
-    group.addKnob ( krepoup)
+    group.addKnob ( krepo )
+    group.addKnob ( krepoup )
     
     for param in params :
         knob = nuke.Enumeration_Knob ( param, param, list () )
         func = "hkReadUpdate ( param = '%s' )" % param
         group.addKnob ( knob )
     
-    kfile = reader [ "file" ]
+    kextension = nuke.Enumeration_Knob ( "extension", "extension", list(("exr","tif","jpg")) )
+    kpath = nuke.File_Knob ( "path", "path" )
+    group.addKnob ( kextension )
+    group.addKnob ( kpath )
+    
+    kfile = read [ "file" ]
     kfile.setValue ( filecmd )
     klabel = group [ "label" ]
     klabel.setValue ("[value type]_[value asset]_[value task]_[value fork]_[value layer]_[value aov]")
     kpostage_stamp = group [ "postage_stamp" ]
     kpostage_stamp.setValue ( True )
+
+    group.addKnob ( settingsTab )
+    # group.addKnob ( nuke.Text_Knob ("divName","",""))
+    group.addKnob ( read["cacheLocal"])
+    group.addKnob ( read["format"])
+    group.addKnob ( read["first"])
+    group.addKnob ( read["before"])
+    group.addKnob ( read["last"])
+    group.addKnob ( read["after"])
+    group.addKnob ( read["frame_mode"])
+    group.addKnob ( read["frame"])
+    group.addKnob ( read["origfirst"])
+    group.addKnob ( read["origlast"])
+    group.addKnob ( read["on_error"])
+    group.addKnob ( read["reload"])
+    group.addKnob ( read["colorspace"])
+    group.addKnob ( read["premultiplied"])
+    group.addKnob ( read["raw"])
+    group.addKnob ( read["auto_alpha"])
     hkReadUpdateAll ( node = group )
 
 def hkWriteCreate ():
     group = nuke.createNode ( "Group" )
     group [ "name" ].setValue ( "WriteAsset" )
 
+    #Create the gizmo
     group.begin ()
     input = nuke.createNode ( "Input" )
+    input["name"].setValue("Input")
     write = nuke.createNode ( "Write" )
+    write["name"].setValue("Write")
     output = nuke.createNode ( "Output" )
+    output["name"].setValue("Output")
     group.end ()
+
+    #Create tabs
+    assetTab = nuke.Tab_Knob ( "Asset" )
+    settingsTab = nuke.Tab_Knob ( "Settings" )
 
     #Setup file python expression
     params = ( "type", "asset", "task", "fork" )
-    # filecmd = "[ python hkReadGetPath ( nuke.thisParent() ) ]"
-
+    
     #Create and setup knobs
+    group.addKnob ( assetTab )
     repository = ["local"]
     krepo = nuke.Enumeration_Knob ( "repository", "repository", repository ) 
     repoup = "hkReadUpdateAll ()"
@@ -189,28 +254,38 @@ def hkWriteCreate ():
         knob = nuke.Enumeration_Knob ( param, param, list () )
         func = "hkReadUpdate ( param = '%s' )" % param
         group.addKnob ( knob )
-    
+           
     kversion = nuke.String_Knob ("version","version","default")
+    kextension = nuke.Enumeration_Knob ( "extension", "extension", list ( ("exr", "tif", "jpg") ) )
+    kpath = nuke.File_Knob ( "path", "path" )
 
-    filecmd = "[ python hkReadGetPath ( nuke.thisParent() ) ]"
+    filecmd = "[ value parent.path ]"
     kfile = write [ "file" ]
     kfile.setValue ( filecmd )
-
     group.addKnob ( kversion )
+    group.addKnob ( kextension )
+    group.addKnob ( kpath )
 
-    group.addKnob ( nuke.Text_Knob ("divName","",""))
+    group.addKnob ( settingsTab )
+    # group.addKnob ( nuke.Text_Knob ("divName","",""))
     group.addKnob ( write["channels"])
     group.addKnob ( write["colorspace"])
     group.addKnob ( write["premultiplied"])
     group.addKnob ( write["raw"])
-    group.addKnob ( write["file_type"])
-
+    
     group.addKnob ( nuke.Text_Knob("divName","",""))
     group.addKnob ( write.knob("render_order") )
     group.addKnob ( write.knob("Render") )
+    group.addKnob ( write.knob("first") )
+    group.addKnob ( write.knob("last") )
+    group.addKnob ( write.knob("use_limit") )
+    group.addKnob ( write.knob("reading") )
+    group.addKnob ( write.knob("checkHashOnRead") )
+    group.addKnob ( write.knob("on_error") )
+    group.addKnob ( write.knob("reload") )
 
-    klabel = group [ "label" ]
-    klabel.setValue ("[value type]_[value asset]_[value task]_[value fork]_[value version]")
+    # klabel = group [ "label" ]
+    # klabel.setValue ("[value type]_[value asset]_[value task]_[value fork]_[value version]")
     hkReadUpdateAll ( node = group, params = params )
 
-hkWriteCreate ()
+# hkReadCreate ()

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export PYTHONPATH=$HK_COUCHDB:$PYTHONPATH
 echo "Running hk-maya $HK_MAYA_VER..."
+export PYTHONPATH="$HK_COUCHDB:$PYTHONPATH"
 
 if $HK_DEV_MODE
     then
@@ -12,10 +12,7 @@ fi
 
 script="$code/tools/maya/$HK_MAYA_VER/scripts"
 plugin="$code/tools/maya/$HK_MAYA_VER/plugins"
-
 export MAYA_SCRIPT_PATH="$script:$MAYA_SCRIPT_PATH"
 export MAYA_PLUG_IN_PATH="$plugin:$MAYA_PLUG_IN_PATH"
-
-echo /usr/autodesk/maya$HK_MAYA_VER-x64/bin/maya $@
 
 /usr/autodesk/maya$HK_MAYA_VER-x64/bin/maya $@

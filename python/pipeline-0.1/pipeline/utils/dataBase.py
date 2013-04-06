@@ -46,9 +46,9 @@ def lsDb( db = None , view = "", startkey = "", endkey = "" ):
     if endkey == "":
         endkey = startkey + "\u0fff"
     
-    design = getDesign()    
-    view = db.view ( "_design/%s/_view/%s" % ( design, view ),
-                    startkey = startkey, endkey = endkey )
+    design = getDesign ()
+    viewname = "_design/%s/_view/%s" % ( design, view )
+    view = db.view ( viewname, startkey = startkey, endkey = endkey )
     
     doc_ls = list()
     
@@ -65,12 +65,12 @@ def createDbViews (db):
     views['project']= {'map': 'function(doc) {\n  if(doc.type == "project") {\n    emit(doc.name, doc);\n}\n}'}
     
     for key in asset:
-        views[key] = {'map': 'function(doc) {\n  if(doc.type == "%s") {\n    emit(doc._id, doc);\n}\n}' % key}
+        views[asset[key]] = {'map': 'function(doc) {\n  if(doc.type == "%s") {\n    emit(doc._id, doc);\n}\n}' % asset[key]}
     
     for key in task:
-        views[key] = {'map': 'function(doc) {\n  if(doc.task == "%s") {\n    emit(doc._id, doc);\n}\n}' % key}
+        views[task[key]] = {'map': 'function(doc) {\n  if(doc.task == "%s") {\n    emit(doc._id, doc);\n}\n}' % task[key] }
         
-    # 'asset_task': {'map': 'function(doc) {\n  if(doc.task && !doc.shot_id) {\n    emit(doc._id, doc);\n}\n}'}
+#     'asset_task': {'map': 'function(doc) {\n  if(doc.task && !doc.shot_id) {\n    emit(doc._id, doc);\n}\n}'}
     # 'shot_task': {'map': 'function(doc) {\n  if(doc.task && doc.shot_id) {\n    emit(doc._id, doc);\n}\n}'}
         
     doc = {
