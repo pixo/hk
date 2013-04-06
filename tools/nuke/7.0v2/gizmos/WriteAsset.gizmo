@@ -1,0 +1,45 @@
+#! /usr/local/Nuke7.0v2/nuke -nx
+version 7.0 v2
+Gizmo {
+ label "\[value type]_\[value asset]_\[value task]_\[value fork]_\[value version]"
+ addUserKnob {20 Asset}
+ addUserKnob {4 repository M {local}}
+ addUserKnob {22 repositoryup l Update -STARTLINE T "hkReadUpdateAll ()"}
+ addUserKnob {4 type M {chr shot}}
+ addUserKnob {4 asset M {mickey mimi}}
+ addUserKnob {4 task M {tex mod}}
+ addUserKnob {4 fork M {main}}
+ addUserKnob {1 version}
+ version default
+ addUserKnob {4 extension M {exr tif jpg}}
+ addUserKnob {2 path}
+ path /homeworks/users/pixo/projects/testing/chr/mickey/tex/main/default/testing_chr_mickey_tex_main.%04d.exr
+ addUserKnob {20 Settings}
+ addUserKnob {10 channels t "Which channels to write. Most file formats will pack these channels into the first N channels of the file."}
+ addUserKnob {4 colorspace t "Lookup table (LUT) used to convert from the internal values used by Nuke to the values written to the file.\n\nDefault means it is determined from the type of file and the size and type of data written to it." M {"default (linear)" linear sRGB rec709 Cineon Gamma1.8 Gamma2.2 Panalog REDLog ViperLog AlexaV3LogC PLogLin SLog REDSpace}}
+ addUserKnob {6 premultiplied t "If there is an alpha channel, divide color data by the alpha before converting to the colorspace, and then multiply by the alpha afterwards. This will reproduce how partially transparent pixels are written by some renderers." -STARTLINE}
+ addUserKnob {6 raw l "raw data" t "raw\nDo not convert the data. For most file formats this is the same as Linear colorspace, but for some it may disable other processing, such as conversion from YUV." -STARTLINE}
+ addUserKnob {26 divName l "" +STARTLINE}
+ addUserKnob {3 render_order l "render order" t "When multiple nodes are rendered at once, they are sorted into increasing order by this number."}
+ addUserKnob {22 Render t "Press this to render image files" -STARTLINE T "nukescripts.render_panel((nuke.thisNode(),), False)"}
+ addUserKnob {3 first l "frame range" t "The first frame to be executable" +DISABLED}
+ addUserKnob {3 last l "" t "The last frame to be executable" -STARTLINE +DISABLED}
+ addUserKnob {6 use_limit l "limit to range" t "If set, this node will only execute for frames within the given range - it will act is if the node is disabled if executed outside of the range." -STARTLINE}
+ addUserKnob {6 reading l "read file" t "Make the output of this node come from reading the written file, instead of the input." -STARTLINE}
+ addUserKnob {6 checkHashOnRead l "check file matches input" t "Check if the input file is up to date with the input tree connected to the write node.  Only available with EXR files written by Nuke and when proxy scale is disabled." -STARTLINE +DISABLED}
+ addUserKnob {4 on_error l "missing frames" t "What to do when there is an error opening the file" +DISABLED M {error black checkerboard "read input"}}
+ addUserKnob {32 reload l Reload t "Re-read the image from the disk" -STARTLINE +DISABLED}
+}
+ Input {
+  inputs 0
+  name Input1
+ }
+ Write {
+  file "\[ value parent.path ]"
+  name Write1
+ }
+ Output {
+  name Output1
+  selected true
+ }
+end_group
