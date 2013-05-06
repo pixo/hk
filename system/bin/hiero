@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "Running hk-hiero $HK_HIERO_VER..."
+export PYTHONPATH="$HK_COUCHDB:$PYTHONPATH"
+
+if $HK_DEV_MODE
+    then
+		code="$HK_USER_CODE_PATH"
+    else
+        code="$HK_CODE_PATH"
+fi
+
+/usr/local/soft/hiero/$HK_HIERO_VER/bin/Hiero$HK_HIERO_VER $@
