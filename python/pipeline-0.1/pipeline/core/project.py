@@ -20,14 +20,17 @@ HK_DB_USER="admin:admin"
 export HK_DB_SERVER="http://$HK_DB_USER@127.0.0.1:5984/"
 #export HK_DB_SERVER="https://$HK_DB_USER@homeworks.iriscouch.com"
 
-export HK_PIPELINE_VER=0.1
-export HK_MARI_VER=2.0v1
 export HK_COAT_VER=4-BETA12B
-export HK_MUDBOX_VER=2013
-export HK_MAYA_VER=2013
+export HK_GUERILLA_VER=0.15.7
+export HK_HIERO_VER=1.6v1
+export HK_HIERO_PLAYER_VER=1.6v1
 export HK_HOUDINI_VER=12.5
-export HK_GUERILLA_VER=0.15.2
+export HK_MARI_VER=2.0v1
+export HK_MAYA_VER=2013
+export HK_MODO_VER=701
+export HK_MUDBOX_VER=2013
 export HK_NUKE_VER=7.0v2
+export HK_PIPELINE_VER=0.1
 
 #Set dev env
 alias ~~='cd $HK_HOME'

@@ -188,9 +188,11 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
                  
     """ check if the source file exists in the repository """
     file_list = list()
+    
     for src in src_ls :
         if os.path.exists ( src ) :
             file_list.append(src)
+            
         else:
             print "Warning: %s doesn't exist" % src
               
@@ -202,14 +204,14 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
              
     """ Copy all the files in the destination directory """
     progress_value = 0
-    progress_step = 100.0/len(file_list)
+    progress_step = 100.0/len ( file_list )
     files_attr = list()
-    wspace = getWorkspaceFromId( doc_id )
+    wspace = getWorkspaceFromId ( doc_id )
              
     """ Iterate over all the provided source files """
     for src in file_list :
         """ Because some peoples use to name directories with points """
-        file_space = os.path.dirname( src )
+        file_space = os.path.dirname ( src )
         """file space in case we need to publish directories """
         file_space = file_space.replace( wspace, "" )
         file_name =  os.path.join( file_space, os.path.basename ( src ) )
@@ -234,7 +236,7 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
         if not os.path.exists(dirname):
             os.makedirs(dirname)
           
-        shutil.copy( src, tmp_file )
+        shutil.copy ( src, tmp_file )
         msg = "%s" % tmp_file
           
         """ Store the files names in a list to avoid to call 
@@ -244,10 +246,14 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
          
         if progressbar :
             progress_value += progress_step
-            progressbar.setProperty("value", progress_value)
+            progressbar.setProperty ( "value", progress_value )
+        else :
+            print progress_value 
              
         if msgbar :
-            msgbar(msg)
+            msgbar ( msg )
+        else :
+            print msg
              
     """ Get latest version number because somebody may push a new version 
         during the process """
@@ -259,6 +265,84 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
     """Rename the temp dir"""
     os.rename( tmp_dir, repo )
     os.system( "chmod -R 555  %s" % repo )
+         
+    """ Create the new version data for the "versions" document's attribute """
+    fileinfo = {
+                "creator" : os.getenv ( "USER" ),
+                "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.localtime()),
+                "description" : description ,
+                "path" : path_attr ,
+                "files" : files_attr
+                }
+     
+    """ Append the data into the document version attribute copy """
+    ver_attr [ ver ] = fileinfo
+      
+    """ Replace the original "versions" attribute by our modified version """
+    doc [ "versions" ] = ver_attr
+     
+    """ Push the info into the db """
+    db [ doc_id ] = doc
+     
+    """ print published file for the user"""
+    for file in files_attr:
+        print os.path.join( repo , file)
+         
+    """Return the published directory"""
+    return repo
+
+def pushDir ( db = "", doc_id = "", path = list(), description = "" ):
+     
+    """
+    push() Put the datas into the repository 
+    db, type couch.db.Server
+    doc_id, type string
+    path, directory
+    description, type string
+    """
+                          
+    """ check if the source file exists in the repository """
+    if not os.path.exists ( path ) :
+        print "pushDir(): %s doesn't exist" % path
+        return False
+    
+    """ Get root destination directory to push files """
+    dst_dir = getRootAssetPath ( doc_id )
+     
+    """ Get temporary destination directory to push files """
+    tmp_dir = os.path.join ( dst_dir, hashTime () )
+    os.makedirs ( tmp_dir )
+    
+    """ Copy all the files in the destination directory """
+    files_attr = list ()
+    file_list = os.listdir ( path )
+    
+    for src in file_list :
+        """file space in case we need to publish directories """
+        path_src =  os.path.join ( path, src )                           
+        dst = os.path.join ( tmp_dir, src )
+                                
+        if os.path.isfile ( path_src ):
+            print  "pushDir(): copying file %s " % src
+            shutil.copy ( path_src, dst )
+        elif os.path.isdir ( path_src ):
+            print  "pushDir(): copying directory %s " % src
+            shutil.copytree ( path_src, dst )
+          
+        """ Store the files names in a list to avoid to call 
+            the database for each source file """
+        files_attr.append ( src )
+             
+    """ Get latest version number because somebody may push a new version 
+        during the process """
+    doc = db [ doc_id ]
+    ver_attr = doc [ "versions" ]
+    ver = len ( ver_attr ) + 1
+    path_attr = os.path.join ( dst_dir, "%03d" % ver )
+    repo = os.path.expandvars ( path_attr )
+    """Rename the temp dir"""
+    os.rename ( tmp_dir, repo )
+    os.chmod( repo, 0555)
          
     """ Create the new version data for the "versions" document's attribute """
     fileinfo = {
@@ -384,33 +468,39 @@ def textureExport ( path = "", progressbar = False ):
 def textureCheck ( doc_id = "", files = list() ) :
     textureType = utils.getTextureTypes()
     to_push = list()
-    not_pushed = list(files)
+    not_pushed = list ( files )
         
     for file in files :
         fname = os.path.basename(file)
         
         for typ in textureType :
-            simpTex = "%s_%s\d*.\d\d\d\d.tif$" % ( doc_id, typ )
-            animTex = "%s_%s\d*.\d\d\d\d.\d\d\d\d.tif$" % ( doc_id, typ )
+            simpTex = "%s_%s\d*.\d\d\d\d." % ( doc_id, typ )
+            animTex = "%s_%s\d*.\d\d\d\d.\d\d\d\d." % ( doc_id, typ )
             pattern = "%s|%s" % ( simpTex, animTex )
             
-            if re.findall ( pattern, fname ) :
+            if re.findall ( pattern + "tif$", fname ) or re.findall ( pattern + "exr$", fname ) :
                 print "textureCheck: OK %s" % file
                 to_push.append ( file )
                 not_pushed.remove(file)               
 
     return not_pushed
 
-def texturePush ( db = None, doc_id = "", files = list(), description = "",
+def texturePush ( db = None, doc_id = "", path = "", description = "",
                   progressbar = False, msgbar = False, rename = False ) :
     
+    lsdir = os.listdir ( path )
+    files = list ()
+    
+    for file in lsdir:
+        files.append( os.path.join ( path, file ) )
+        
     texCheck = textureCheck ( doc_id, files )
     
     if len ( texCheck ) == 0 :  
-        pushed = push ( db, doc_id, files, description, progressbar, msgbar, rename )
-        os.system( "chmod -R 775  %s" % pushed )
-        textureExport ( pushed )
-        os.system( "chmod -R 555  %s" % pushed )
+        pushed = pushDir ( db, doc_id, path, description )
+#         os.chmod ( pushed, 0775 )
+#         textureExport ( pushed )
+#         os.chmod ( pushed, 0555 )
         
         return pushed
     
@@ -424,27 +514,34 @@ def texturePush ( db = None, doc_id = "", files = list(), description = "",
         
         return False
        
-def assetExport ( source = "", destination = "", obj=True, abc=True, gproject = True ):    
-    fname = os.path.basename(source)
-    name, ext = os.path.splitext(fname)
-    mayaver = os.getenv("HK_MAYA_VER")
-    mayap = "/usr/autodesk/maya%s-x64/bin/maya" % mayaver
-    os.system( "chmod 775 %s %s"% ( source, destination ) )
+def assetExport ( source = "", obj=True, abc=True, gproject = True ):   
+    destination = os.path.dirname ( source )
+    fname = os.path.basename ( source )
+    name, ext = os.path.splitext ( fname )
+        
+    mayaver = os.getenv ( "HK_MAYA_VER" )
+    guerillaver = os.getenv ( "HK_GUERILLA_VER" )
+    
+    mayaloc = "/usr/autodesk/maya%s-x64" % mayaver
+    mayap = "%s/bin/maya" % mayaloc
+#     mayap = "maya"
+    guerilla_plugins = "/usr/local/soft/guerilla/%s/guerilla_for_maya/plug-ins" % guerillaver
+    os.system( "chmod 775 %s %s" % ( source, destination ) )
         
     fobj = objcmd = fabc = abccmd = fgpj = gpjcmd = ""
     
     if not obj == None :
-        fobj = os.path.join( destination, name + ".obj" )
-        objcmd = """ loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/objExport.so\\"; file -force -options \\"groups=1;ptgroups=1;materials=0;smoothing=1;normals=1\\" -type \\"OBJexport\\" -pr -ea \\"%s\\"; """ % fobj   
+        fobj = os.path.join ( destination, name + ".obj" )
+        objcmd = """ loadPlugin \\"%s/bin/plug-ins/objExport.so\\"; file -force -options \\"groups=1;ptgroups=1;materials=0;smoothing=1;normals=1\\" -type \\"OBJexport\\" -pr -ea \\"%s\\"; """ % (mayaloc, fobj)   
     
     if not abc == None :
-        fabc = os.path.join( destination, name + ".abc" )
-        abccmd = """ loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/AbcExport.so\\"; AbcExport -j \\"-frameRange 1 1 -file %s\\"; """ % fabc
+        fabc = os.path.join ( destination, name + ".abc" )
+        abccmd = """ loadPlugin \\"%s/bin/plug-ins/AbcExport.so\\"; AbcExport -j \\"-frameRange 1 1 -file %s\\"; """ % ( mayaloc, fabc )
     
     if not gproject == None :
-        fgpj = os.path.join( destination, name + ".gproject" )
-        gpjcmd = """ loadPlugin \\"/usr/autodesk/maya2013-x64/bin/plug-ins/guerilla2013.so\\"; GuerillaExport -m 1 -a 1 -pf \\"%s\\";file -f -save; """ % fgpj
-        fgpj = os.path.join( destination, name + ".g*" )
+        fgpj = os.path.join ( destination, name + ".gproject" )
+        gpjcmd = """ loadPlugin \\"%s/guerilla2013.so\\"; GuerillaExport -m 1 -a 1 -pf \\"%s\\";file -f -save; """ % ( guerilla_plugins, fgpj )
+        fgpj = os.path.join ( destination, name + ".g*" )
 
     cmd = """%s -batch -file %s -command "%s %s %s" """ % ( mayap, source, objcmd, abccmd, gpjcmd )
     chmodLock = "chmod 555 %s %s %s %s %s"% ( fobj, fabc, fgpj, source, destination )
@@ -453,11 +550,11 @@ def assetExport ( source = "", destination = "", obj=True, abc=True, gproject = 
     os.system( chmodLock )
     return True
     
-def mayaToObj (source, destination) :
-    assetExport ( source, destination, True, None, None )
+def mayaToObj ( source ) :
+    assetExport ( source, True, None, None )
     
-def mayaToAbc (source, destination) :
-    assetExport(source, destination, None, True, None)
+def mayaToAbc ( source ) :
+    assetExport( source, None, True, None )
 
-def mayaToGuerilla (source, destination) :
-    assetExport(source, destination, None, None, True)
+def mayaToGuerilla ( source ) :
+    assetExport(source, None, None, True)

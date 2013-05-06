@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
 import sys, argparse, os
-import pipeline.core as core
+
+try :
+	import pipeline.core as core
+except :
+	pass
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
@@ -15,6 +19,5 @@ if __name__ == '__main__':
 			print "No input file provided.Please check help, -h"
 	else:
 		source = os.path.abspath ( args.input )
-		destination = os.path.dirname ( source )
 		print "Exporting ...\n"
-		core.assetExport ( source, destination, args.obj, args.alembic, args.guerilla )
+		core.assetExport ( source, args.obj, args.alembic, args.guerilla )

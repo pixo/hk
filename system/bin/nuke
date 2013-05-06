@@ -16,4 +16,4 @@ script="$code/tools/nuke/$HK_NUKE_VER/python:$script"
 script="$code/tools/nuke/$HK_NUKE_VER/icons:$script"
 export NUKE_PATH="$script:$NUKE_PATH"
 
-/usr/local/soft/nuke/$HK_NUKE_VER/nuke $@
+/usr/local/soft/nuke/$HK_NUKE_VER/nuke --nukex $@

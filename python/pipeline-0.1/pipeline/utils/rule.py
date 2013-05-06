@@ -5,27 +5,32 @@ Created on Feb 17, 2013
 '''
 
 def getTextureTypes () :
-    return {"diff" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
-            "diffback" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
-            "droug" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1" ),
-            "drougback": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
-            "spec" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
-            "specback" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"), 
-            "sroug" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1" ),
-            "srougback" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
-            "emis" : ( "RGB", "8-bit", "rgb(0,0,0)", True, "triangle", "1"),
-            "emisback" : ( "RGB", "8-bit", "rgb(0,0,0)", True, "triangle", "1"),
+    return {
+            "bump" : ( "R", "8-bit 16-bit","rgb(127,127,127)", True, "bspline", "1"),
+            "bumpbk" : ( "R", "8-bit 16-bit", "rgb(127,127,127)", True, "bspline", "1"),
+            "disp" : ( "R", "8-bit 16-bit 32-bit", False, True, "bspline", "1"),
+            "diff" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
+            "diffbk" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
+            "drgh" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1" ),
+            "drghbk": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
+            "dirt" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
+            "dirtmk" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
+            "emis" : ( "RGB", "8-bit 16-bit", "rgb(0,0,0)", True, "triangle", "1"),
+            "emisbk" : ( "RGB", "8-bit 16-bit", "rgb(0,0,0)", True, "triangle", "1"),
             "mask" : ( "R", "8-bit", "rgb(0,0,0)", "Triangle" ),
-            "maskback" : ( "R", "8-bit", "rgb(0,0,0)", True, "triangle", "1"),
-            "albe" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "sRGB"),
-            "albeback" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "sRGB"),
-            "ssss" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
-            "ssssback" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
-            "bump" : ( "R", "8-bit 16-bit","rgb(127,127,127)",True, "bspline", "1"),
-            "bumpback" : ( "R", "8-bit 16-bit", "rgb(127,127,127)", True, "bspline", "1"),
+            "maskbk" : ( "R", "8-bit", "rgb(0,0,0)", True, "triangle", "1"),
+            "mtal" : ( "R", "8-bit 16-bit", "rgb(0,0,0)", True, "triangle", "1"),
             "norm" : ( "RGB", "8-bit", "rgb(127,127,255)", True, "triangle", "1"),
-            "normback" : ("RGB","8-bit","rgb(127,127,255)",True, "triangle", "1"),
-            "disp" : ( "R", "16-bit 32-bit", False, True, "bspline", "1")}
+            "normbk" : ("RGB","8-bit","rgb(127,127,255)",True, "triangle", "1"),
+            "spec" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1"),
+            "specbk" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1"), 
+            "srgh" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1" ),
+            "srghbk" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1"),
+            "sssc" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "sRGB"),
+            "ssscbk" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "sRGB"),
+            "ssss" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
+            "ssssbk" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "1")
+            }
 
 def getAssetTypes ():
     return {'character':'chr',

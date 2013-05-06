@@ -18,7 +18,7 @@ PROJECT = utils.getProjectName()
 
 def pushMaya ( db = None, doc_id = "", description = "", item = None,
                screenshot = "", msgbar = False, progressbar = False,
-               selection = False, rename = True, extension = ".mb") :
+               selection = False, rename = True, extension = ".mb" ) :
     
     fname = os.path.join ( "/tmp", "%s%s" % ( core.hashTime (), extension ) )
     
@@ -27,8 +27,8 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
                            msgbar, rename )
         core.transfer ( screenshot, destination, doc_id )
         source = os.path.join ( destination, doc_id + extension )
-        assetExportCmd = "hk-asset-export -i %s " % source
-        os.system ( assetExportCmd )
+        print "pushMaya", source
+#         core.assetExport ( source)
         msgbar ( "Done" )
         
         return True

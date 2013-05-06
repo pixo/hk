@@ -11,7 +11,9 @@ if $HK_DEV_MODE
 fi
 
 script="$code/tools/maya/$HK_MAYA_VER/scripts"
-plugin="$code/tools/maya/$HK_MAYA_VER/plugins"
+plugin="/usr/local/soft/guerilla/$HK_GUERILLA_VER/guerilla_for_maya/plug-ins"
+plugin="$code/tools/maya/$HK_MAYA_VER/plugins:$plugin"
+
 export MAYA_SCRIPT_PATH="$script:$MAYA_SCRIPT_PATH"
 export MAYA_PLUG_IN_PATH="$plugin:$MAYA_PLUG_IN_PATH"
 

@@ -1,4 +1,16 @@
 #!/bin/bash
-export PYTHONPATH=$HK_COUCHDB:$PYTHONPATH
+
 echo "Running hk-mari $HK_MARI_VER..."
-/usr/local/foundry/Mari$HK_MARI_VER/mari $*
+export PYTHONPATH="$HK_COUCHDB:$PYTHONPATH"
+
+if $HK_DEV_MODE
+    then
+		code="$HK_USER_CODE_PATH"
+    else
+        code="$HK_CODE_PATH"
+fi
+
+script="$code/tools/mari/$HK_MARI_VER/python"
+export MARI_SCRIPT_PATH="$script"
+
+/usr/local/soft/mari/$HK_MARI_VER/mari $@

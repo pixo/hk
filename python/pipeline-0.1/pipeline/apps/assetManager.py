@@ -1,30 +1,3 @@
-'''
-Created on Jan 13, 2013
-ASSET tasks:
-    modeling        : mod
-    texturing       : tex
-    rigging         : rig
-    surfacing       : srf
-    
-SHOT tasks:    
-    layouting       : lay
-    lighting        : lit
-    render          : rdr
-    compositing     : cmp
-    matte-painting  : dmp
-    cam             : cam
-
-ASSET type list:
-    typ = {"character":"chr",
-    "vehicle":"vcl",
-    "prop":"prp",
-    "environment":"env",
-    "effect":"vfx"}
-    freetype        : ***
-
-@author: pixo
-'''
-
 import sys, os
 from PySide import QtCore, QtGui
 import pipeline.utils as utils
@@ -749,8 +722,8 @@ class UiAssetManager(UiMainManager):
     
     #TODO:replace by utils.getTaskTypes ()
     asset_task ={
-                'bashcomp':'bsh',
-                'comp':'cmp',
+                'bashcomp':'bcmp',
+                'comp':'rcmp',
                 'mattepaint':'dmp',
                 'model':'mod',
                 'render':'ren',
