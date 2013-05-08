@@ -1,5 +1,9 @@
 import sys, os
-from PySide import QtCore, QtGui
+try :
+    from PySide import QtCore, QtGui
+except:
+    from PythonQt import QtCore, QtGui
+    
 import pipeline.utils as utils
 import pipeline.core as core
 
@@ -69,24 +73,29 @@ class UiPush ( QtGui.QWidget ) :
         pass
         
     def pushClicked(self):
-        lspush = list ()
-        self.progressBar.setHidden ( False )
-        self.progressBar.setValue (0)
         
         item = self.listWidget_file.currentItem ()
-        lspush.append ( self.dictpath[ item.text () ] )
-        description = self.plainTextEdit_description.toPlainText()
         
-        if self.task in self.pushTask :
-            push = self.pushTask[self.task]
+        if type ( item ) == type (None) :
+            self.labelStatus.setText ( "Please select an item to publish" )
+        
         else:
-            push = core.push
+            lspush = list ()
+            self.progressBar.setHidden ( False )
+            self.progressBar.setValue (0)
+            lspush.append ( self.dictpath[ item.text () ] )
+            description = self.plainTextEdit_description.toPlainText()
             
-        push( self.db, self.doc_id, lspush, description, self.progressBar,
-                   self.labelStatus.setText )
-        
-        self.progressBar.setHidden ( True )
-        self.labelStatus.setText ( "Done" )
+            if self.task in self.pushTask :
+                push = self.pushTask[self.task]
+            else:
+                push = core.push
+                
+            push( self.db, self.doc_id, lspush, description, self.progressBar,
+                       self.labelStatus.setText )
+            
+            self.progressBar.setHidden ( True )
+            self.labelStatus.setText ( "Done" )
         
     def descriptionChanged( self ):        
         description = self.plainTextEdit_description.toPlainText()

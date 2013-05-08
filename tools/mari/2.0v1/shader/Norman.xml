@@ -3,12 +3,16 @@
   <DefaultName>Norman Lighting</DefaultName>
   <Inputs>
     <Input Name="TxDiffuseColor" PrettyName="Diffuse Color" PreferredInput='1'></Input>
+    <Input Name="TxDirtColor" PrettyName="Dirt Color" PreferredInput='0.18'></Input>
+    <Input Name="TxDirt" PrettyName="Dirt Mask" PreferredInput='1'></Input>
     <Input Name="TxSpecularColor" PrettyName="Specular1 Weight" PreferredInput='1'></Input>
     <Input Name="TxSpecularRough" PrettyName="Specular1 Roughness" PreferredInput='1'></Input>
+
     <Input Name="Normal"></Input>
   </Inputs>
   <Attributes>
     <Attribute Name="Diffuse" Group="Display" Type="double" Min="0" Max="1">1</Attribute>
+    <Attribute Name="Dirt" Group="Display" Type="double" Min="0" Max="1">0</Attribute>
     <Attribute Name="Specular" Group="Display" Type="double" Min="0" Max="1">1</Attribute>
     <Attribute Name="SpecularRoughness" PrettyName="Specular Roughness" Group="Display" Type="double" Min="0.000" Max="1">1</Attribute>
     <Attribute Name="IOR" Group="Advanced" Type="double" Min="1" Max="5">1.3</Attribute>
@@ -22,6 +26,8 @@
         <Context Type="NodeGraphView">
             <Inputs>
                 <Input Name="TxDiffuseColor"><Pos>0,-50</Pos></Input>
+                <Input Name="TxDirtColor"><Pos>0,-50</Pos></Input>
+                <Input Name="TxDirt"><Pos>0,-50</Pos></Input>
                 <Input Name="TxSpecularColor"><Pos>-60,-50</Pos></Input>
                 <Input Name="TxSpecularRough"><Pos>0,-50</Pos></Input>
                 <Input Name="Normal"><Pos>60,-50</Pos></Input>
@@ -31,6 +37,8 @@
             <Shader ShaderType='Fragment'>
                 <Inputs>
                     <Input Name="TxDiffuseColor"><Default>vec4(0.5,0.5,0.5,1)</Default></Input>
+                    <Input Name="TxDirtColor"><Default>vec4(0.18,0.18,0.18,1)</Default></Input>
+                    <Input Name="TxDirt"><Default>vec4(1,1,1,1)</Default></Input>
                     <Input Name="TxSpecularColor"><Default>vec4(1,1,1,1)</Default></Input>
                     <Input Name="TxSpecularRough"><Default>vec4(1,1,1,1)</Default></Input>
                     <Input Name="Normal"><Default>vec4(0,0,1,1)</Default></Input>
@@ -77,18 +85,18 @@
 
         //Beckman
         float F = Kr; 
-        float D = 0.5 * (oor+2) * pow (nh, oor);
+        float D = 0.5 * ( oor + 2 ) * pow ( nh, oor );
         float G = min ( 1, 2 * min ( nwo * nhohwo, nwi * nhohwo ) );
         float specbrdf = max ( 0, 0.25 * F * G * D / nwo );
 
         //Fresnel diffuse
-        vec3 R_d = reflect (-wi, n);
-        vec3 T_d = refract (-wi, n, eta);
+        vec3 R_d = reflect ( -wi, n );
+        vec3 T_d = refract ( -wi, n, eta );
         float cos_theta1_d = dot ( n, R_d );
         float cos_theta2_d = dot ( -n, T_d );
-        float   ppara_d = (cos_theta1_d - eta * cos_theta2_d) / (cos_theta1_d + eta * cos_theta2_d);
-        float   pperp_d = (eta * cos_theta1_d - cos_theta2_d) / (eta * cos_theta1_d + cos_theta2_d);
-        float Krd = clamp (0.5*((ppara_d*ppara_d)+(pperp_d*pperp_d)), 0, 1);
+        float   ppara_d = ( cos_theta1_d - eta * cos_theta2_d ) / ( cos_theta1_d + eta * cos_theta2_d );
+        float   pperp_d = ( eta * cos_theta1_d - cos_theta2_d ) / ( eta * cos_theta1_d + cos_theta2_d );
+        float Krd = clamp ( 0.5 * ( ( ppara_d*ppara_d ) + ( pperp_d * pperp_d ) ), 0, 1 );
         float Ktd = 1 - Krd;
 
         // Beckman specular
@@ -100,6 +108,7 @@
 
     Output.rgb = lighting_mode==0 ? #TxDiffuseColor.rgb : Diffuse * $Diffuse * #TxDiffuseColor.rgb * mix ( 1, Kt, $CE );
     Output.rgb += lighting_mode==2 ? vec3 ( Specular * #TxSpecularColor.r * $Specular ): vec3(0.0);
+    Output.rgb = mix ( Output.rgb, Diffuse * #TxDirtColor.rgb, $Dirt * #TxDirt.r );
     Output.a = #TxDiffuseColor.a;
                 ]]></Body>
             </Shader>

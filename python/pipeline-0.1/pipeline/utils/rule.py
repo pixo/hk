@@ -13,13 +13,16 @@ def getTextureTypes () :
             "diffbk" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
             "drgh" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1" ),
             "drghbk": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
-            "dirt" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
-            "dirtmk" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
-            "emis" : ( "RGB", "8-bit 16-bit", "rgb(0,0,0)", True, "triangle", "1"),
-            "emisbk" : ( "RGB", "8-bit 16-bit", "rgb(0,0,0)", True, "triangle", "1"),
-            "mask" : ( "R", "8-bit", "rgb(0,0,0)", "Triangle" ),
-            "maskbk" : ( "R", "8-bit", "rgb(0,0,0)", True, "triangle", "1"),
-            "mtal" : ( "R", "8-bit 16-bit", "rgb(0,0,0)", True, "triangle", "1"),
+            "dirt" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1" ),
+            "dirtco" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
+            "emis" : ( "R", "8-bit 16-bit", "rgb(0,0,0)", True, "triangle", "1"),
+            "emisco" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
+            "emisbk" : ( "R", "8-bit 16-bit", "rgb(0,0,0)", True, "triangle", "1"),
+            "emiscobk" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
+            "mask" : ( "R", "8-bit", "rgb(0,0,0)", "Triangle", "1" ),
+            "maskbk" : ( "R", "8-bit", "rgb(0,0,0)", True, "triangle", "1" ),
+            "mtal" : ( "R", "8-bit 16-bit", "rgb(0,0,0)", True, "triangle", "1" ),
+            "mtalco" : ( "RGB", "8-bit 16-bit", "rgb(0,0,0)", True, "triangle", "sRGB" ),
             "norm" : ( "RGB", "8-bit", "rgb(127,127,255)", True, "triangle", "1"),
             "normbk" : ("RGB","8-bit","rgb(127,127,255)",True, "triangle", "1"),
             "spec" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1"),
@@ -28,8 +31,8 @@ def getTextureTypes () :
             "srghbk" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1"),
             "sssc" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "sRGB"),
             "ssscbk" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "sRGB"),
-            "ssss" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
-            "ssssbk" : ( "RGB", "8-bit", "rgb(255,255,255)", True, "triangle", "1")
+            "ssss" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
+            "ssssbk" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1")
             }
 
 def getAssetTypes ():

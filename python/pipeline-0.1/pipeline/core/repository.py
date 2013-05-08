@@ -498,6 +498,7 @@ def texturePush ( db = None, doc_id = "", path = "", description = "",
     
     if len ( texCheck ) == 0 :  
         pushed = pushDir ( db, doc_id, path, description )
+        #TODO: Repair textureExport
 #         os.chmod ( pushed, 0775 )
 #         textureExport ( pushed )
 #         os.chmod ( pushed, 0555 )

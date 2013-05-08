@@ -1,4 +1,4 @@
 #!/bin/bash
 export PYTHONPATH=$HK_COUCHDB:$PYTHONPATH
 echo "Running hk-3dcoat $HK_COAT_VER..."
-/usr/local/3dcoat/$HK_COAT_VER/3d-coat-64 $*
+/usr/local/soft/3dcoat/$HK_COAT_VER/3d-coat-64 $*
