@@ -1,24 +1,13 @@
 import mari
-import PythonQt
-
-gui = PythonQt.QtGui 
-core = PythonQt.QtCore 
+import PythonQt.QtCore as pyqtcore
 
 """Flip PaintBuffer"""
 def paintBufferFlip( scaleFactor ):
     paintBuffer = mari.canvases.paintBuffer()
     scale = paintBuffer.scale()
-    scale = core.QSizeF( scale.width() * scaleFactor[0], scale.height() * scaleFactor[1] )
+    scale = pyqtcore.QSizeF( scale.width() * scaleFactor[0], scale.height() * scaleFactor[1] )
     paintBuffer.setScale( scale )
     
-"""Bake PaintBuffer
-def paintBufferBake():
-    paintBuffer = mari.canvases.paintBuffer()
-    scale = paintBuffer.scale()
-    paintBuffer.bake()
-    paintBuffer.setScale( scale )
-"""    
-
 """Create PaintBuffer menu Actions"""
 def createPaintBufferActions():
     description="Paint Buffer %s"
@@ -45,9 +34,9 @@ def createClearActions():
     actionClearHistory = mari.actions.create('Dadi/Clear/History','mari.projects.current().save();mari.history.clear(show_dialog=True)')
     mari.menus.addAction( actionClearHistory, "MainWindow/D&adi/&Clear" )
 
-""" Create Pixo's Actions"""
-def createActions():
+""" Create Actions"""
+def createDadiActions():
     createPaintBufferActions()
     createClearActions()
 
-createActions()
+createDadiActions()

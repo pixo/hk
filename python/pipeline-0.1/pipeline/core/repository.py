@@ -400,6 +400,10 @@ def textureBuild ( path = "", texfilter = None ):
     #TODO: Add Gamma support
     if texfilter == None: 
         texattr = getTextureAttr ( path )[1]
+        
+        if not texattr :  
+            return False
+        
         texfilter = texattr[4]
         texgamma = texattr[5]
         
@@ -409,6 +413,7 @@ def textureBuild ( path = "", texfilter = None ):
     cmd = """render --buildtex --in %s --mode "ww" --filter %s --out %s""" % ( path, texfilter, tex )
     os.system ( cmd )
     print "buildtex: building %s" % tex
+    return True
    
 def textureOptimise ( path ):
     

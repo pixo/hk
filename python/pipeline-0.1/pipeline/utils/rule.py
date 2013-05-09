@@ -8,6 +8,8 @@ def getTextureTypes () :
     return {
             "bump" : ( "R", "8-bit 16-bit","rgb(127,127,127)", True, "bspline", "1"),
             "bumpbk" : ( "R", "8-bit 16-bit", "rgb(127,127,127)", True, "bspline", "1"),
+            "cavt" : ( "R", "8-bit 16-bit","rgb(127,127,127)", True, "bspline", "1"),
+            "cavtbk" : ( "R", "8-bit 16-bit","rgb(127,127,127)", True, "bspline", "1"),
             "disp" : ( "R", "8-bit 16-bit 32-bit", False, True, "bspline", "1"),
             "diff" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
             "diffbk" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),

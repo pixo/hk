@@ -5,7 +5,11 @@ Created on Mar 5, 2013
 '''
 import sys
 import pipeline.core as core
-from PySide import QtCore, QtGui
+
+try :
+    from PySide import QtCore, QtGui
+except:
+    from PythonQt import QtCore, QtGui
 
 class UiProjectCreator ( QtGui.QMainWindow ):
             

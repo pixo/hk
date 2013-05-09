@@ -669,16 +669,17 @@ class UiMainManager(QtGui.QMainWindow):
         
     def customUi ( self ):
         self.progressBar.setHidden(True)
-        self.label_sys.setPixmap(os.path.join ( CC_PATH, "%s.png" % self.launcher ))
-        self.label.setPixmap ( os.path.join ( CC_PATH, "search.png" ) )
         self.label_proj.setText("""<html><head/><body><p><span style=\" font-size:12pt;
                                     font-weight:600;\">Asset Manager </span><span style=\" font-size:12pt;
                                     \"/><span style=\" font-size:12pt;font-weight:600;
                                     \">:</span><span style=\" font-size:12pt;
                                     \"> '%s'</span></p></body></html>""" % PROJECT )
+
+        self.labelImage.setPixmap( os.path.join( CC_PATH, "hk_title_medium.png" ) )
+        self.label_sys.setPixmap ( os.path.join ( CC_PATH, "%s.png" % self.launcher ) )
+        self.label.setPixmap ( os.path.join ( CC_PATH, "search.png" ) )
         self.label_filter.setPixmap( os.path.join ( CC_PATH, "filter.png" ) )
-        empty = os.path.join( CC_PATH, "hk_title_medium.png" )
-        self.labelImage.setPixmap( empty )
+        
         self.treeWidget_a.setContextMenuPolicy( QtCore.Qt.CustomContextMenu )
         self.treeWidget_a.headerItem().setText ( 0, "asset" )
         self.plainTextEdit_description.setReadOnly(True)
@@ -1095,9 +1096,9 @@ class UiAssetManager(UiMainManager):
         
         if not os.path.exists ( screenshot ) :
             screenshot = os.path.join( CC_PATH, "hk_title_medium.png" )
-            
+
         self.labelImage.setPixmap( screenshot )
-            
+
     def itemClickedFork( self, item ) :
                 
         """Set the data to the plain text"""

@@ -1,7 +1,8 @@
 import os
 import pipeline.core as core
 import pipeline.utils as utils
-# 
+import glob
+
 # def cli ( path, description ):
 #     if not os.path.exists ( path ):
 #         print "hk-texture-publish: %s doesn't exists" % path
