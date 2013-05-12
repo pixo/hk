@@ -21,7 +21,7 @@ export HK_DB_SERVER="http://$HK_DB_USER@127.0.0.1:5984/"
 #export HK_DB_SERVER="https://$HK_DB_USER@homeworks.iriscouch.com"
 
 export HK_COAT_VER=4-BETA12B
-export HK_GUERILLA_VER=0.15.7
+export HK_GUERILLA_VER=0.16.1
 export HK_HIERO_VER=1.6v1
 export HK_HIERO_PLAYER_VER=1.6v1
 export HK_HOUDINI_VER=12.5

@@ -18,8 +18,8 @@ PROJECT = utils.getProjectName()
 
 def assetExport ( source = "", obj=True, abc=True, gpj = True, first= 1, last = 1 ):
     cmd = """hk-asset-export -i %s -obj %d -abc %d -gpj %d -f %d -l %d """ % ( source, int(obj), int(abc), int( gpj ), first, last )   
-    commands.getoutput( cmd )
-    return True
+    return commands.getoutput( cmd )
+    
 
 def pushMaya ( db = None, doc_id = "", description = "", item = None,
                screenshot = "", msgbar = False, progressbar = False,

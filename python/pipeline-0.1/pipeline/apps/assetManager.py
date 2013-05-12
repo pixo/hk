@@ -1,11 +1,14 @@
 import sys, os
-# try :
-#     from PySide import QtCore, QtGui
-# except:
-#     from PythonQt import QtCore, QtGui
+try :
+    from PySide import QtCore, QtGui
+except:
+    #Because of Mari ..... hopefully Pyside will come
+    try :
+        from PythonQt import QtCore, QtGui
+        
+    except :
+        from PySide import QtCore, QtGui
     
-from PySide import QtCore, QtGui
-
 import pipeline.utils as utils
 import pipeline.core as core
 
