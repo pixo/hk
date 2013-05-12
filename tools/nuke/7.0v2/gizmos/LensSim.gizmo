@@ -1,0 +1,350 @@
+#! /usr/local/soft/nuke/7.0v2/nuke -nx
+version 7.0 v2
+Gizmo {
+ note_font Inconsolata
+ lock_connections true
+ mapsize {0.15 0.15}
+ addUserKnob {20 LensSim t "Quick tool to add some level of 'lens simulation' to any image, preferably CG imagery. You would want to match lens irregularities to the camera that was used to shoot you plates or a target camera look."}
+ addUserKnob {20 Diffusion n 1}
+ addUserKnob {41 blur l Blur t "Amount of softness (blur radius)." T Blur9.size}
+ addUserKnob {41 Mix l mix T Blur9.mix}
+ addUserKnob {6 diffonoff l Disable +STARTLINE}
+ addUserKnob {20 endGroup n -1}
+ addUserKnob {20 ChromaticAbberation l "Chromatic Abberation" n 1}
+ addUserKnob {7 scaleR l "Scale r" R 0.999 1.001}
+ scaleR 1.0003
+ addUserKnob {7 scaleG l g -STARTLINE R 0.999 1.001}
+ scaleG 1.0001
+ addUserKnob {7 scaleB l b -STARTLINE R 0.999 1.001}
+ scaleB 1
+ addUserKnob {6 CAoff l Disable +STARTLINE}
+ addUserKnob {20 endGroup_1 l endGroup n -1}
+ addUserKnob {20 Glints n 1}
+ addUserKnob {41 GlintsContribution l Contribution T Dissolve2.which}
+ addUserKnob {6 goff l Disable +STARTLINE}
+ goff true
+ addUserKnob {20 endGroup_2 l endGroup n -1}
+ addUserKnob {20 ProMist n 1}
+ addUserKnob {41 PMContribution l Contribution t "Default of 0.12 shouldn't have to be modified." T Merge42.mix}
+ addUserKnob {6 pmoff l Disable +STARTLINE}
+ pmoff true
+ addUserKnob {20 endGroup_3 l endGroup n -1}
+ addUserKnob {20 Vignette n 1}
+ addUserKnob {7 scaleVignette l scale R 0 10}
+ scaleVignette 2.2
+ addUserKnob {41 softness T Radial1.softness}
+ addUserKnob {6 voff l Disable +STARTLINE}
+ voff true
+ addUserKnob {20 endGroup_5 l endGroup n -1}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 510
+  ypos -646
+ }
+ Dot {
+  name Dot29
+  xpos 544
+  ypos -534
+ }
+set N65a2010 [stack 0]
+push $N65a2010
+ Dot {
+  name Dot31
+  xpos 617
+  ypos -534
+ }
+ Blur {
+  channels rgba
+  size 2
+  mix 0.25
+  name Blur9
+  xpos 583
+  ypos -441
+ }
+ Switch {
+  inputs 2
+  which {{diffonoff i}}
+  name Switch2
+  xpos 510
+  ypos -373
+ }
+ Dot {
+  name Dot34
+  xpos 544
+  ypos -174
+ }
+set N605f990 [stack 0]
+ Dot {
+  name Dot5
+  xpos 212
+  ypos -174
+ }
+ Dot {
+  name Dot2
+  xpos 219
+  ypos 258
+ }
+push $N605f990
+ AddChannels {
+  channels rgb
+  name AddChannels1
+  xpos 354
+  ypos -86
+ }
+set N6787950 [stack 0]
+ Transform {
+  scale {{parent.scaleR}}
+  center {{width/2} {height/2}}
+  name TransformR
+  xpos 290
+  ypos -8
+ }
+push $N6787950
+ Transform {
+  scale {{parent.scaleG i}}
+  center {{width/2 i} {height/2 i}}
+  name TransformG
+  xpos 401
+  ypos -10
+ }
+push $N605f990
+ Transform {
+  scale {{parent.scaleB i}}
+  center {{width/2 i} {height/2 i}}
+  name TransformB
+  xpos 510
+  ypos -10
+ }
+ Copy {
+  inputs 2
+  from0 rgba.green
+  to0 rgba.green
+  bbox B
+  name Copy1
+  xpos 510
+  ypos 34
+ }
+ Copy {
+  inputs 2
+  from0 rgba.red
+  to0 rgba.red
+  bbox B
+  name Copy2
+  xpos 510
+  ypos 94
+ }
+ Switch {
+  inputs 2
+  which {{CAoff i}}
+  name Switch3
+  xpos 510
+  ypos 253
+ }
+set N74e7400 [stack 0]
+ Dot {
+  name Dot1
+  xpos 434
+  ypos 354
+ }
+set N74ed5e0 [stack 0]
+push $N605f990
+ Dot {
+  name Dot35
+  xpos 874
+  ypos -174
+ }
+ Clamp {
+  minimum 1
+  maximum {{minimum}}
+  MinClampTo_enable true
+  MaxClampTo_enable true
+  name Clamp1
+  xpos 840
+  ypos 164
+ }
+ Dot {
+  name Dot36
+  xpos 874
+  ypos 306
+ }
+set N7500e30 [stack 0]
+ Dot {
+  name Dot37
+  xpos 874
+  ypos 378
+ }
+ Glint {
+  length 32
+  rotation 90
+  to_color {0.02136000432 0.05999999866 0 0}
+  name Glint3
+  xpos 730
+  ypos 367
+ }
+ Blur {
+  channels rgba
+  size 2.5
+  name Blur12
+  xpos 620
+  ypos 375
+ }
+push $N7500e30
+ Glint {
+  length 32
+  to_color {0.05999999866 0.02231999859 0 0}
+  name Glint4
+  xpos 730
+  ypos 293
+ }
+ Blur {
+  channels rgba
+  size 2.5
+  name Blur16
+  xpos 620
+  ypos 301
+ }
+push $N74e7400
+ Merge2 {
+  inputs 2
+  operation plus
+  bbox B
+  mix 0.055
+  name Merge39
+  xpos 510
+  ypos 301
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  bbox B
+  mix 0.055
+  name Merge40
+  xpos 510
+  ypos 375
+ }
+push $N74ed5e0
+ Dissolve {
+  inputs 2
+  which 1
+  name Dissolve2
+  xpos 510
+  ypos 419
+ }
+ Switch {
+  inputs 2
+  which {{goff i}}
+  name Switch4
+  xpos 510
+  ypos 494
+ }
+ Dot {
+  name Dot38
+  xpos 544
+  ypos 522
+ }
+set N7560700 [stack 0]
+ Dot {
+  name Dot3
+  xpos 669
+  ypos 630
+ }
+push $N7560700
+ Crop {
+  box {{curve i} {curve i} {width i} {height i}}
+  crop false
+  name Crop5
+  xpos 400
+  ypos 517
+ }
+ Grade {
+  blackpoint 0.27
+  name Grade52
+  xpos 400
+  ypos 542
+ }
+set N7571040 [stack 0]
+ Blur {
+  channels rgba
+  size 100
+  crop false
+  name Blur23
+  xpos 428
+  ypos 589
+ }
+push $N7571040
+ Blur {
+  channels rgba
+  size 33
+  name Blur24
+  xpos 290
+  ypos 589
+ }
+ Dissolve {
+  inputs 2
+  which 0.5
+  name Dissolve1
+  xpos 400
+  ypos 633
+ }
+push $N7560700
+ Merge2 {
+  inputs 2
+  operation plus
+  bbox B
+  mix 0.12
+  name Merge42
+  xpos 510
+  ypos 641
+ }
+ Switch {
+  inputs 2
+  which {{pmoff}}
+  name Switch5
+  xpos 510
+  ypos 710
+ }
+set N75a77d0 [stack 0]
+ Dot {
+  name Dot4
+  xpos 444
+  ypos 897
+ }
+push $N75a77d0
+ Radial {
+  replace true
+  area {{width-(width*((scaleVignette-1)/2+1))} {height-(height*((scaleVignette-1)/2+1))} {width*((scaleVignette-1)/2+1)} {height*((scaleVignette-1)/2+1)}}
+  softness 0.65
+  name Radial1
+  xpos 648
+  ypos 864
+ }
+ Dot {
+  name Dot6
+  xpos 682
+  ypos 908
+ }
+push $N75a77d0
+ Merge2 {
+  inputs 2
+  operation multiply
+  bbox B
+  output {rgba.red rgba.green rgba.blue -rgba.alpha}
+  name Merge1
+  xpos 510
+  ypos 895
+ }
+ Switch {
+  inputs 2
+  which {{voff i}}
+  name Switch6
+  xpos 510
+  ypos 975
+ }
+ Output {
+  name Output1
+  xpos 510
+  ypos 1237
+ }
+end_group

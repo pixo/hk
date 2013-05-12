@@ -22,6 +22,9 @@ except:
 #TODO: create ui for shot creation
 #TODO: preview obj with meshlab
 #TODO: create ui to add tasks_type or asset_type
+#TODO: creation de "fork" sur toute les taches existante, le controle doit etre au niveau de l'asset. 
+
+
 
 class UiPush ( QtGui.QWidget ) :
 

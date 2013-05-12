@@ -388,9 +388,13 @@ def pushFile ( files = list (), description="", db = "", doc_id = False, rename 
 def getTextureAttr ( path ):
     textureType = utils.getTextureTypes()
     fname = os.path.basename ( path )
+    
     for typ in textureType :
-        pattern = "%s\d*.\d\d\d\d" % typ
-        if len(re.findall ( pattern, fname )):
+        simpTex = "%s\d*.\d\d\d\d." % typ
+        animTex = "%s\d*.\d\d\d\d.\d\d\d\d." % typ
+        pattern = "%s|%s" % ( simpTex, animTex )
+        
+        if len ( re.findall ( pattern, fname ) ):
             return ( typ, textureType[typ] )
         
     return (False, False)
@@ -554,6 +558,7 @@ def assetExport ( source = "", obj=True, abc=True, gproject = True ):
     
     os.system( cmd )
     os.system( chmodLock )
+#     for path in ( fobj, fabc, fgpj, source, destination ): os.chmod ( path, 0555)
     return True
     
 def mayaToObj ( source ) :

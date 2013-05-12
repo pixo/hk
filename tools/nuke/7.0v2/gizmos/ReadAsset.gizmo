@@ -1,22 +1,21 @@
-#! /usr/local/Nuke7.0v2/nuke -nx
+#! /usr/local/soft/nuke/7.0v2/nuke -nx
 version 7.0 v2
 Gizmo {
  inputs 0
- label "\[value type]_\[value asset]_\[value task]_\[value fork]_\[value layer]_\[value aov]"
- postage_stamp true
+ tile_color 0x4c9999ff
+ label "\[ python hkHelperGetReadAssetName() ]"
  addUserKnob {20 Asset}
  addUserKnob {4 repository M {network local}}
  addUserKnob {22 repositoryup l Update -STARTLINE T "hkReadUpdateAll ()"}
- addUserKnob {4 type M {chr}}
- addUserKnob {4 asset M {mickey}}
- addUserKnob {4 task M {mod}}
- addUserKnob {4 fork M {main}}
- addUserKnob {4 version M {001}}
+ addUserKnob {4 type M {}}
+ addUserKnob {4 asset M {}}
+ addUserKnob {4 task M {}}
+ addUserKnob {4 fork M {}}
+ addUserKnob {4 version M {}}
  addUserKnob {4 layer M {}}
  addUserKnob {4 aov M {}}
  addUserKnob {4 extension M {exr tif jpg}}
  addUserKnob {2 path}
- path /homeworks/projects/testing/chr/mickey/mod/main/001/testing_chr_mickey_mod_main.%04d.exr
  addUserKnob {20 Settings}
  addUserKnob {4 cacheLocal l "cache locally" t "Allow local file caching. Copies of the files are stored in a specified local folder for faster access times." M {always auto never}}
  addUserKnob {17 format t "Size of this file. Typically it will be guessed correctly from the file header but you can change to set a different pixel aspect ratio if necessary."}
@@ -30,19 +29,23 @@ Gizmo {
  addUserKnob {3 origlast l "" t "The underlying last frame number" -STARTLINE}
  addUserKnob {4 on_error l "missing frames" t "What to do when there is an error opening the file" M {error black checkerboard "nearest frame"}}
  addUserKnob {32 reload t "Re-read the image from the disk" -STARTLINE T "knob version \[expr \[value version]+1]"}
- addUserKnob {4 colorspace t "Lookup table (LUT) used to convert from this file to the internal values used by Nuke.\n\nDefault means it is determined from the size and type of data in the file and other information from the file header." M {default linear sRGB rec709 Cineon Gamma1.8 Gamma2.2 Panalog REDLog ViperLog AlexaV3LogC PLogLin SLog REDSpace}}
+ addUserKnob {4 colorspace t "Lookup table (LUT) used to convert from this file to the internal values used by Nuke.\n\nDefault means it is determined from the size and type of data in the file and other information from the file header." M {"default (sRGB)" linear sRGB rec709 Cineon Gamma1.8 Gamma2.2 Panalog REDLog ViperLog AlexaV3LogC PLogLin SLog REDSpace}}
  addUserKnob {6 premultiplied t "If there is an alpha channel, divide color data by the alpha before converting from the colorspace, and then multiply by the alpha afterwards. This will correct the color of the partially-transparent pixels produced by most renderers." -STARTLINE}
  addUserKnob {6 raw l "raw data" t "raw\nDo not convert the data. For most file formats this is the same as Linear colorspace, but for some it may disable other processing, such as conversion from YUV." -STARTLINE}
  addUserKnob {6 auto_alpha l "auto alpha" t "If the Read will produce RGB but no alpha channel, then assume the alpha should be 1 if it's requested." -STARTLINE}
 }
  Read {
   inputs 0
-  file "\[ value parent.path ]"
+  file "\[ python hkHelperReadPath() ]"
   origset true
   name Read1
+  selected true
+  xpos 460
+  ypos 17
  }
  Output {
   name Output1
-  selected true
+  xpos 460
+  ypos 115
  }
 end_group

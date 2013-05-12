@@ -25,11 +25,15 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
     if hkcmds.saveFile ( fname, selection, msgbar ) :
         destination = core.push ( db, doc_id, fname, description, progressbar,
                            msgbar, rename )
+        
         core.transfer ( screenshot, destination, doc_id )
         source = os.path.join ( destination, doc_id + extension )
-        print "pushMaya", source
-#         core.assetExport ( source)
-        msgbar ( "Done" )
+        
+        print "pushMaya():", source
+        core.assetExport ( source )
+        
+        if msgbar :
+            msgbar ( "Done" )
         
         return True
     

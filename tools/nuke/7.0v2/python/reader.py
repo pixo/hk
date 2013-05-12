@@ -1,5 +1,5 @@
 print "hk-nuke: importing reader"
-import nuke,os
+import nuke, os, glob, re
 import pipeline.utils as utils
 
 def getAssetTypes():
@@ -16,8 +16,10 @@ def getTaskTypes():
         result[ params [param] ] = param
     return result
 
-HK_ASSET_TYPE = getAssetTypes ()
-HK_TASK_TYPE = getTaskTypes ()
+def createOutDirs ():
+    trgDir = os.path.dirname( nuke.filename( nuke.thisNode() ) )    
+    if not os.path.isdir( trgDir ):
+        os.makedirs( trgDir )
 
 def hkGetRepo ( space = "network" ) :
     repository = { "network":"HK_REPO", "local":"HK_USER_REPO" }
@@ -27,97 +29,206 @@ def hkGetRepo ( space = "network" ) :
 def hkGetProject () :
     return os.getenv ( "HK_PROJECT" )
 
-def hkGetParams ():
-    return ( "type", "asset", "task", "fork", "version", "layer", "aov" )
+def hkGetParams ( nodeclass ):
 
-def hkReadChanged () :
+    if nodeclass == "Write" :
+        return ( "type", "asset", "task", "fork", "versions" )
+
+    elif nodeclass == "Read":
+        return ( "type", "asset", "task", "fork", "versions", "layer", "aov" )
+
+    elif nodeclass == "ReadGeo2":
+        return ( "type", "asset", "task", "fork", "versions", "layer", "aov" )
+
+def hkSetNodes () :
+
+    node = nuke.thisNode()
+    #Get path from node
+    filepath = hkGetPath ( node )
+
+    if node.Class () == "Read":
+        path, rang = getFileSeq ( filepath ).split()
+        first,last = rang.split ( '-' )
+        node['file'].setValue( path )
+        node['first'].setValue( int ( first ) )
+        node['last'].setValue( int ( last ) )
+    
+    elif node.Class () == "Write":
+        node['file'].setValue ( filepath )
+        node['first'].setValue( 1 )
+        node['last'].setValue( 1 )
+
+    elif node.Class () == "ReadGeo2":
+        path, rang = getFileSeq ( filepath ).split()
+        first,last = rang.split ( '-' )
+        node['geofile'].setValue( path )
+
+def hkReadChanged ():
     n = nuke.thisNode()
     k = nuke.thisKnob()
     name = k.name()
-    params = hkGetParams ()
 
+    params = hkGetParams ( n.Class () )
+
+    values = list ()
     if name in params :
-        for i in range ( params.index ( name ), 7 ) :
+
+        for i in range ( params.index ( name ), len ( params ) ) :
             param = params[i]
-            hkReadUpdate ( param = param )
-        
-    elif name in ( "repository", "extension" ) :
-        hkReadUpdateAll ()
+            values = hkAssetUpdate ( param = param )
 
-nuke.addKnobChanged ( hkReadChanged )#, nodeClass="ColorCorrect")
+        hkSetNodes ()
 
-def hkReadUpdate ( node = None, param = "") :
-    params = hkGetParams ()
-    paramfilter = { "type":HK_ASSET_TYPE , "task":HK_TASK_TYPE }
+    elif name in ( "repository", "extension", ) :
+        hkAssetUpdateAll ( node = n )
 
+
+#ULTRA SHITTY MUST BE CHANGED IN THE FUTUR
+def hkAssetUpdate ( node = None, param = "" ) :
+    #Get param filter
+    paramfilter = { "type":getAssetTypes () , "task":getTaskTypes () }
+
+    #Check the arg are provided
     if node == None :
-        n = nuke.thisNode ()
-    else:
-        n = node
+        node = nuke.thisNode ()
 
-    k = n.knob ( param )
+    #Get params in function of the class node
+    params = hkGetParams ( node.Class () )
+    
+    #Get the knob parameter
+    knob = node.knob ( param )
 
-    if ( type ( k ) != type ( None ) ) and ( k.Class() == "Enumeration_Knob" ) :
-        krepo = n.knob  ( "repository" )
-        kpath = n.knob  ( "path" )
-
+    if ( type ( knob ) != type ( None ) ) :
+        #Get repository local or network
+        krepo = node.knob  ( "repository" )
         space = krepo.enumName ( int ( krepo.getValue () ) )
         root = hkGetRepo ( space )
+
+        #Get project name
         project = hkGetProject ()
-        path = os.path.join ( root, project ) 
 
-        it = 0
-        klastval = None
-        
-        while it < params.index ( param )  :        
-            klast = n.knob ( params [ max ( 0, it-1 ) ] )
-            klastval = klast.enumName ( int( klast.getValue () ) )
-            kcur = n.knob ( params [ it ] )
-            
-            if not ( klastval == None )  :
-                kcurval = kcur.enumName ( int( kcur.getValue () ) )
-                if not ( kcurval == None ) : 
-                    path = os.path.join ( path, kcurval )
-            
-            else :
-                klastval = None
-            
-            kcur = None        
-            it += 1
-        
-        updated = list ()
-    
-        if ( klastval != None ) or (it == 0):
-            if os.path.exists ( path ) :
+        #Get project repository path
+        path = os.path.join ( root, project )
+        if ( knob.Class() == "Enumeration_Knob" ) :
+            it = 0
+            kcurval = None
+            next = True
+            #Get the path till the current parameters
+            while it < params.index ( param ) and next  :
+                #Get current knob
+                kcur = node.knob ( params [ it ] )
+
+                #Get current knob value
+                kcurval = kcur.enumName ( int ( kcur.getValue () ) )
                 
-                if os.path.isdir ( path ):
-                    lsdir = os.listdir ( path )
-                    
-                    for f in lsdir:
-                        fpath = os.path.join ( path, f )
+                #Increment iterator                    
+                it += 1
+
+                #reconstruct the path
+                if kcurval != None :
+                    path = os.path.join ( path, kcurval )
+                else:
+                    next = False
+
+            # Collect all directories in reconstructed path
+            values = list ()
+            if os.path.exists ( path ) and os.path.isdir ( path ) and next:
+
+                # List 'path'
+                files = os.listdir ( path )
+
+                # Iterate over 'files'
+                for file in files :
+
+                    # Get directories in file
+                    if os.path.isdir ( os.path.join ( path, file ) ):
                         
-                        if os.path.isdir ( fpath ) :
+                        # Check if current  knob is type or task
+                        if ( param in paramfilter ):
 
-                            if param in paramfilter :
+                            # Add directories if they have the good value eg type: chr,prp,etc or task: lit,tex, etc
+                            if ( file in paramfilter [ param ]) :
+                                values.append ( file )
+                        else:
+                            #Adding others folders
+                            values.append ( file )
 
-                                if f in paramfilter [ param ] :
-                                    updated.append ( f )                            
-                            else :
-                                updated.append ( f )
+            #Set the current knob values
+            knob.setValues (values)
 
-                k.setValues ( updated )
-
-        values = k.values ()
-
-        if ( len ( values ) > 0 ) and  ( k.enumName ( int ( k.getValue () ) ) == None ) :
-            k.setValue ( values[0] )
-
-        kpath.setValue ( hkGetPath ( n ) )
+            #Check that the current knob values is not set to None if it contains data 
+            if (len ( values ) > 0) and knob.enumName ( int ( knob.getValue () ) ) == None :
+                knob.setValue ( values[0] )
 
 
-def hkReadUpdateAll ( node = None, params = ( "type", "asset", "task", "fork", "version", "layer", "aov" ) ) :
+def hkAssetUpdateAll ( node = None, params = "" ) :
+    if params == "" :
+        params = hkGetParams ( node.Class () )
+    
     for param in params :
-        hkReadUpdate ( node = node, param = param )
+        hkAssetUpdate ( node = node, param = param )
+
+    hkSetNodes ()
+
+def getFileSeq ( path ):
+    '''Return file sequence with same name as the parent directory. Very loose example!!'''
+    dirPath = path
+    if not os.path.isdir ( path ):
+        dirPath = os.path.dirname( path )
+
+    # COLLECT ALL FILES IN THE DIRECTORY THAT HVE THE SAME NAME AS THE DIRECTORY
+#     files = glob.glob( os.path.join( dirPath, '%s.*.*' % doc_id ) )
+    files = glob.glob ( os.path.join( dirPath, '*' ) )
+    files.sort ()
+
+    # GRAB THE RIGHT MOST DIGIT IN THE FIRST FRAME'S FILE NAME
+    # print "files", files
+    if not len (files) > 0:
+        return path + " 1-1"
+
+    file = files[0] 
+    firstString = re.findall ( r'\d+', os.path.basename ( file ) )
+
+    if not len ( firstString ) > 0 :
+        return file + " 1-1" 
+    
+    firstString = firstString[-1]
+
+    # GET THE PADDING FROM THE AMOUNT OF DIGITS
+    padding = len ( firstString )
+
+    # CREATE PADDING STRING FRO SEQUENCE NOTATION
+    paddingString = '%02s' % padding
+
+    # CONVERT TO INTEGER
+    first = int ( firstString )
+
+    # GET LAST FRAME
+    last = re.findall( r'\d+', os.path.basename ( files[-1] ) )[-1]
+    last = int ( last.replace ( ".", "" ) )
+
+    # GET EXTENSION
+    ext = os.path.splitext ( file )[-1]
+    file =  files[0].replace ( ext, "" )
+    if ext == ".tex":
+        ext = ".tif"
+
+    # BUILD SEQUENCE NOTATION
+    filsplit = file.split (".")
+
+    if len ( filsplit ) > 2:
+        base = file.replace( filsplit[-1],"")
+        fileName = '%s%%%sd%s %s-%s' % ( base, str(padding).zfill(2), ext, first, last )
+    
+    elif len ( filsplit ) == 2:
+        base = file.replace( filsplit[1],"")
+        fileName = '%s%%%sd%s %s-%s' % ( base, str(padding).zfill(2), ext, first, last )
+    else :
+        base = file
+        fileName = '%s%s %s-%s' % ( base, ext, first, last )
+
+    # RETURN FULL PATH AS SEQUENCE NOTATION
+    return os.path.join ( dirPath, fileName )
 
 def hkGetPath ( node = None ) :
 
@@ -126,166 +237,155 @@ def hkGetPath ( node = None ) :
     project = project.replace( " ", "" )
 
     krepo = node.knob ( 'repository' )
-    kextension = node.knob ( 'extension' )
-    
-    if node == None or kextension == None :
-        return
-
     if krepo != None :
+
+        # Get repository local or network
         repo = str ( krepo.value () )
         root = hkGetRepo ( repo )
         path = os.path.join ( root, project)
+
+        # Iterate over the parameters to get filename
         fname = project
-        params = hkGetParams ()
+        params = hkGetParams ( node.Class () )
 
         for param in params:
             k = node.knob ( param )
+            
             if k != None :
                 value = str ( k.value () )
 
                 if value != None and value != "0" :
                     value = value.lower().replace ( " ", "" )
                     
-                    if param != "version":
+                    # Get the file name
+                    if param != "versions":
                         fname += "_%s" % value
                     
+                    # Get file path
                     path = os.path.join ( path, value )
 
-        fname += ".%s.%s" % ( "%04d", kextension.enumName ( int ( kextension.getValue() ) ) )
+        ext = ""
+        kextension = node.knob ( 'extension' )
+        if kextension != None :
+            ext = "." + kextension.enumName ( int ( kextension.getValue() ) )
+
+        fname += ".%s%s" % ( "%04d", ext  )
         path = os.path.join ( path, fname )
 
         return path
     
-def hkWriteRender( node = None ):
-    pass
-
-def hkReadCreate () :
-    group = nuke.createNode ( "Group" )
-    group [ "name" ].setValue ( "ReadAsset" )
-    group.begin ()
-    read = nuke.createNode ( "Read" )
-    output = nuke.createNode ( "Output" )
-    group.end ()
-    
-    assetTab = nuke.Tab_Knob ( "Asset" )
-    settingsTab = nuke.Tab_Knob ( "Settings" )
-
+def hkReadImagesCreate () :
     #Setup file python expression
-    params = ( "type", "asset", "task", "fork", "version", "layer", "aov" )
-    filecmd = "[ value parent.path ]"
+    params = hkGetParams ( "Read" )
+
+    # Create main node    
+    node_asset = nuke.createNode ( "Read" )
+    node_asset [ "name" ].setValue ( "ReadAsset" )
+    assetTab = nuke.Tab_Knob ( "Asset" )
 
     #Create and setup knobs
-    group.addKnob ( assetTab )
+    node_asset.addKnob ( assetTab )
     repository = ( "network", "local" )
     krepo = nuke.Enumeration_Knob ( "repository", "repository", repository ) 
-    repoup = "hkReadUpdateAll ()"
+    repoup = "hkAssetUpdateAll ( nuke.thisNode () )"
     krepoup = nuke.PyScript_Knob ( "repositoryup", "Update", repoup )
-    group.addKnob ( krepo )
-    group.addKnob ( krepoup )
+    node_asset.addKnob ( krepo )
+    node_asset.addKnob ( krepoup )
     
     for param in params :
         knob = nuke.Enumeration_Knob ( param, param, list () )
-        func = "hkReadUpdate ( param = '%s' )" % param
-        group.addKnob ( knob )
+        node_asset.addKnob ( knob )
     
-    kextension = nuke.Enumeration_Knob ( "extension", "extension", list(("exr","tif","jpg")) )
-    kpath = nuke.File_Knob ( "path", "path" )
-    group.addKnob ( kextension )
-    group.addKnob ( kpath )
-    
-    kfile = read [ "file" ]
-    kfile.setValue ( filecmd )
-    klabel = group [ "label" ]
-    klabel.setValue ("[value type]_[value asset]_[value task]_[value fork]_[value layer]_[value aov]")
-    kpostage_stamp = group [ "postage_stamp" ]
+    # kextension = nuke.Enumeration_Knob ( "extension", "extension", list(("exr","tif","png","jpg")) )
+    # node_asset.addKnob ( kextension )
+
+    kpostage_stamp = node_asset [ "postage_stamp" ]
     kpostage_stamp.setValue ( True )
 
-    group.addKnob ( settingsTab )
-    # group.addKnob ( nuke.Text_Knob ("divName","",""))
-    group.addKnob ( read["cacheLocal"])
-    group.addKnob ( read["format"])
-    group.addKnob ( read["first"])
-    group.addKnob ( read["before"])
-    group.addKnob ( read["last"])
-    group.addKnob ( read["after"])
-    group.addKnob ( read["frame_mode"])
-    group.addKnob ( read["frame"])
-    group.addKnob ( read["origfirst"])
-    group.addKnob ( read["origlast"])
-    group.addKnob ( read["on_error"])
-    group.addKnob ( read["reload"])
-    group.addKnob ( read["colorspace"])
-    group.addKnob ( read["premultiplied"])
-    group.addKnob ( read["raw"])
-    group.addKnob ( read["auto_alpha"])
-    hkReadUpdateAll ( node = group )
+    #Update everything
+    hkAssetUpdateAll ( node = node_asset )
 
-def hkWriteCreate ():
-    group = nuke.createNode ( "Group" )
-    group [ "name" ].setValue ( "WriteAsset" )
+def hkWriteImagesCreate ():
 
-    #Create the gizmo
-    group.begin ()
-    input = nuke.createNode ( "Input" )
-    input["name"].setValue("Input")
-    write = nuke.createNode ( "Write" )
-    write["name"].setValue("Write")
-    output = nuke.createNode ( "Output" )
-    output["name"].setValue("Output")
-    group.end ()
-
+    #Create the main node
+    node_asset = nuke.createNode ( "Write" )
+    node_asset [ "name" ].setValue ( "WriteAsset" )
+    node_asset["beforeRender"].setValue ( "createOutDirs()" )
+    
     #Create tabs
     assetTab = nuke.Tab_Knob ( "Asset" )
-    settingsTab = nuke.Tab_Knob ( "Settings" )
-
+    
     #Setup file python expression
     params = ( "type", "asset", "task", "fork" )
     
     #Create and setup knobs
-    group.addKnob ( assetTab )
+    node_asset.addKnob ( assetTab )
     repository = ["local"]
     krepo = nuke.Enumeration_Knob ( "repository", "repository", repository ) 
-    repoup = "hkReadUpdateAll ()"
+    repoup = "hkAssetUpdateAll ( params = ( 'type', 'asset', 'task', 'fork' ) )"
     krepoup = nuke.PyScript_Knob ( "repositoryup", "Update", repoup )
-    group.addKnob ( krepo)
-    group.addKnob ( krepoup)
+    node_asset.addKnob ( krepo)
+    node_asset.addKnob ( krepoup)
     
     for param in params :
         knob = nuke.Enumeration_Knob ( param, param, list () )
-        func = "hkReadUpdate ( param = '%s' )" % param
-        group.addKnob ( knob )
+        node_asset.addKnob ( knob )
            
-    kversion = nuke.String_Knob ("version","version","default")
-    kextension = nuke.Enumeration_Knob ( "extension", "extension", list ( ("exr", "tif", "jpg") ) )
-    kpath = nuke.File_Knob ( "path", "path" )
+    kversion = nuke.String_Knob ("versions","versions","wedge")
+    kextension = nuke.Enumeration_Knob ( "extension", "extension", list ( ("exr", "tif", "png", "jpg") ) )
 
-    filecmd = "[ value parent.path ]"
-    kfile = write [ "file" ]
-    kfile.setValue ( filecmd )
-    group.addKnob ( kversion )
-    group.addKnob ( kextension )
-    group.addKnob ( kpath )
+    for k in (kversion, kextension):
+        node_asset.addKnob ( k )
 
-    group.addKnob ( settingsTab )
-    # group.addKnob ( nuke.Text_Knob ("divName","",""))
-    group.addKnob ( write["channels"])
-    group.addKnob ( write["colorspace"])
-    group.addKnob ( write["premultiplied"])
-    group.addKnob ( write["raw"])
+    #Update everything
+    hkAssetUpdateAll ( node = node_asset ) #, params = params )
+
+
+def hkReadGeometryCreate () :
+    #Setup file python expression
+    params = hkGetParams ( "Read" )
+
+    # Create main node    
+    node_asset = nuke.createNode ( "ReadGeo2" )
+    node_asset [ "name" ].setValue ( "ReadAsset" )
+    assetTab = nuke.Tab_Knob ( "Asset" )
+
+    #Create and setup knobs
+    node_asset.addKnob ( assetTab )
+    repository = ( "network", "local" )
+    krepo = nuke.Enumeration_Knob ( "repository", "repository", repository ) 
+    repoup = "hkAssetUpdateAll ( nuke.thisNode () )"
+    krepoup = nuke.PyScript_Knob ( "repositoryup", "Update", repoup )
+    node_asset.addKnob ( krepo )
+    node_asset.addKnob ( krepoup )
     
-    group.addKnob ( nuke.Text_Knob("divName","",""))
-    group.addKnob ( write.knob("render_order") )
-    group.addKnob ( write.knob("Render") )
-    group.addKnob ( write.knob("first") )
-    group.addKnob ( write.knob("last") )
-    group.addKnob ( write.knob("use_limit") )
-    group.addKnob ( write.knob("reading") )
-    group.addKnob ( write.knob("checkHashOnRead") )
-    group.addKnob ( write.knob("on_error") )
-    group.addKnob ( write.knob("reload") )
+    for param in params :
+        knob = nuke.Enumeration_Knob ( param, param, list () )
+        node_asset.addKnob ( knob )
+    
+    # kextension = nuke.Enumeration_Knob ( "extension", "extension", list(("exr","tif","png","jpg")) )
+    # node_asset.addKnob ( kextension )
 
-    # klabel = group [ "label" ]
-    # klabel.setValue ("[value type]_[value asset]_[value task]_[value fork]_[value version]")
-    hkReadUpdateAll ( node = group, params = params )
+    kpostage_stamp = node_asset [ "postage_stamp" ]
+    kpostage_stamp.setValue ( True )
 
-# hkReadCreate ()
+    kgeofile = nuke.File_Knob ("geofile","geofile")
+    node_asset.addKnob ( kgeofile )
+
+    loadgeo = "hkLoadAbc()"
+    kloadgeo = nuke.PyScript_Knob ( "kgeoload", "Loadgeo", loadgeo )
+    node_asset.addKnob ( kloadgeo )
+
+    #Update everything
+    hkAssetUpdateAll ( node = node_asset )
+
+
+#####################CALL BACK
+#Add callback
+for nclass in ( "Read","Write", "ReadGeo2" ):
+    nuke.addKnobChanged ( hkReadChanged , nodeClass= nclass )
+    
+def hkLoadAbc ():
+    node = nuke.thisNode()
+    node['file'].setValue(node['geofile'].getValue()) 
+    # nuke.createScenefileBrowser( node['geofile'].value(), "ReadAsset" )
