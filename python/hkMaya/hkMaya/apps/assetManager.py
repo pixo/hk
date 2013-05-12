@@ -9,12 +9,17 @@ import pipeline.utils as utils
 import pipeline.core as core
 import hkMaya.cmds as hkcmds
 import glob, os
-
+import commands
 
 CC_PATH = utils.getCCPath()
 PROJECT = utils.getProjectName()
 
 #TODO:remove GuerillaNode when importing an asset
+
+def assetExport ( source = "", obj=True, abc=True, gpj = True, first= 1, last = 1 ):
+    cmd = """hk-asset-export -i %s -obj %d -abc %d -gpj %d -f %d -l %d """ % ( source, int(obj), int(abc), int( gpj ), first, last )   
+    commands.getoutput( cmd )
+    return True
 
 def pushMaya ( db = None, doc_id = "", description = "", item = None,
                screenshot = "", msgbar = False, progressbar = False,
@@ -30,7 +35,7 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
         source = os.path.join ( destination, doc_id + extension )
         
         print "pushMaya():", source
-        core.assetExport ( source )
+        assetExport ( source )
         
         if msgbar :
             msgbar ( "Done" )

@@ -63,16 +63,15 @@ def createDbViews (db):
     
     views = dict()
     views['project']= {'map': 'function(doc) {\n  if(doc.type == "project") {\n    emit(doc.name, doc);\n}\n}'}
-    
+    views['asset']= {'map': "function(doc) {\n  if(doc.type != \"project\" && !doc.task  ) {\n    emit(doc._id, doc);\n}\n}"}
+    views['task']= {"map": "function(doc) {\n  if(doc.task) {\n    emit(doc._id, doc);\n}\n}"}
+        
     for key in asset:
         views[asset[key]] = {'map': 'function(doc) {\n  if(doc.type == "%s") {\n    emit(doc._id, doc);\n}\n}' % asset[key]}
     
     for key in task:
         views[task[key]] = {'map': 'function(doc) {\n  if(doc.task == "%s") {\n    emit(doc._id, doc);\n}\n}' % task[key] }
-        
-#     'asset_task': {'map': 'function(doc) {\n  if(doc.task && !doc.shot_id) {\n    emit(doc._id, doc);\n}\n}'}
-    # 'shot_task': {'map': 'function(doc) {\n  if(doc.task && doc.shot_id) {\n    emit(doc._id, doc);\n}\n}'}
-        
+                
     doc = {
            "_id" : "_design/AssetManager",
            "language" : "javascript",

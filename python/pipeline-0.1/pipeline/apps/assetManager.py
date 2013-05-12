@@ -1,9 +1,11 @@
 import sys, os
-try :
-    from PySide import QtCore, QtGui
-except:
-    from PythonQt import QtCore, QtGui
+# try :
+#     from PySide import QtCore, QtGui
+# except:
+#     from PythonQt import QtCore, QtGui
     
+from PySide import QtCore, QtGui
+
 import pipeline.utils as utils
 import pipeline.core as core
 
@@ -17,14 +19,12 @@ try :
     PROJECT = utils.getProjectName()
 except:
     PROJECT = "temp"
-    print "assetManager module: Can't set PROJECT \n set PROJECT > temp"
+    print "assetManager module: Can't set PROJECT \n set PROJECT > tmp"
 
 #TODO: create ui for shot creation
 #TODO: preview obj with meshlab
 #TODO: create ui to add tasks_type or asset_type
 #TODO: creation de "fork" sur toute les taches existante, le controle doit etre au niveau de l'asset. 
-
-
 
 class UiPush ( QtGui.QWidget ) :
 
@@ -527,7 +527,7 @@ class UiMainManager(QtGui.QMainWindow):
                 else :
                     item.setHidden (False)
                       
-            it.next()
+            it.next ()
             
     def searchLine_b_Changed ( self, lineEdit, treeWidget ) :
         it = QtGui.QTreeWidgetItemIterator(treeWidget)
@@ -749,6 +749,8 @@ class UiAssetManager(UiMainManager):
     
     #TODO:replace by utils.getAssetTypes ()    
     typ_dict = {
+                "asset": ( "asset", asset_task ),
+                "task": ( "task", asset_task ),
                 "character": ( "chr", asset_task ),
                 "vehicle": ( "vcl", asset_task ),
                 "prop": ( "prp", asset_task ),
@@ -758,6 +760,17 @@ class UiAssetManager(UiMainManager):
                 "shot" : ( "shot", shot_task ),
                 "sequence" : ( "seq", sequence_task )
                 }
+    #should be temp all icon should be name eg chr.png, prp.png, etc
+    icons_dict = {
+                  "chr":"character",
+                  "vcl":"vehicle",
+                  "prp":"prop",
+                  "env":"environment",
+                  "vfx" : "effect",
+                  "mtl" : "material",
+                  "shot" : "shot",
+                  "seq" : "sequence"
+                  }
     
     icon_empty = os.path.join ( CC_PATH, "empty.png" )
     
@@ -1103,7 +1116,7 @@ class UiAssetManager(UiMainManager):
         self.labelImage.setPixmap( screenshot )
 
     def itemClickedFork( self, item ) :
-                
+        
         """Set the data to the plain text"""
         creator  = "Creator:\t%s\n" % item.dbdoc [ 'creator' ]
         created  = "\nCreated:\t%s\n" % item.dbdoc [ 'created' ]
@@ -1154,23 +1167,18 @@ class UiAssetManager(UiMainManager):
             it.next()
             
     def comboTypeChange ( self ) :                    
-        currtext = self.comboBox_a.currentText ()
-        finded = self.comboBox_a.findText ( "Please select ..." )
-        
-        if finded >= 0 : 
-            self.comboBox_a.removeItem ( finded )
-            
+        currtext = self.comboBox_a.currentText ()           
         self.typ = self.typ_dict [ currtext ] [0]
         self.setComboTask ( self.typ_dict [ currtext ] [1] )
-        hktype = "sequence"
-        
+    
         startkey = "%s" % ( PROJECT )
-        if self.typ != "seq" : 
+        if not (self.typ in ("asset", "task") ):
             startkey = startkey + "_" + self.typ
-            hktype = "asset"
-            
+        hktype = "asset"
+        
         obj_ls = utils.lsDb ( self.db, self.typ, startkey )
-        icon_empty = os.path.join ( CC_PATH, "empty.png" )             
+            
+        icon_empty = os.path.join ( CC_PATH, "empty.png" )              
         self.treeWidget_a.clear ()
                 
         font = QtGui.QFont ()
@@ -1180,10 +1188,12 @@ class UiAssetManager(UiMainManager):
         font.setBold ( True )
                  
         for asset in obj_ls :
+            assplit = asset.split ( "_" )
+            typ, name = assplit[0],assplit[1] 
             item_asset = QtGui.QTreeWidgetItem ( self.treeWidget_a )
             item_asset.setFont ( 0, font )
-            item_asset.setText ( 0, "%s" % asset.split ( "_" ) [-1] )
-            icon = os.path.join ( CC_PATH, currtext + ".png" )
+            item_asset.setText ( 0, name )
+            icon = os.path.join ( CC_PATH, self.icons_dict [ typ] + ".png" )
             item_asset.setIcon ( 0, QtGui.QIcon ( icon ) )
             item_asset.hktype = hktype
             item_asset.hkid = "%s_%s" % ( PROJECT, asset )
@@ -1202,12 +1212,22 @@ class UiAssetManager(UiMainManager):
         
     def createWidget ( self ) :
         """Create the type combobox"""
-        icon = os.path.join ( CC_PATH, "combobox.png" )
-        self.comboBox_a.addItem ( QtGui.QIcon ( icon ), "Please select ..." )
         
-        for key in self.typ_dict :
+        item = list (("asset","task"))
+        tmp = list ()
+        
+        for key in self.typ_dict : 
+            if not (key in ("asset","task")):
+                tmp.append (key)
+        
+        tmp.sort ()
+        item = item + tmp
+        
+        for key in item :
             icon = os.path.join ( CC_PATH, key + ".png" )
             self.comboBox_a.addItem ( QtGui.QIcon ( icon ), key )
+    
+        self.comboTypeChange ()
                 
 def systemAM () :
     app = QtGui.QApplication ( sys.argv )    

@@ -30,15 +30,14 @@ def hkGetProject () :
     return os.getenv ( "HK_PROJECT" )
 
 def hkGetParams ( nodeclass ):
-
     if nodeclass == "Write" :
         return ( "type", "asset", "task", "fork", "versions" )
 
-    elif nodeclass == "Read":
+    elif nodeclass in ( "Read") :
         return ( "type", "asset", "task", "fork", "versions", "layer", "aov" )
 
-    elif nodeclass == "ReadGeo2":
-        return ( "type", "asset", "task", "fork", "versions", "layer", "aov" )
+    elif nodeclass in ( "ReadGeo2", "Camera2" ) :
+        return ( "type", "asset", "task", "fork", "versions" )
 
 def hkSetNodes () :
 
@@ -63,7 +62,12 @@ def hkSetNodes () :
         first,last = rang.split ( '-' )
         node['geofile'].setValue( path )
 
-def hkReadChanged ():
+    elif node.Class () == "Camera2":
+        path, rang = getFileSeq ( filepath ).split()
+        first,last = rang.split ( '-' )
+        node['file'].setValue( path )
+
+def hkAssetChanged ():
     n = nuke.thisNode()
     k = nuke.thisKnob()
     name = k.name()
@@ -82,8 +86,6 @@ def hkReadChanged ():
     elif name in ( "repository", "extension", ) :
         hkAssetUpdateAll ( node = n )
 
-
-#ULTRA SHITTY MUST BE CHANGED IN THE FUTUR
 def hkAssetUpdate ( node = None, param = "" ) :
     #Get param filter
     paramfilter = { "type":getAssetTypes () , "task":getTaskTypes () }
@@ -280,7 +282,7 @@ def hkReadImagesCreate () :
 
     # Create main node    
     node_asset = nuke.createNode ( "Read" )
-    node_asset [ "name" ].setValue ( "ReadAsset" )
+    node_asset [ "name" ].setValue ( "ReadImagesAsset" )
     assetTab = nuke.Tab_Knob ( "Asset" )
 
     #Create and setup knobs
@@ -343,11 +345,11 @@ def hkWriteImagesCreate ():
 
 def hkReadGeometryCreate () :
     #Setup file python expression
-    params = hkGetParams ( "Read" )
+    params = hkGetParams ( "ReadGeo2" )
 
     # Create main node    
     node_asset = nuke.createNode ( "ReadGeo2" )
-    node_asset [ "name" ].setValue ( "ReadAsset" )
+    node_asset [ "name" ].setValue ( "ReadGeoAsset" )
     assetTab = nuke.Tab_Knob ( "Asset" )
 
     #Create and setup knobs
@@ -379,11 +381,36 @@ def hkReadGeometryCreate () :
     #Update everything
     hkAssetUpdateAll ( node = node_asset )
 
+def hkReadCameraCreate () :
+    #Setup file python expression
+    params = hkGetParams ( "Camera2" )
+
+    # Create main node    
+    node_asset = nuke.createNode ( "Camera2" )
+    node_asset [ 'name' ].setValue ( "ReadCameraAsset" )
+    node_asset [ 'read_from_file' ].setValue ( True )
+    assetTab = nuke.Tab_Knob ( "Asset" )
+
+    #Create and setup knobs
+    node_asset.addKnob ( assetTab )
+    repository = ( "network", "local" )
+    krepo = nuke.Enumeration_Knob ( "repository", "repository", repository ) 
+    repoup = "hkAssetUpdateAll ( nuke.thisNode () )"
+    krepoup = nuke.PyScript_Knob ( "repositoryup", "Update", repoup )
+    node_asset.addKnob ( krepo )
+    node_asset.addKnob ( krepoup )
+    
+    for param in params :
+        knob = nuke.Enumeration_Knob ( param, param, list () )
+        node_asset.addKnob ( knob )
+
+    #Update everything
+    hkAssetUpdateAll ( node = node_asset )
 
 #####################CALL BACK
 #Add callback
-for nclass in ( "Read","Write", "ReadGeo2" ):
-    nuke.addKnobChanged ( hkReadChanged , nodeClass= nclass )
+for nclass in ( "Read","Write", "ReadGeo2", "Camera2" ):
+    nuke.addKnobChanged ( hkAssetChanged , nodeClass= nclass )
     
 def hkLoadAbc ():
     node = nuke.thisNode()

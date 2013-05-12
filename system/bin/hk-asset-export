@@ -1,20 +1,84 @@
-#!/usr/bin/env python
+#!/usr/autodesk/maya2013-x64/bin/mayapy
 import sys, argparse, os
+import maya.standalone
+maya.standalone.initialize ( name = 'python' )
+import maya.cmds as cmds
+import maya.mel as mel
+import glob
 
-import pipeline.core as core
+def objExporter ( destination = "", start = 1, end = 1 ):    
+    start = int ( start )
+    end = int ( end )
+    
+    if start != end :
+        base, ext = os.path.splitext ( destination )
+        destination = base + ".%04d.obj"
+    
+    for frame in range ( start, (end+1) ):
+        dst = ( destination % frame ) if start != end else destination
+        cmds.currentTime ( frame )
+        cmds.file ( dst, force = True, options = "groups=1;ptgroups=1;materials=0;smoothing=1;normals=1",
+                    type = "OBJexport", pr = True, ea = True )
 
+def abcExporter ( destination = "", start = 1, end = 1 ):
+    mel.eval ( 'AbcExport -j "-frameRange %s %s -ro -file %s";' % ( start, end, destination ) )
+
+def gpjExporter ( destination = "", start = 1, end = 1 ):    
+    cmds.GuerillaExport(m = 1, a = 1, framesToExport = 3, customRange = ( int(start), int (end) ), pf = destination )
+
+def cli ( input = None, obj = True, abc = True, gpj = True, start = 1, end = 1 ) :
+
+    """Load the input file"""
+    if os.path.isabs ( input ):
+        input = os.path.abspath ( input )
+    cmds.file ( os.path.abspath ( input ), o = True )
+
+    """Get maya plugins path"""
+    mayaver = os.getenv ( "HK_MAYA_VER" )
+    mayaloc = "/usr/autodesk/maya%s-x64/bin/plug-ins" % mayaver  
+    guerillaver = os.getenv ( "HK_GUERILLA_VER" )
+    guerillaloc = "/usr/local/soft/guerilla/%s/guerilla_for_maya/plug-ins" % guerillaver
+    
+    """Load maya plugins"""
+    cmds.loadPlugin ( os.path.join ( mayaloc, 'objExport.so' ) )
+    cmds.loadPlugin ( os.path.join ( mayaloc, 'AbcExport.so' ) )
+    cmds.loadPlugin ( os.path.join ( guerillaloc, 'guerilla2013.so' ) )
+
+    """Get the input directory to change permission"""
+    base, ext = os.path.splitext ( input )
+    dirname = os.path.dirname ( input )
+    os.chmod ( dirname, 0775 )
+
+    """Exporting to obj abc gpj"""
+    if obj :
+        dst = base+".obj"
+        objExporter ( dst, start, end )
+
+    if abc :
+        dst = base+".abc"
+        abcExporter ( dst, start, end )
+
+    if gpj:
+        dst = base+".gproject"
+        gpjExporter ( dst, start, end )
+    
+    files = glob.glob ( "%s/*" % dirname )
+    files.append ( dirname )
+    for file in files : os.chmod ( file, 0555 )
 
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
-	parser.add_argument( "-i", "--input", help = "input file")
-	parser.add_argument( "-obj", "--obj", default = True, help = "convert to obj file, default = True")
-	parser.add_argument( "-abc", "--alembic", default = True, help = "convert to alembic file, default = True")
-	parser.add_argument( "-gpj", "--guerilla", default = True, help = "convert to guerilla file, default = True")
-	args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument( "-i", "--input", help = "input file obj, ma, mb")
+    parser.add_argument( "-obj", "--obj", default = True, help = "convert to obj file, default = True")
+    parser.add_argument( "-abc", "--alembic", default = True, help = "convert to alembic file, default = True")
+    parser.add_argument( "-gpj", "--guerilla", default = True, help = "convert to guerilla file, default = True")
+    parser.add_argument( "-f", "--first", default = 1, help = "First frame, default frame 1")
+    parser.add_argument( "-l", "--last", default = 1, help = "Last frame, default frame 1")
+    args = parser.parse_args()
 
-	if args.input == None:
-			print "No input file provided.Please check help, -h"
-	else:
-		source = os.path.abspath ( args.input )
-		print "Exporting ...\n"
-		core.assetExport ( source, args.obj, args.alembic, args.guerilla )
+    if args.input == None:
+            print "No input file provided.Please check help, -h"
+    else:
+        source = os.path.abspath ( args.input )
+        print "Exporting ...\n"
+        cli ( source, args.obj, args.alembic, args.guerilla, args.first, args.last )

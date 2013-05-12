@@ -524,48 +524,47 @@ def texturePush ( db = None, doc_id = "", path = "", description = "",
         
         return False
        
-def assetExport ( source = "", obj=True, abc=True, gproject = True ):   
-    destination = os.path.dirname ( source )
-    fname = os.path.basename ( source )
-    name, ext = os.path.splitext ( fname )
-        
-    mayaver = os.getenv ( "HK_MAYA_VER" )
-    guerillaver = os.getenv ( "HK_GUERILLA_VER" )
-    
-    mayaloc = "/usr/autodesk/maya%s-x64" % mayaver
-    mayap = "%s/bin/maya" % mayaloc
-#     mayap = "maya"
-    guerilla_plugins = "/usr/local/soft/guerilla/%s/guerilla_for_maya/plug-ins" % guerillaver
-    os.system( "chmod 775 %s %s" % ( source, destination ) )
-        
-    fobj = objcmd = fabc = abccmd = fgpj = gpjcmd = ""
-    
-    if not obj == None :
-        fobj = os.path.join ( destination, name + ".obj" )
-        objcmd = """ loadPlugin \\"%s/bin/plug-ins/objExport.so\\"; file -force -options \\"groups=1;ptgroups=1;materials=0;smoothing=1;normals=1\\" -type \\"OBJexport\\" -pr -ea \\"%s\\"; """ % (mayaloc, fobj)   
-    
-    if not abc == None :
-        fabc = os.path.join ( destination, name + ".abc" )
-        abccmd = """ loadPlugin \\"%s/bin/plug-ins/AbcExport.so\\"; AbcExport -j \\"-frameRange 1 1 -file %s\\"; """ % ( mayaloc, fabc )
-    
-    if not gproject == None :
-        fgpj = os.path.join ( destination, name + ".gproject" )
-        gpjcmd = """ loadPlugin \\"%s/guerilla2013.so\\"; GuerillaExport -m 1 -a 1 -pf \\"%s\\";file -f -save; """ % ( guerilla_plugins, fgpj )
-        fgpj = os.path.join ( destination, name + ".g*" )
-
-    cmd = """%s -batch -file %s -command "%s %s %s" """ % ( mayap, source, objcmd, abccmd, gpjcmd )
-    chmodLock = "chmod 555 %s %s %s %s %s"% ( fobj, fabc, fgpj, source, destination )
-    
-    os.system( cmd )
-    os.system( chmodLock )
-#     for path in ( fobj, fabc, fgpj, source, destination ): os.chmod ( path, 0555)
-    return True
-    
-def mayaToObj ( source ) :
-    assetExport ( source, True, None, None )
-    
-def mayaToAbc ( source ) :
-    assetExport( source, None, True, None )
-
-def mayaToGuerilla ( source ) :
-    assetExport(source, None, None, True)
+# def assetExport ( source = "", obj=True, abc=True, gproject = True ):   
+#     destination = os.path.dirname ( source )
+#     fname = os.path.basename ( source )
+#     name, ext = os.path.splitext ( fname )
+#         
+#     mayaver = os.getenv ( "HK_MAYA_VER" )
+#     guerillaver = os.getenv ( "HK_GUERILLA_VER" )
+#     
+#     mayaloc = "/usr/autodesk/maya%s-x64" % mayaver
+#     mayap = "%s/bin/maya" % mayaloc
+# #     mayap = "maya"
+#     guerilla_plugins = "/usr/local/soft/guerilla/%s/guerilla_for_maya/plug-ins" % guerillaver
+#     os.system( "chmod 775 %s %s" % ( source, destination ) )
+#         
+#     fobj = objcmd = fabc = abccmd = fgpj = gpjcmd = ""
+#     
+#     if not obj == None :
+#         fobj = os.path.join ( destination, name + ".obj" )
+#         objcmd = """ loadPlugin \\"%s/bin/plug-ins/objExport.so\\"; file -force -options \\"groups=1;ptgroups=1;materials=0;smoothing=1;normals=1\\" -type \\"OBJexport\\" -pr -ea \\"%s\\"; """ % (mayaloc, fobj)   
+#     
+#     if not abc == None :
+#         fabc = os.path.join ( destination, name + ".abc" )
+#         abccmd = """ loadPlugin \\"%s/bin/plug-ins/AbcExport.so\\"; AbcExport -j \\"-frameRange 1 1 -file %s\\"; """ % ( mayaloc, fabc )
+#     
+#     if not gproject == None :
+#         fgpj = os.path.join ( destination, name + ".gproject" )
+#         gpjcmd = """ loadPlugin \\"%s/guerilla2013.so\\"; GuerillaExport -m 1 -a 1 -pf \\"%s\\";file -f -save; """ % ( guerilla_plugins, fgpj )
+#         fgpj = os.path.join ( destination, name + ".g*" )
+# 
+#     cmd = """%s -batch -file %s -command "%s %s %s" """ % ( mayap, source, objcmd, abccmd, gpjcmd )
+#     chmodLock = "chmod 555 %s %s %s %s %s"% ( fobj, fabc, fgpj, source, destination )
+#     
+#     os.system( cmd )
+#     os.system( chmodLock )
+# #     for path in ( fobj, fabc, fgpj, source, destination ): os.chmod ( path, 0555)
+#     return True
+# def mayaToObj ( source ) :
+#     assetExport ( source, True, None, None )
+#     
+# def mayaToAbc ( source ) :
+#     assetExport( source, None, True, None )
+# 
+# def mayaToGuerilla ( source ) :
+#     assetExport(source, None, None, True)
