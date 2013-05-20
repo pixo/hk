@@ -3,13 +3,13 @@ Created on Feb 9, 2013
 
 @author: pixo
 '''
-
 import pipeline.apps as apps
 import pipeline.utils as utils
 import pipeline.core as core
 import hkMaya.cmds as hkcmds
 import glob, os
 import commands
+import PySide.QtGui as QtGui 
 
 CC_PATH = utils.getCCPath()
 PROJECT = utils.getProjectName()
@@ -147,4 +147,44 @@ class UiMayaAM(apps.UiAssetManager):
         
     def openFile ( self, fname ) :
         hkcmds.openFile ( fname )
+
+
+    def contextMenuFork ( self, item ) :
+        item = self.treeWidget_a.currentItem ()       
+        menu = QtGui.QMenu ()   
+        icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
+        icon_push = QtGui.QIcon ( os.path.join ( CC_PATH, "push.png" ) )
+        icon_open = QtGui.QIcon ( os.path.join ( CC_PATH, "open.png" ) )
+        icon_saveas = QtGui.QIcon ( os.path.join ( CC_PATH, "save.png" ) )
+        
+        doc_id = item.hkid
+        path = core.getWorkspaceFromId ( doc_id )
+        
+        if os.path.exists ( path ) :
+            actionPush = menu.addAction ( icon_push, 'Push a new %s %s %s version' % 
+                                      ( item.parent().parent().text(0),
+                                        item.parent().text(0), item.text(0)) )
+            actionPush.triggered.connect ( self.pushVersion )
+            actionOpen = menu.addAction ( icon_open, 'Open from Workspace' )
+            actionOpen.triggered.connect ( self.openFileDialog )
+            actionSaveas = menu.addAction ( icon_saveas, 'Save to Workspace' )
+            actionSaveas.triggered.connect ( self.saveFileDialog )
+            
+        else:
+            action = menu.addAction ( icon_new, 'Create workspace' )
+            action.triggered.connect ( self.createWorkspace )
+                    
+        menu.exec_ ( QtGui.QCursor.pos () )
+
+    def contextMenuVersion ( self, item ) :
+        menu = QtGui.QMenu ()
+        icon_pull = QtGui.QIcon ( os.path.join ( CC_PATH, "pull.png" ) )
+        action_pull = menu.addAction ( icon_pull, 'Pull version %s' % item.text (0) )
+        action_pull.triggered.connect ( self.pullVersion )
+        
+        icon_import = QtGui.QIcon ( os.path.join ( CC_PATH, "import.png" ) )
+        action_import = menu.addAction ( icon_import, 'Import version %s' % item.text (0) )
+        action_import.triggered.connect ( self.importVersion )
+        
+        menu.exec_( QtGui.QCursor.pos () )
         

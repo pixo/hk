@@ -1,14 +1,6 @@
 import sys, os
-try :
-    from PySide import QtCore, QtGui
-except:
-    #Because of Mari ..... hopefully Pyside will come
-    try :
-        from PythonQt import QtCore, QtGui
-        
-    except :
-        from PySide import QtCore, QtGui
-    
+
+from PySide import QtCore, QtGui
 import pipeline.utils as utils
 import pipeline.core as core
 
@@ -891,11 +883,7 @@ class UiAssetManager(UiMainManager):
                                       ( item.parent().parent().text(0),
                                         item.parent().text(0), item.text(0)) )
             actionPush.triggered.connect ( self.pushVersion )
-            actionOpen = menu.addAction ( icon_open, 'Open from Workspace' )
-            actionOpen.triggered.connect ( self.openFileDialog )
-            actionSaveas = menu.addAction ( icon_saveas, 'Save to Workspace' )
-            actionSaveas.triggered.connect ( self.saveFileDialog )
-            
+                        
         else:
             action = menu.addAction ( icon_new, 'Create workspace' )
             action.triggered.connect ( self.createWorkspace )
@@ -907,11 +895,7 @@ class UiAssetManager(UiMainManager):
         icon_pull = QtGui.QIcon ( os.path.join ( CC_PATH, "pull.png" ) )
         action_pull = menu.addAction ( icon_pull, 'Pull version %s' % item.text (0) )
         action_pull.triggered.connect ( self.pullVersion )
-        
-        icon_import = QtGui.QIcon ( os.path.join ( CC_PATH, "import.png" ) )
-        action_import = menu.addAction ( icon_import, 'Import version %s' % item.text (0) )
-        action_import.triggered.connect ( self.importVersion )
-        
+                
         menu.exec_( QtGui.QCursor.pos () )
         
     def contextMenuEvent ( self ) :
