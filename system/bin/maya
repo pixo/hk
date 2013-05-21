@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Running hk-maya $HK_MAYA_VER..."
-export PYTHONPATH="$HK_COUCHDB:$PYTHONPATH"
+export PYTHONPATH="$HK_PYSIDE:$HK_COUCHDB:$PYTHONPATH"
 
 if $HK_DEV_MODE
     then

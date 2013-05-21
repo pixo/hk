@@ -23,7 +23,7 @@ export HK_DB_SERVER="http://$HK_DB_USER@127.0.0.1:5984/"
 export HK_COAT_VER=4-BETA12B
 export HK_COAT_VER_T=4-BETA12B
 export HK_GUERILLA_VER=0.16.1
-export HK_GUERILLA_VER_T=0.16.1
+export HK_GUERILLA_VER_T=0.17.0b0
 export HK_HIERO_VER=1.6v1
 export HK_HIERO_PLAYER_VER=1.6v1
 export HK_HOUDINI_VER=12.5
@@ -45,11 +45,13 @@ if $HK_DEV_MODE
         logpath="$HK_USER_CODE_PATH"
         export HK_PIPELINE="$HK_USER_CODE_PATH/python/pipeline-$HK_PIPELINE_VER"
         export HK_COUCHDB="$HK_USER_CODE_PATH/python/couchdb-python"
+        export HK_PYSIDE="$HK_USER_CODE_PATH/python/pyside"
         pythonpath="$HK_PIPELINE:$HK_USER_CODE_PATH/python/json:$HK_USER_CODE_PATH/python/pyside-qt4.8+1.1.2/PySide:$HK_USER_CODE_PATH/python/hkMaya"
     else
         logpath="$HK_USER_REPO"
         export HK_PIPELINE="$HK_CODE_PATH/python/pipeline-$HK_PIPELINE_VER"
         export HK_COUCHDB="$HK_CODE_PATH/python/couchdb-python"
+        export HK_PYSIDE="$HK_CODE_PATH/python/pyside"
         pythonpath="$HK_CODE_PATH/python/pipeline-$HK_PIPELINE_VER:$HK_CODE_PATH/python/json:$HK_CODE_PATH/python/pyside-qt4.8+1.1.2/PySide:$HK_CODE_PATH/python/hkMaya"
 fi
 

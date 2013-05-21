@@ -7,7 +7,7 @@ if $HK_DEV_MODE
     else
         code="$HK_CODE_PATH"
 fi
-export PYTHONPATH="$code/pyside:$HK_COUCHDB:$PYTHONPATH"
+export PYTHONPATH="$HK_PYSIDE:$HK_COUCHDB:$PYTHONPATH"
 
 script="$code/tools/mari/$HK_MARI_VER/python"
 
