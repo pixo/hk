@@ -1,18 +1,62 @@
+#TODO:convert hkMaya to am_maya
+
 '''
 Created on Feb 9, 2013
 
 @author: pixo
 '''
+import glob, os, commands
+import maya.cmds as cmds
+import maya.OpenMaya as api
+import maya.OpenMayaUI as apiUI
 import pipeline.apps as apps
 import pipeline.utils as utils
 import pipeline.core as core
-import hkMaya.cmds as hkcmds
-import glob, os
-import commands
-import PySide.QtGui as QtGui 
+import PySide.QtGui as QtGui
 
 CC_PATH = utils.getCCPath()
 PROJECT = utils.getProjectName()
+
+def doScreenshot ( filename = "" ) :
+    image = api.MImage ()
+    view = apiUI.M3dView.active3dView ()
+    view.readColorBuffer ( image, True )
+    image.resize ( 640, 480, True )
+    image.writeToFile ( filename, 'jpg' )
+    return filename
+    
+def saveFile ( filename = "", exportsel = False, msgbar = None ) :
+    
+    if exportsel :
+        if len ( cmds.ls ( sl = True ) ) == 0 :
+            msgbar ( "Please select an asset to export" )
+            return False
+            
+    extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
+    ext = os.path.splitext ( filename )[-1]
+    
+    if ext == "" :
+        ext = ".ma"
+         
+    cmds.file ( filename, force=True, options="v=0;", type = extension[ext],
+                pr = True, es = exportsel, ea = (not exportsel))
+    
+    return os.path.exists ( filename )
+
+def saveSelected ( filename = "", msgbar = None ) :
+    saveFile ( filename, True, msgbar )
+
+def openFile ( filename ):
+    extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
+    ext = os.path.splitext ( filename )[-1]
+    cmds.file ( filename, f=True, options="v=0;", type = extension[ext], o = True )
+    
+def importFile(filename):
+    extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
+    ext = os.path.splitext ( filename )[-1]
+    cmds.file ( filename, i=True, options="v=0;", type = extension[ext],
+                ra=True, mergeNamespacesOnClash=True, namespace=":", pr=True,
+                loadReferenceDepth="all" )
 
 #TODO:remove GuerillaNode when importing an asset
 
@@ -27,7 +71,7 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
     
     fname = os.path.join ( "/tmp", "%s%s" % ( core.hashTime (), extension ) )
     
-    if hkcmds.saveFile ( fname, selection, msgbar ) :
+    if saveFile ( fname, selection, msgbar ) :
         destination = core.push ( db, doc_id, fname, description, progressbar,
                            msgbar, rename )
         
@@ -48,7 +92,7 @@ def pullMaya (db = None, doc_id = "", ver = "latest" ):
     path = core.getAssetPath ( doc_id, ver )
     files = glob.glob ( os.path.join ( path, "*.ma" ) )
     files.extend ( glob.glob ( os.path.join ( path, "*.mb" ) ) )
-    hkcmds.openFile ( files[0] )
+    openFile ( files[0] )
         
 def pushFile ( db = None, doc_id = "", description = "", item = None, 
                screenshot = "", msgbar = False, progressbar = False ) :
@@ -64,7 +108,7 @@ class UiPushMaya(apps.UiPush3dPack):
      
      
     launcher = "maya"
-    screenshot = hkcmds.doScreenshot ( os.path.join ( "/tmp", "%s.jpg" % core.hashTime() ) )
+    screenshot = doScreenshot ( os.path.join ( "/tmp", "%s.jpg" % core.hashTime() ) )
     fnPush = {
               "model" : pushSelected,
               "retopo" : pushFile,
@@ -100,7 +144,7 @@ class UiPushMaya(apps.UiPush3dPack):
             self.close()
      
     def screenshotClicked ( self ) :
-        self.screenshot = hkcmds.doScreenshot ( os.path.join ( "/tmp", "%s.jpg" % core.hashTime() ) )
+        self.screenshot = doScreenshot ( os.path.join ( "/tmp", "%s.jpg" % core.hashTime() ) )
         self.labelImage.setPixmap ( self.screenshot )
          
  
@@ -120,7 +164,7 @@ class UiMayaAM(apps.UiAssetManager):
         files = glob.glob(os.path.join(path,"*.ma"))
         files.extend(glob.glob(os.path.join(path,"*.mb")))
          
-        hkcmds.importFile(files[0])
+        importFile(files[0])
         self.statusbar.showMessage("%s pulled" % files[0] )
 
     def pushVersion ( self ) :
@@ -140,13 +184,13 @@ class UiMayaAM(apps.UiAssetManager):
                            progressbar = self.progressBar,
                            msgbar = self.statusbar.showMessage)
         if pull :
-            hkcmds.openFile ( pull [ 0 ] )
+            openFile ( pull [ 0 ] )
             self.statusbar.showMessage("%s %s pulled" % ( doc_id, str(ver) ))
          
         self.progressBar.setHidden ( True )
         
     def openFile ( self, fname ) :
-        hkcmds.openFile ( fname )
+        openFile ( fname )
 
 
     def contextMenuFork ( self, item ) :

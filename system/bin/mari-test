@@ -1,18 +1,16 @@
 #!/bin/bash
 
-echo "Running hk-mari $HK_MARI_VER..."
+echo "Running hk-mari $HK_MARI_VER_T..."
 if $HK_DEV_MODE
     then
 		code="$HK_USER_CODE_PATH"
     else
         code="$HK_CODE_PATH"
 fi
+
+export LD_LIBRARY_PATH="$code/python/pyside/lib:$LD_LIBRARY_PATH"
 export PYTHONPATH="$HK_PYSIDE:$HK_COUCHDB:$PYTHONPATH"
-
-script="$code/tools/mari/$HK_MARI_VER/python"
-
-echo $script
-export MARI_SCRIPT_PATH="$script"
+export MARI_SCRIPT_PATH="$code/tools/mari/$HK_MARI_VER/python"
 
 /usr/local/soft/mari/$HK_MARI_VER_T/mari $@
 

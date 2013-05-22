@@ -1,6 +1,9 @@
 print "hk-nuke: importing reader"
 import nuke, os, glob, re
+import pipeline.apps as apps
 import pipeline.utils as utils
+
+ASSET_MANAGER = apps.UiAssetManager ()
 
 def getAssetTypes():
     params = utils.getAssetTypes ()

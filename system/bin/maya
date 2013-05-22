@@ -1,8 +1,6 @@
 #!/bin/bash
 
 echo "Running hk-maya $HK_MAYA_VER..."
-export PYTHONPATH="$HK_PYSIDE:$HK_COUCHDB:$PYTHONPATH"
-
 if $HK_DEV_MODE
     then
 		code="$HK_USER_CODE_PATH"
@@ -14,7 +12,9 @@ script="$code/tools/maya/$HK_MAYA_VER/scripts"
 plugin="/usr/local/soft/guerilla/$HK_GUERILLA_VER/guerilla_for_maya/plug-ins"
 plugin="$code/tools/maya/$HK_MAYA_VER/plugins:$plugin"
 
-export MAYA_SCRIPT_PATH="$script:$MAYA_SCRIPT_PATH"
+export LD_LIBRARY_PATH="$code/python/pyside/lib:$LD_LIBRARY_PATH"
 export MAYA_PLUG_IN_PATH="$plugin:$MAYA_PLUG_IN_PATH"
+export PYTHONPATH="$HK_PYSIDE:$HK_COUCHDB:$PYTHONPATH"
+export MAYA_SCRIPT_PATH="$script:$MAYA_SCRIPT_PATH"
 
 /usr/autodesk/maya$HK_MAYA_VER-x64/bin/maya $@

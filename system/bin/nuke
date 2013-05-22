@@ -1,8 +1,6 @@
 #!/bin/bash
 
 echo "Running hk-nuke $HK_NUKE_VER..."
-export PYTHONPATH="$HK_COUCHDB:$PYTHONPATH"
-
 if $HK_DEV_MODE
     then
 		code="$HK_USER_CODE_PATH"
@@ -10,6 +8,7 @@ if $HK_DEV_MODE
         code="$HK_CODE_PATH"
 fi
 
+export PYTHONPATH="$HK_COUCHDB:$PYTHONPATH"
 script="$code/tools/nuke/$HK_NUKE_VER"
 script="$code/tools/nuke/$HK_NUKE_VER/gizmos:$script"
 script="$code/tools/nuke/$HK_NUKE_VER/python:$script"
