@@ -1,5 +1,3 @@
-#TODO:convert hkMaya to am_maya
-
 '''
 Created on Feb 9, 2013
 
@@ -153,7 +151,7 @@ class UiMayaAM(apps.UiAssetManager):
     defaultfilter = "ma"
     launcher = "maya"
     defaultsuffix = "mb"
-         
+    
     def importVersion ( self ) :
         item = self.treeWidget_a.currentItem ()
         doc_id = item.parent().hkid

@@ -31,7 +31,7 @@ def cli ( input = None, obj = True, abc = True, gpj = True, start = 1, end = 1 )
     """Load the input file"""
     if os.path.isabs ( input ):
         input = os.path.abspath ( input )
-    cmds.file ( os.path.abspath ( input ), o = True )
+    cmds.file ( input, o = True )
 
     """Get maya plugins path"""
     mayaver = os.getenv ( "HK_MAYA_VER" )
@@ -47,6 +47,7 @@ def cli ( input = None, obj = True, abc = True, gpj = True, start = 1, end = 1 )
     """Get the input directory to change permission"""
     base, ext = os.path.splitext ( input )
     dirname = os.path.dirname ( input )
+    os.chmod ( input, 0775 )
     os.chmod ( dirname, 0775 )
 
     """Exporting to obj abc gpj"""
@@ -62,6 +63,7 @@ def cli ( input = None, obj = True, abc = True, gpj = True, start = 1, end = 1 )
         dst = base+".gproject"
         gpjExporter ( dst, start, end )
     
+    cmds.file ( save = True)
     files = glob.glob ( "%s/*" % dirname )
     files.append ( dirname )
     for file in files : os.chmod ( file, 0555 )

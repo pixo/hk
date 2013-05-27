@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Running hk-guerilla $HK_GUERILLA_VER...py"
+echo "Running hk-guerilla $HK_GUERILLA_VER_T..."
 if $HK_DEV_MODE
     then
 		code="$HK_USER_CODE_PATH"
@@ -15,4 +15,4 @@ export PYTHONPATH="$HK_COUCHDB:/usr/local/soft/nuke/7.0v2/plugins:/usr/local/sof
 export HK_GUERILLA_PLUGINS="$code/tools/guerilla/$HK_GUERILLA_VER/plugins"
 # export HK_GUERILLA_LIBRARY = "$code/tools/guerilla/$HK_GUERILLA_VER/plugins"
 
-/usr/local/soft/guerilla/$HK_GUERILLA_VER/guerilla $@
+/usr/local/soft/guerilla/$HK_GUERILLA_VER_T/guerilla $@
