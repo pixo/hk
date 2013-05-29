@@ -35,26 +35,18 @@ export HK_MUDBOX_VER=2013
 export HK_NUKE_VER=7.0v2
 export HK_PIPELINE_VER=0.1
 
-#Set dev env
-alias ~~='cd $HK_HOME'
 if $HK_DEV_MODE
     then
-        alias code_debug='cd $HK_USER_CODE_PATH'
-        alias code_release='cd $HK_CODE_PATH'
         devmode="DEV-"
-        logpath="$HK_USER_CODE_PATH"
-        export HK_PIPELINE="$HK_USER_CODE_PATH/python/pipeline-$HK_PIPELINE_VER"
-        export HK_COUCHDB="$HK_USER_CODE_PATH/python/couchdb-python"
-        export HK_PYSIDE="$HK_USER_CODE_PATH/python/pyside"
-        pythonpath="$HK_PIPELINE:$HK_USER_CODE_PATH/python/json:$HK_USER_CODE_PATH/python/pyside-qt4.8+1.1.2/PySide"
-    else
-        logpath="$HK_USER_REPO"
-        export HK_PIPELINE="$HK_CODE_PATH/python/pipeline-$HK_PIPELINE_VER"
-        export HK_COUCHDB="$HK_CODE_PATH/python/couchdb-python"
-        export HK_PYSIDE="$HK_CODE_PATH/python/pyside"
-        pythonpath="$HK_CODE_PATH/python/pipeline-$HK_PIPELINE_VER:$HK_CODE_PATH/python/json:$HK_CODE_PATH/python/pyside-qt4.8+1.1.2/PySide"
 fi
 
+alias ~~='cd $HK_HOME'
+
+logpath="$HK_USER_REPO"
+export HK_PIPELINE="$HK_CODE_PATH/python/pipeline-$HK_PIPELINE_VER"
+export HK_COUCHDB="$HK_CODE_PATH/python/couchdb-python"
+export HK_PYSIDE="$HK_CODE_PATH/python/pyside"
+pythonpath="$HK_CODE_PATH/python/pipeline-$HK_PIPELINE_VER:$HK_CODE_PATH/python/json"
 export PYTHONPATH="$pythonpath:$PYTHONPATH"
 
 #Set PS1
@@ -65,7 +57,6 @@ if ! ([ -d $logpath ])
       then
         mkdir -p $logpath
 fi
-cd $logpath
 """ % ( dbname )
 
     file = utils.getProjectEnv ( name )

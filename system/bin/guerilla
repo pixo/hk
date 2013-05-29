@@ -1,6 +1,5 @@
 #!/bin/bash
-
-echo "Running hk-guerilla $HK_GUERILLA_VER...py"
+echo "Running hk-guerilla $HK_GUERILLA_VER..."
 if $HK_DEV_MODE
     then
 		code="$HK_USER_CODE_PATH"
@@ -8,11 +7,17 @@ if $HK_DEV_MODE
         code="$HK_CODE_PATH"
 fi
 
-export LD_LIBRARY_PATH="$code/python/couchdb-python/lib:$code/debug/python/pyside/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$HK_CODE_PATH/python/couchdb-python/lib:$HK_CODE_PATH/python/pyside/lib:$LD_LIBRARY_PATH"
 export GUERILLA_PYTHON_LIBRARY="/usr/local/soft/nuke/7.0v2/libpython2.6.so.1.0"
 export PYTHONHOME="/usr/local/soft/nuke/7.0v2/lib/python2.6"
-export PYTHONPATH="$HK_COUCHDB:/usr/local/soft/nuke/7.0v2/plugins:/usr/local/soft/nuke/7.0v2/lib/python2.6/lib-dynload:/usr/local/soft/nuke/7.0v2/plugins/modules:/usr/local/soft/nuke/7.0v2/lib/python2.6/site-packages:/usr/local/soft/nuke/7.0v2/lib/python26.zip:/usr/local/soft/nuke/7.0v2/lib/python2.6:/usr/local/soft/nuke/7.0v2/lib/python2.6/plat-linux2:/usr/local/soft/nuke/7.0v2/lib/python2.6/lib-tk:/usr/local/soft/nuke/7.0v2/lib/python2.6/lib-old:$PYTHONPATH"
-export HK_GUERILLA_PLUGINS="$code/tools/guerilla/$HK_GUERILLA_VER/plugins"
-# export HK_GUERILLA_LIBRARY = "$code/tools/guerilla/$HK_GUERILLA_VER/plugins"
+
+pythonpath="/usr/local/soft/nuke/7.0v2/plugins:/usr/local/soft/nuke/7.0v2/lib/python2.6/lib-dynload"
+pythonpath="/usr/local/soft/nuke/7.0v2/plugins/modules:/usr/local/soft/nuke/7.0v2/lib/python2.6/site-packages:$pythonpath"
+pythonpath="/usr/local/soft/nuke/7.0v2/lib/python2.6:/usr/local/soft/nuke/7.0v2/lib/python2.6/plat-linux2:$pythonpath"
+export PYTHONPATH="$pythonpath:$HK_COUCHDB:$PYTHONPATH"
+# export PYTHONPATH="$HK_COUCHDB:/usr/local/soft/nuke/7.0v2/plugins:/usr/local/soft/nuke/7.0v2/lib/python2.6/lib-dynload:/usr/local/soft/nuke/7.0v2/plugins/modules:/usr/local/soft/nuke/7.0v2/lib/python2.6/site-packages:/usr/local/soft/nuke/7.0v2/lib/python26.zip:/usr/local/soft/nuke/7.0v2/lib/python2.6:/usr/local/soft/nuke/7.0v2/lib/python2.6/plat-linux2:/usr/local/soft/nuke/7.0v2/lib/python2.6/lib-tk:/usr/local/soft/nuke/7.0v2/lib/python2.6/lib-old:$PYTHONPATH"
+
+export HK_GUERILLA_PLUGINS="$HK_CODE_PATH/tools/guerilla/$HK_GUERILLA_VER/plugins"
+# export HK_GUERILLA_LIBRARY = "$HK_CODE_PATH/tools/guerilla/$HK_GUERILLA_VER/plugins"
 
 /usr/local/soft/guerilla/$HK_GUERILLA_VER/guerilla $@

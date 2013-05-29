@@ -10,7 +10,7 @@ if $HK_DEV_MODE
 		read ans
 		case "$ans" in
 			d*|D*)
-				origin=$HK_USER_CODE_PATH/system/bash_completion.d;;
+				origin=$HK_CODE_PATH/system/bash_completion.d;;
 			r*|R*)
 				origin=$HK_CODE_PATH/system/bash_completion.d;;
 			*)

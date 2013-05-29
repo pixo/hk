@@ -5,7 +5,10 @@ if [ $1=="-d" ]
 		args="--delete"
 fi
 
-if [ -a "$HK_USER_CODE_PATH" -a -a "$HK_CODE_PATH" ]
+user_code_path="$HK_ROOT/users/$USER/codes/debug"
+code_path="$HK_ROOT/codes/release"
+
+if [ -a "$user_code_path" -a -a "$code_path" ]
 	then
 		#Exclude file 
 		pyc="--exclude=*.pyc"
@@ -16,7 +19,7 @@ if [ -a "$HK_USER_CODE_PATH" -a -a "$HK_CODE_PATH" ]
 		exclude_args="$pyc $eclipse $pydev $sys $couchapp"
 
 		#sync
-		rsync --progress -rvuh $args $exclude_args $HK_USER_CODE_PATH/* $HK_CODE_PATH
+		rsync --progress -rvuh $args $exclude_args $user_code_path/* $code_path
 	else
 		echo "hk-code-release: You should be log into a project. Use hk-project command to login"
 fi

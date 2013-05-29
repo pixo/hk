@@ -7,9 +7,11 @@ if [ -n "$HK_ROOT" ]
 				if [ "-d" == $1 ]
 					then
 						devmode=true
+						export HK_CODE_PATH=$HK_ROOT/users/$USER/codes/debug
 						project=$2
 					else
 						devmode=false
+						export HK_CODE_PATH=$HK_ROOT/codes/release
 						project=$1
 				fi
 
@@ -17,10 +19,9 @@ if [ -n "$HK_ROOT" ]
 					then
 						echo "hk-project: Empty project"
 						exit
-				fi
-
-				export HK_USER_CODE_PATH=$HK_ROOT/users/$USER/codes/debug
-				export HK_CODE_PATH=$HK_ROOT/codes/release
+				fi	
+				
+				export PATH=$HK_CODE_PATH/system/bin:$PATH
 				export HK_DEV_MODE=$devmode
 				export HK_HOME=$HK_ROOT/users/$USER
 				export HK_REPO="$HK_ROOT/projects"

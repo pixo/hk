@@ -3,11 +3,4 @@
 echo "Running hk-hieroplayer $HK_HIERO_PLAYER_VER..."
 export PYTHONPATH="$HK_COUCHDB:$PYTHONPATH"
 
-if $HK_DEV_MODE
-    then
-		code="$HK_USER_CODE_PATH"
-    else
-        code="$HK_CODE_PATH"
-fi
-
 /usr/local/soft/hiero_player/$HK_HIERO_PLAYER_VER/bin/HieroPlayer$HK_HIERO_PLAYER_VER $@

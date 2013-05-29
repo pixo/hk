@@ -1,18 +1,12 @@
 #!/bin/bash
 
 echo "Running hk-nuke $HK_NUKE_VER..."
-if $HK_DEV_MODE
-    then
-		code="$HK_USER_CODE_PATH"
-    else
-        code="$HK_CODE_PATH"
-fi
 
 export PYTHONPATH="$HK_COUCHDB:$PYTHONPATH"
-script="$code/tools/nuke/$HK_NUKE_VER"
-script="$code/tools/nuke/$HK_NUKE_VER/gizmos:$script"
-script="$code/tools/nuke/$HK_NUKE_VER/python:$script"
-script="$code/tools/nuke/$HK_NUKE_VER/icons:$script"
+script="$HK_CODE_PATH/tools/nuke/$HK_NUKE_VER"
+script="$HK_CODE_PATH/tools/nuke/$HK_NUKE_VER/gizmos:$script"
+script="$HK_CODE_PATH/tools/nuke/$HK_NUKE_VER/python:$script"
+script="$HK_CODE_PATH/tools/nuke/$HK_NUKE_VER/icons:$script"
 export NUKE_PATH="$script:$NUKE_PATH"
 
 /usr/local/soft/nuke/$HK_NUKE_VER/nuke --nukex $@

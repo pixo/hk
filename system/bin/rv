@@ -2,12 +2,4 @@
 
 echo "Running hk-rv 3.12.17..."
 export PYTHONPATH="$HK_COUCHDB:$PYTHONPATH"
-
-if $HK_DEV_MODE
-    then
-		code="$HK_USER_CODE_PATH"
-    else
-        code="$HK_CODE_PATH"
-fi
-
 /usr/local/soft/rv/3.12.17/bin/rv $@
