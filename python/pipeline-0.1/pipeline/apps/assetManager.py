@@ -16,10 +16,9 @@ except:
     PROJECT = "temp"
     print "assetManager module: Can't set PROJECT \n set PROJECT > tmp"
 
+#TODO: create task and fork for current asset, a menu with all the tickable tasks and fork name ( see UiCreateTask line 480)
 #TODO: create ui for shot creation
 #TODO: preview obj with meshlab
-#TODO: create ui to add tasks_type or asset_type
-#TODO: creation de "fork" sur toute les taches existante, le controle doit etre au niveau de l'asset. 
 
 class UiPush ( QtGui.QWidget ) :
 
@@ -478,7 +477,7 @@ class UiCreateAsset(UiCreateOnDb):
         if doc :
             self.lineEdit.setText("")
             self.label_status.setText("%s created" % doc_id)
-        
+
 class UiCreateTask(UiCreateOnDb):
         
     def pushButtonClicked(self):
@@ -690,7 +689,6 @@ class UiAssetManager(UiMainManager):
     fileFilters = "Maya (*.ma *.mb);;Wavefront (*.obj *.Obj *.OBJ)"
     defaultsuffix = "obj"
     
-    
     #TODO:find a way to generalize the following task and asset stuff
     pushls = ("texture",
               "render",
@@ -770,7 +768,6 @@ class UiAssetManager(UiMainManager):
     icon_empty = os.path.join ( CC_PATH, "empty.png" )
     
     def createAsset ( self ) :
-        
         nicename = self.comboBox_a.currentText()
         typ = self.typ_dict[nicename][0]
         
@@ -788,10 +785,10 @@ class UiAssetManager(UiMainManager):
     def pushVersion ( self ) :
         item = self.treeWidget_a.currentItem()
         task = item.parent().text(0) 
-        doc_id = item.hkid
         
         if task in self.pushls:
             self.pushVersionWin = UiPushLs (db = self.db, item = item)
+            
         else:
             self.pushVersionWin = UiPush ( db = self.db, item = item )
 
@@ -800,9 +797,13 @@ class UiAssetManager(UiMainManager):
     def pullVersion ( self ) :
         self.progressBar.setHidden ( False )
         item = self.treeWidget_a.currentItem ()
+        
+        """get asset id and version"""
         doc_id = item.parent().hkid
         ver = int ( item.text ( 0 ) )
         self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str(ver) ) )
+        
+        """Pull asset"""
         pull = core.pull ( doc_id = doc_id, ver = ver, progressbar = self.progressBar,
                            msgbar = self.statusbar.showMessage)
         if pull :
@@ -848,45 +849,44 @@ class UiAssetManager(UiMainManager):
 
     def contextMenuAsset ( self, item ) :
         menu = QtGui.QMenu ()
+        curtext = self.comboBox_a.currentText()
         icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
-        icon_refresh = QtGui.QIcon ( os.path.join ( CC_PATH, "refresh.png" ) ) 
-        action = menu.addAction ( icon_new, 'Create new %s' % self.comboBox_a.currentText() )
-        action.triggered.connect (  self.createAsset )       
+        
+        """Create new asset"""
+        newAsset = menu.addAction ( icon_new, 'Add %s' % curtext )
+        newAsset.triggered.connect (  self.createAsset )       
+        
+        """Create new task"""
+        newTask = menu.addAction ( icon_new, 'Add task' % curtext )
+        newTask.triggered.connect ( self.createTask )
+
+        """Refresh option """
+        icon_refresh = QtGui.QIcon ( os.path.join ( CC_PATH, "refresh.png" ) )
         refresh = menu.addAction ( icon_refresh, 'Refresh' )
         refresh.triggered.connect ( self.refreshBranch )
+        
+        """Execute menu"""
         menu.exec_( QtGui.QCursor.pos() )
-         
+                 
     def contextMenuTask ( self, item ) :
-        menu = QtGui.QMenu ()
-        icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
-        icon_refresh = QtGui.QIcon ( os.path.join ( CC_PATH, "refresh.png" ) ) 
-        action = menu.addAction ( icon_new, 'New %s %s fork' % 
-                                ( item.parent().text(0), item.text(0) ) )
-        action.triggered.connect ( self.createTask )
-        refresh = menu.addAction( icon_refresh, 'Refresh' )
-        refresh.triggered.connect( self.refreshBranch )
-        menu.exec_ ( QtGui.QCursor.pos () )
-        
-    def contextMenuFork ( self, item ) :
         item = self.treeWidget_a.currentItem ()       
-        menu = QtGui.QMenu ()   
-        icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
-        icon_push = QtGui.QIcon ( os.path.join ( CC_PATH, "push.png" ) )
-        icon_open = QtGui.QIcon ( os.path.join ( CC_PATH, "open.png" ) )
-        icon_saveas = QtGui.QIcon ( os.path.join ( CC_PATH, "save.png" ) )
+        menu = QtGui.QMenu ()
         
+        """Get workspace"""
         doc_id = item.hkid
         path = core.getWorkspaceFromId ( doc_id )
         
         if os.path.exists ( path ) :
-            actionPush = menu.addAction ( icon_push, 'Push a new %s %s %s version' % 
-                                      ( item.parent().parent().text(0),
-                                        item.parent().text(0), item.text(0)) )
-            actionPush.triggered.connect ( self.pushVersion )
-                        
+            """Check if workspace exists"""
+            icon_push = QtGui.QIcon ( os.path.join ( CC_PATH, "push.png" ) )
+            push = menu.addAction ( icon_push, 'Push a new %s version' % doc_id )
+            push.triggered.connect ( self.pushVersion )
+            
         else:
-            action = menu.addAction ( icon_new, 'Create workspace' )
-            action.triggered.connect ( self.createWorkspace )
+            """If not existing create action createWorkspace """
+            icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
+            createWorkspace = menu.addAction ( icon_new, 'Create workspace' )
+            createWorkspace.triggered.connect ( self.createWorkspace )
                     
         menu.exec_ ( QtGui.QCursor.pos () )
         
@@ -914,10 +914,7 @@ class UiAssetManager(UiMainManager):
                 
             elif item_type == "task" :
                 self.contextMenuTask ( item )
-                
-            elif item_type == "fork" :
-                self.contextMenuFork ( item )
-                
+                                
             elif item_type == "version" :
                 self.contextMenuVersion ( item )
                 
@@ -969,9 +966,10 @@ class UiAssetManager(UiMainManager):
             
     def itemExpandedAsset ( self, item ) :
          
-        if item.child(0).hktype == "none" :
+        if item.child ( 0 ).hktype == "none" :
             icon_empty = os.path.join ( CC_PATH, "empty.png" )
-            task_dict = self.typ_dict [ self.comboBox_a.currentText () ][1]
+            doc_id = item.hkid
+            task_dict = utils.lsDb ( self.db, "task", doc_id )            
             font = item.font(0)
             font.setPointSize ( 9.5 )
             
@@ -982,17 +980,19 @@ class UiAssetManager(UiMainManager):
             for task in task_dict :
                 itemChild = QtGui.QTreeWidgetItem ( item )
                 itemChild.setForeground(0,brush)
-                itemChild.setText (0, task)
-                itemChild.setFont( 0, font)
+                itemChild.setText (0, task )
+                itemChild.setFont( 0, font )
                 icon=os.path.join ( CC_PATH,task + ".png" )
                 itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
                 itemChild.hktype = "task"
-                itemChild.hkbranch = task
-                itemChild.hkid = ( "%s_%s" ) % ( item.hkid, task_dict[task] )
-                
+                itemChild.hkbranch = task.split("_")[2]
+                itemChild.hkid = "%s_%s" % ( PROJECT, task )
+                itemChild.versions = dict ()
+                itemChild.dbdoc = self.db [ "%s_%s" % ( PROJECT, task ) ]
+     
                 item_none = QtGui.QTreeWidgetItem( itemChild )
                 item_none.hktype = "none"
-                item_none.hkbranch = task
+                item_none.hkbranch = task.split("_")[2]
                 item_none.setText ( 0, "Empty" )
                 item_none.setIcon ( 0, QtGui.QIcon(icon_empty ) )
                 
@@ -1001,42 +1001,71 @@ class UiAssetManager(UiMainManager):
             
         self.filterTree()
             
+#     def itemExpandedTask ( self, item ) :
+#         if item.child(0).hktype == "none" :
+#             task_dict = self.typ_dict [ self.comboBox_a.currentText () ][1]
+#             
+#             task = task_dict [ item.text (0) ]
+#             
+#             parentId = item.parent().hkid
+#             startkey = "%s_%s" % ( parentId, task )
+# #             itNameLs = utils.lsDb ( self.db, "asset_task", startkey )
+#             itNameLs = utils.lsDb ( self.db, task, startkey )
+#             icon_empty = os.path.join ( CC_PATH, "empty.png" )
+#             
+#             if len ( itNameLs ) > 0 :
+#                 item.removeChild ( item.child (0) )         
+#             
+#             for itName in itNameLs :
+#                 itemChild = QtGui.QTreeWidgetItem ( item )
+#                 itemChild.setText ( 0, itName.split ( "_" ) [-1] )
+#                 itemChild.hktype = "fork"
+#                 itemChild.hkbranch = item.hkbranch
+#                 icon = os.path.join ( CC_PATH, "fork.png" )
+#                 itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
+#                 itemChild.versions = dict ()
+#                 itemChild.hkid = "%s_%s" % ( PROJECT, itName )
+#                 itemChild.dbdoc = self.db [ itemChild.hkid ]
+#                 
+#                 item_none = QtGui.QTreeWidgetItem ( itemChild )
+#                 item_none.hktype = "none"
+#                 item_none.hkbranch = "empty"
+#                 item_none.setText ( 0, "Empty" )
+#                 item_none.setIcon ( 0, QtGui.QIcon ( icon_empty ) )
+#                 item_none.setText ( 0, "Empty" )
+#                 item_none.setHidden = True
+# 
+#             order = QtCore.Qt.AscendingOrder    
+#             item.sortChildren ( 0, order )
+#         
+#     def itemExpandedFork ( self, item ) :
+#         
+#         if item.child(0).hktype == "none" :
+#             font = QtGui.QFont ()
+#             font.setItalic ( True )
+# 
+#             if item.versions == dict ():
+#                 item.versions = item.dbdoc [ "versions" ]
+#                 
+#                 if len ( item.versions ) > 0:
+#                     brush = QtGui.QBrush ( QtGui.QColor ( 128, 128, 128 ) )
+#                     
+#                     for ver in item.versions :
+#                         itemChild = QtGui.QTreeWidgetItem ( item )
+#                         itemChild.setFont ( 0, font )
+#                         itemChild.setForeground ( 0, brush )
+#                         icon = os.path.join ( CC_PATH, "file.png" )
+#                         itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
+#                         itemChild.setText ( 0, "%03d" % float ( ver ) )
+#                         itemChild.hkbranch = item.hkbranch
+#                         itemChild.hktype = "version"
+#                         itemChild.info = item.versions [ ver ]
+#                         
+#                     order = QtCore.Qt.DescendingOrder
+#                     item.sortChildren ( 0, order )
+#                     item.removeChild ( item.child ( 0 ) )
+                    
     def itemExpandedTask ( self, item ) :
-        if item.child(0).hktype == "none" :
-            task_dict = self.typ_dict [ self.comboBox_a.currentText () ][1]
-            task = task_dict [ item.text (0) ]
-            parentId = item.parent().hkid
-            startkey = "%s_%s" % ( parentId, task )
-#             itNameLs = utils.lsDb ( self.db, "asset_task", startkey )
-            itNameLs = utils.lsDb ( self.db, task, startkey )
-            icon_empty = os.path.join ( CC_PATH, "empty.png" )
-            
-            if len ( itNameLs ) > 0 :
-                item.removeChild ( item.child (0) )         
-            
-            for itName in itNameLs :
-                itemChild = QtGui.QTreeWidgetItem ( item )
-                itemChild.setText(0,itName.split ( "_" ) [-1] )
-                itemChild.hktype = "fork"
-                itemChild.hkbranch = item.hkbranch
-                icon = os.path.join ( CC_PATH, "fork.png" )
-                itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
-                itemChild.versions = dict ()
-                itemChild.hkid = "%s_%s" % ( PROJECT, itName )
-                itemChild.dbdoc = self.db [ itemChild.hkid ]
-                
-                item_none = QtGui.QTreeWidgetItem ( itemChild )
-                item_none.hktype = "none"
-                item_none.hkbranch = "empty"
-                item_none.setText ( 0, "Empty" )
-                item_none.setIcon ( 0, QtGui.QIcon ( icon_empty ) )
-                item_none.setText ( 0, "Empty" )
-                item_none.setHidden = True
-
-            order = QtCore.Qt.AscendingOrder    
-            item.sortChildren ( 0, order )
-        
-    def itemExpandedFork ( self, item ) :
         
         if item.child(0).hktype == "none" :
             font = QtGui.QFont ()
@@ -1065,18 +1094,26 @@ class UiAssetManager(UiMainManager):
         
     def itemExpanded ( self, item ) :
         
-        if item.hktype == "sequence" :
-            self.itemExpandedSequence ( item )
-            
-        elif item.hktype == "asset":
+        if item.hktype == "asset":
             self.itemExpandedAsset ( item )
             
         elif item.hktype == "task" :
             self.itemExpandedTask ( item )
-            
-        elif item.hktype == "fork" :
-            self.itemExpandedFork ( item )
                             
+        elif item.hktype == "sequence" :
+            self.itemExpandedSequence ( item )
+            
+    def itemClickedTask( self, item ) :
+        
+        """Set the data to the plain text"""
+        creator  = "Creator:\t%s\n" % item.dbdoc [ 'creator' ]
+        created  = "\nCreated:\t%s\n" % item.dbdoc [ 'created' ]
+        state = "\nState:\t%s\n" % item.dbdoc [ 'state' ]
+        description = "\nDescription:\n\t%s\n" % item.dbdoc [ 'description' ]
+          
+        infos = creator + created + state + description
+        self.plainTextEdit_description.setPlainText ( infos )  
+
     def itemClickedVersion( self, item ) :
                 
         """Set the data to the plain text"""
@@ -1101,22 +1138,11 @@ class UiAssetManager(UiMainManager):
             screenshot = os.path.join( CC_PATH, "hk_title_medium.png" )
 
         self.labelImage.setPixmap( screenshot )
-
-    def itemClickedFork( self, item ) :
-        
-        """Set the data to the plain text"""
-        creator  = "Creator:\t%s\n" % item.dbdoc [ 'creator' ]
-        created  = "\nCreated:\t%s\n" % item.dbdoc [ 'created' ]
-        state = "\nState:\t%s\n" % item.dbdoc [ 'state' ]
-        description = "\nDescription:\n\t%s\n" % item.dbdoc [ 'description' ]
-          
-        infos = creator + created + state + description
-        self.plainTextEdit_description.setPlainText ( infos )  
         
     def itemClicked ( self, item ) :
        
-        if item.hktype == "fork" :
-            self.itemClickedFork ( item )
+        if item.hktype == "task" :
+            self.itemClickedTask ( item )
             
         elif item.hktype == "version" :
             self.itemClickedVersion ( item )
@@ -1126,6 +1152,7 @@ class UiAssetManager(UiMainManager):
             
         if hasattr(item, "hkid") :
             self.statusbar.showMessage(item.hkid)
+
         else:
             self.statusbar.showMessage("")
             
@@ -1157,35 +1184,52 @@ class UiAssetManager(UiMainManager):
         currtext = self.comboBox_a.currentText ()           
         self.typ = self.typ_dict [ currtext ] [0]
         self.setComboTask ( self.typ_dict [ currtext ] [1] )
-    
-        startkey = "%s" % ( PROJECT )
-        if not (self.typ in ("asset", "task") ):
-            startkey = startkey + "_" + self.typ
+        startkey = PROJECT
         hktype = "asset"
         
-        obj_ls = utils.lsDb ( self.db, self.typ, startkey )
-            
+        """Check if current filter is asset or task"""
+        if not ( self.typ in ("asset", "task") ):
+            """If current filter is asset or task then create a proper view"""
+            startkey = "%s_%s" % ( startkey, self.typ )
+
+        """List assets"""         
+        obj_ls = utils.lsDb ( self.db, self.typ, startkey )    
+        
+        """Clear the tree"""
         icon_empty = os.path.join ( CC_PATH, "empty.png" )              
         self.treeWidget_a.clear ()
-                
+        
+        """Setup the items fonts"""    
         font = QtGui.QFont ()
         font.setPointSize ( 10 )
         font.setWeight ( 75 )
         font.setItalic ( False )
         font.setBold ( True )
-                 
+        
+        """Create the items"""
         for asset in obj_ls :
-            assplit = asset.split ( "_" )
-            typ, name = assplit[0],assplit[1] 
+            """Set the item attributes"""
             item_asset = QtGui.QTreeWidgetItem ( self.treeWidget_a )
+            assplit = asset.split ( "_" )
+            typ, name = assplit[0],assplit[1]
+            
+            if self.typ == "task" : 
+                item_asset.versions = dict ()
+                item_asset.dbdoc = self.db [ "%s_%s" % ( PROJECT, asset ) ]
+                hktype = "task"
+                name = asset
+                
+            item_asset.hkid = "%s_%s" % ( PROJECT, asset )
+            item_asset.hkbranch = "root"
+            item_asset.hktype = hktype
+            
+            """UI look"""
             item_asset.setFont ( 0, font )
             item_asset.setText ( 0, name )
             icon = os.path.join ( CC_PATH, self.icons_dict [ typ] + ".png" )
             item_asset.setIcon ( 0, QtGui.QIcon ( icon ) )
-            item_asset.hktype = hktype
-            item_asset.hkid = "%s_%s" % ( PROJECT, asset )
-            item_asset.hkbranch = "root"
             
+            """Children"""
             item_none = QtGui.QTreeWidgetItem ( item_asset )
             item_none.setIcon ( 0, QtGui.QIcon ( icon_empty ))
             item_none.setText ( 0, "Empty" )

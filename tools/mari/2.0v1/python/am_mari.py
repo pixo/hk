@@ -311,25 +311,25 @@ class UiMariAM(apps.UiAssetManager):
     def contextMenuFork ( self, item ) :
         item = self.treeWidget_a.currentItem ()       
         menu = QtGui.QMenu ()   
-        icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
-        icon_push = QtGui.QIcon ( os.path.join ( CC_PATH, "push.png" ) )
-        icon_open = QtGui.QIcon ( os.path.join ( CC_PATH, "open.png" ) )
-        icon_saveas = QtGui.QIcon ( os.path.join ( CC_PATH, "save.png" ) )
-        
+
         doc_id = item.hkid
         path = core.getWorkspaceFromId ( doc_id )
         
         if os.path.exists ( path ) :
-            actionPush = menu.addAction ( icon_push, 'Push a new %s %s %s version' % 
-                                      ( item.parent().parent().text(0),
-                                        item.parent().text(0), item.text(0)) )
+        	icon_push = QtGui.QIcon ( os.path.join ( CC_PATH, "push.png" ) )
+            actionPush = menu.addAction ( icon_push, 'Push a new %s version' % doc_id )
             actionPush.triggered.connect ( self.pushVersion )
+
+        	icon_open = QtGui.QIcon ( os.path.join ( CC_PATH, "open.png" ) )
             actionOpen = menu.addAction ( icon_open, 'Open from Workspace' )
             actionOpen.triggered.connect ( self.openFileDialog )
+            
+        	icon_saveas = QtGui.QIcon ( os.path.join ( CC_PATH, "save.png" ) )
             actionSaveas = menu.addAction ( icon_saveas, 'Save to Workspace' )
             actionSaveas.triggered.connect ( self.saveFileDialog )
             
         else:
+        	icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
             action = menu.addAction ( icon_new, 'Create workspace' )
             action.triggered.connect ( self.createWorkspace )
                     
@@ -337,6 +337,7 @@ class UiMariAM(apps.UiAssetManager):
 
     def contextMenuVersion ( self, item ) :
         menu = QtGui.QMenu ()
+        
         icon_pull = QtGui.QIcon ( os.path.join ( CC_PATH, "pull.png" ) )
         action_pull = menu.addAction ( icon_pull, 'Pull version %s' % item.text (0) )
         action_pull.triggered.connect ( self.pullVersion )

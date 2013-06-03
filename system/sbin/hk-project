@@ -7,11 +7,11 @@ if [ -n "$HK_ROOT" ]
 				if [ "-d" == $1 ]
 					then
 						devmode=true
-						export HK_CODE_PATH=$HK_ROOT/users/$USER/codes/debug
+						export HK_CODE_PATH=$HK_ROOT/users/$USER/codes/public
 						project=$2
 					else
 						devmode=false
-						export HK_CODE_PATH=$HK_ROOT/codes/release
+						export HK_CODE_PATH=$HK_ROOT/codes/public
 						project=$1
 				fi
 

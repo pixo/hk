@@ -124,13 +124,26 @@ class UiPushMaya(apps.UiPush3dPack):
               "matte-paint" : pushFile,
               "render" : pushFile
               }
+
+                
+    varpush = {
+              'dmp':'mattepaint',
+              'mod':'model',
+              'rig':'rig',
+              'rtp':'retopo',
+              'sct':'sculpt',
+              'tex':'texture',
+              'vfx':'effect',
+              'lay':'layout',
+              'cam':'camera'
+             }
          
     def pushClicked ( self ) :
         db = self.db
         doc_id = self.doc_id
         description = self.plainTextEdit_comments.toPlainText ()
         item = self.item
-        taskType = self.item.parent().text(0)
+        taskType = self.varpush [ doc_id.split ( "_" ) [3] ]
         screenshot = self.screenshot
         msgbar = self.labelStatus.setText
         progressbar = self.progressBar
@@ -147,7 +160,6 @@ class UiPushMaya(apps.UiPush3dPack):
          
  
 class UiMayaAM(apps.UiAssetManager):
-     
     defaultfilter = "ma"
     launcher = "maya"
     defaultsuffix = "mb"
@@ -162,7 +174,8 @@ class UiMayaAM(apps.UiAssetManager):
         files = glob.glob(os.path.join(path,"*.ma"))
         files.extend(glob.glob(os.path.join(path,"*.mb")))
          
-        importFile(files[0])
+        importFile ( files [0] )
+
         self.statusbar.showMessage("%s pulled" % files[0] )
 
     def pushVersion ( self ) :
@@ -190,40 +203,50 @@ class UiMayaAM(apps.UiAssetManager):
     def openFile ( self, fname ) :
         openFile ( fname )
 
-
-    def contextMenuFork ( self, item ) :
+    def contextMenuTask ( self, item ) :
         item = self.treeWidget_a.currentItem ()       
-        menu = QtGui.QMenu ()   
-        icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
-        icon_push = QtGui.QIcon ( os.path.join ( CC_PATH, "push.png" ) )
-        icon_open = QtGui.QIcon ( os.path.join ( CC_PATH, "open.png" ) )
-        icon_saveas = QtGui.QIcon ( os.path.join ( CC_PATH, "save.png" ) )
+        menu = QtGui.QMenu ()
         
+        """Get workspace"""
         doc_id = item.hkid
         path = core.getWorkspaceFromId ( doc_id )
         
         if os.path.exists ( path ) :
-            actionPush = menu.addAction ( icon_push, 'Push a new %s %s %s version' % 
-                                      ( item.parent().parent().text(0),
-                                        item.parent().text(0), item.text(0)) )
+            """Check if workspace exists"""
+
+            """push an asset"""
+            icon_push = QtGui.QIcon ( os.path.join ( CC_PATH, "push.png" ) )
+            actionPush = menu.addAction ( icon_push, 'Push a new %s version' % doc_id )
             actionPush.triggered.connect ( self.pushVersion )
+
+            """open from workspace"""
+            icon_open = QtGui.QIcon ( os.path.join ( CC_PATH, "open.png" ) )
             actionOpen = menu.addAction ( icon_open, 'Open from Workspace' )
             actionOpen.triggered.connect ( self.openFileDialog )
+
+            """save to workspace"""
+            icon_saveas = QtGui.QIcon ( os.path.join ( CC_PATH, "save.png" ) )
             actionSaveas = menu.addAction ( icon_saveas, 'Save to Workspace' )
             actionSaveas.triggered.connect ( self.saveFileDialog )
-            
+
         else:
-            action = menu.addAction ( icon_new, 'Create workspace' )
-            action.triggered.connect ( self.createWorkspace )
+            """If not existing create action createWorkspace """
+            icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
+            createWorkspace = menu.addAction ( icon_new, 'Create workspace' )
+            createWorkspace.triggered.connect ( self.createWorkspace )
                     
         menu.exec_ ( QtGui.QCursor.pos () )
 
+
     def contextMenuVersion ( self, item ) :
         menu = QtGui.QMenu ()
+
+        """pull asset"""
         icon_pull = QtGui.QIcon ( os.path.join ( CC_PATH, "pull.png" ) )
         action_pull = menu.addAction ( icon_pull, 'Pull version %s' % item.text (0) )
         action_pull.triggered.connect ( self.pullVersion )
         
+        """import version"""
         icon_import = QtGui.QIcon ( os.path.join ( CC_PATH, "import.png" ) )
         action_import = menu.addAction ( icon_import, 'Import version %s' % item.text (0) )
         action_import.triggered.connect ( self.importVersion )

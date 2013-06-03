@@ -2,10 +2,11 @@
 
 echo "Running hk-maya $HK_MAYA_VER..."
 
+headbang="$HK_ROOT/codes/private/tools/maya/$HK_MAYA_VER/headbang2"
 script="$HK_CODE_PATH/tools/maya/$HK_MAYA_VER/scripts"
-mel="$script/mel"
+mel="$script/mel:$headbang"
 python="$script/python" 
-plugin="/usr/local/soft/guerilla/$HK_GUERILLA_VER/guerilla_for_maya/plug-ins"
+plugin="/usr/local/soft/guerilla/$HK_GUERILLA_VER/guerilla_for_maya/plug-ins:$headbang"
 plugin="$HK_CODE_PATH/tools/maya/$HK_MAYA_VER/plugins:$plugin"
 
 export LD_LIBRARY_PATH="$HK_CODE_PATH/python/pyside/lib:$LD_LIBRARY_PATH"

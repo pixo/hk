@@ -114,6 +114,11 @@ def pull ( doc_id = "", ver = "latest", extension = "",progressbar = False,
            msgbar = False ):
      
     """Get the files from the repository """
+    """Check id"""
+    docsplit = doc_id.split("_")
+    if len ( docsplit ) < 5:
+        print "pull(): Wrong asset id"
+        return False
     
     """ Get asset local, network path """
     src = getAssetPath ( doc_id = doc_id, ver = ver )

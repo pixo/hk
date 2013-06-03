@@ -5,18 +5,19 @@ if [ $1=="-d" ]
 		args="--delete"
 fi
 
-user_code_path="$HK_ROOT/users/$USER/codes/debug"
-code_path="$HK_ROOT/codes/release"
+user_code_path="$HK_ROOT/users/$USER/codes"
+code_path="$HK_ROOT/codes"
 
 if [ -a "$user_code_path" -a -a "$code_path" ]
 	then
-		#Exclude file 
+		#Exclude file
+		dev_qtui="--exclude=dev_qtui" 
 		pyc="--exclude=*.pyc"
 		eclipse="--exclude=*.project --exclude=*.metadata"
 		pydev="--exclude=*.pydevproject"
 		sys="--exclude=*~ --exclude=*.md --exclude=*.rachid --exclude=*.git"
 		couchapp="--exclude=*couchapp"
-		exclude_args="$pyc $eclipse $pydev $sys $couchapp"
+		exclude_args="$dev_qtui $pyc $eclipse $pydev $sys $couchapp"
 
 		#sync
 		rsync --progress -rvuh $args $exclude_args $user_code_path/* $code_path
