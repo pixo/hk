@@ -402,7 +402,7 @@ def getTextureAttr ( path ):
         if len ( re.findall ( pattern, fname ) ):
             return ( typ, textureType[typ] )
         
-    return (False, False)
+    return ( False, False )
 
 def textureBuild ( path = "", texfilter = None ):
     """Guerilla texture build"""
@@ -488,8 +488,8 @@ def textureCheck ( doc_id = "", files = list() ) :
         fname = os.path.basename(file)
         
         for typ in textureType :
-            simpTex = "%s_%s\d*.\d\d\d\d." % ( doc_id, typ )
-            animTex = "%s_%s\d*.\d\d\d\d.\d\d\d\d." % ( doc_id, typ )
+            simpTex = "%s_\d*_%s\d*.\d\d\d\d." % ( doc_id, typ )
+            animTex = "%s_\d*_%s\d*.\d\d\d\d.\d\d\d\d." % ( doc_id, typ )
             pattern = "%s|%s" % ( simpTex, animTex )
             
             if re.findall ( pattern + "tif$", fname ) or re.findall ( pattern + "exr$", fname ) :

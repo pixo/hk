@@ -2,11 +2,11 @@
   <VersionUUID>NORMAN_STUDIOS_surface</VersionUUID>
   <DefaultName>Norman Lighting</DefaultName>
   <Inputs>
-    <Input Name="diff" PrettyName="Diffuse Color" PreferredInput='1'></Input>
-    <Input Name="dirtco" PrettyName="Dirt Color" PreferredInput='0.18'></Input>
+    <Input Name="diff1col" PrettyName="Diffuse Color" PreferredInput='1'></Input>
+    <Input Name="dirtcol" PrettyName="Dirt Color" PreferredInput='0.18'></Input>
     <Input Name="dirt" PrettyName="Dirt Mask" PreferredInput='0'></Input>
-    <Input Name="spec" PrettyName="Specular1 Weight" PreferredInput='1'></Input>
-    <Input Name="srgh" PrettyName="Specular1 Roughness" PreferredInput='1'></Input>
+    <Input Name="spec1" PrettyName="Specular1 Weight" PreferredInput='1'></Input>
+    <Input Name="spec1rgh" PrettyName="Specular1 Roughness" PreferredInput='1'></Input>
 
     <Input Name="Normal"></Input>
   </Inputs>
@@ -25,22 +25,22 @@
     <Contexts>
         <Context Type="NodeGraphView">
             <Inputs>
-                <Input Name="diff"><Pos>0,-50</Pos></Input>
-                <Input Name="dirtco"><Pos>0,-50</Pos></Input>
+                <Input Name="diff1col"><Pos>0,-50</Pos></Input>
+                <Input Name="dirtcol"><Pos>0,-50</Pos></Input>
                 <Input Name="dirt"><Pos>0,-50</Pos></Input>
-                <Input Name="spec"><Pos>-60,-50</Pos></Input>
-                <Input Name="srgh"><Pos>0,-50</Pos></Input>
+                <Input Name="spec1"><Pos>-60,-50</Pos></Input>
+                <Input Name="spec1rgh"><Pos>0,-50</Pos></Input>
                 <Input Name="Normal"><Pos>60,-50</Pos></Input>
             </Inputs>
         </Context>
         <Context Type="GLSL">
             <Shader ShaderType='Fragment'>
                 <Inputs>
-                    <Input Name="diff"><Default>vec4(0.5,0.5,0.5,1)</Default></Input>
-                    <Input Name="dirtco"><Default>vec4(0.18,0.18,0.18,1)</Default></Input>
+                    <Input Name="diff1col"><Default>vec4(0.5,0.5,0.5,1)</Default></Input>
+                    <Input Name="dirtcol"><Default>vec4(0.18,0.18,0.18,1)</Default></Input>
                     <Input Name="dirt"><Default>vec4(1,1,1,1)</Default></Input>
-                    <Input Name="spec"><Default>vec4(1,1,1,1)</Default></Input>
-                    <Input Name="srgh"><Default>vec4(1,1,1,1)</Default></Input>
+                    <Input Name="spec1"><Default>vec4(1,1,1,1)</Default></Input>
+                    <Input Name="spec1rgh"><Default>vec4(1,1,1,1)</Default></Input>
                     <Input Name="Normal"><Default>vec4(0,0,1,1)</Default></Input>
                 </Inputs>
                 <Body><![CDATA[
@@ -49,7 +49,7 @@
     vec3 wo = normalize(-State.viewDir_inEyeSpace_fromViewCamera);
     float eta = 1/$IOR;
 
-    float spec1_r = $SpecularRoughness * #srgh.r;
+    float spec1_r = $SpecularRoughness * #spec1rgh.r;
     float spec1_r2 = spec1_r * spec1_r;
     float spec1_r4 = max ( 0.001, spec1_r2 * spec1_r2 );
     float oor = 1 / spec1_r4;
@@ -106,10 +106,10 @@
         Diffuse += nwi * gl_LightSource[i].diffuse.rgb * lightVisibility; 
     }
 
-    Output.rgb = lighting_mode==0 ? #diff.rgb : Diffuse * $Diffuse * #diff.rgb * mix ( 1, Kt, $CE );
-    Output.rgb += lighting_mode==2 ? vec3 ( Specular * #spec.r * $Specular ): vec3(0.0);
-    Output.rgb = mix ( Output.rgb, Diffuse * #dirtco.rgb, $Dirt * #dirt.r );
-    Output.a = #diff.a;
+    Output.rgb = lighting_mode==0 ? #diff1col.rgb : Diffuse * $Diffuse * #diff1col.rgb * mix ( 1, Kt, $CE );
+    Output.rgb += lighting_mode==2 ? vec3 ( Specular * #spec1.r * $Specular ): vec3(0.0);
+    Output.rgb = mix ( Output.rgb, Diffuse * #dirtcol.rgb, $Dirt * #dirt.r );
+    Output.a = #diff1col.a;
                 ]]></Body>
             </Shader>
         </Context>

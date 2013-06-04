@@ -1,0 +1,2 @@
+guerilla = lua.globals()
+

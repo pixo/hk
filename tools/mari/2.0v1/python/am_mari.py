@@ -24,13 +24,15 @@ def hkExportChannel ( channel_name = None, wedge = "wedge1", geo = None, dialog 
 	"Get geo and channel"
 	geo_name = geo.name ()
 
+	variation = geo.metadata ("Variation")
+
 	"Check channel name"
 	if channel_name == None :
 		channel_name = geo.currentChannel().name() 
 
 	"Reconstruct asset name"
 	slugs = geo_name.split ("_")
-	asset_id = "%s_%s_%s_%s_%s" % ( slugs[0], slugs[1], slugs[2], "tex", slugs[4] )
+	asset_id = "%s_%s_%s_%s_%s_%s" % ( slugs[0], slugs[1], slugs[2], "tex", slugs[4], str ( variation ) )
 
 	"Get wedge name if needed"
 	if dialog :
@@ -115,7 +117,7 @@ def hkImportChannel ( path = "", doc_id = "", channel_name = None, geo = None, a
 	chan.importImages ( path )
 
 	"link channel to shader input"
-	if channel_name in ("diff", "spec", "srgh", "dirt", "dirtco" ):
+	if channel_name in ( "diff1col", "spec1", "spec1rgh", "dirt", "dirtcol" ):
 		shd.setInput ( channel_name, chan )
 	
 	print "hkImportChannel () : %s %s " % ( root, channel_name )
@@ -164,6 +166,7 @@ def hkImportGeo ( path, doc_id, ver ):
 	for geo in geos :
 		geo.setMetadata ( "DBVersion", ver )
 		geo.setMetadata ( "ID", doc_id )
+		geo.setMetadata ( "Variation", 1 )
 		geo.setMetadataEnabled ( "DBVersion", False )
 		geo.setMetadataEnabled ( "ID", False )
 		shd = geo.createShader( "Norman", "Lighting/Standalone/Norman" )
@@ -309,31 +312,31 @@ class UiMariAM(apps.UiAssetManager):
         hkcmds.openFile ( fname )
 
     def contextMenuFork ( self, item ) :
-        item = self.treeWidget_a.currentItem ()       
-        menu = QtGui.QMenu ()   
+		item = self.treeWidget_a.currentItem ()       
+		menu = QtGui.QMenu ()   
 
-        doc_id = item.hkid
-        path = core.getWorkspaceFromId ( doc_id )
-        
-        if os.path.exists ( path ) :
-        	icon_push = QtGui.QIcon ( os.path.join ( CC_PATH, "push.png" ) )
-            actionPush = menu.addAction ( icon_push, 'Push a new %s version' % doc_id )
-            actionPush.triggered.connect ( self.pushVersion )
+		doc_id = item.hkid
+		path = core.getWorkspaceFromId ( doc_id )
 
-        	icon_open = QtGui.QIcon ( os.path.join ( CC_PATH, "open.png" ) )
-            actionOpen = menu.addAction ( icon_open, 'Open from Workspace' )
-            actionOpen.triggered.connect ( self.openFileDialog )
-            
-        	icon_saveas = QtGui.QIcon ( os.path.join ( CC_PATH, "save.png" ) )
-            actionSaveas = menu.addAction ( icon_saveas, 'Save to Workspace' )
-            actionSaveas.triggered.connect ( self.saveFileDialog )
-            
-        else:
-        	icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
-            action = menu.addAction ( icon_new, 'Create workspace' )
-            action.triggered.connect ( self.createWorkspace )
-                    
-        menu.exec_ ( QtGui.QCursor.pos () )
+		if os.path.exists ( path ) :
+			icon_push = QtGui.QIcon ( os.path.join ( CC_PATH, "push.png" ) )
+			actionPush = menu.addAction ( icon_push, 'Push a new %s version' % doc_id )
+			actionPush.triggered.connect ( self.pushVersion )
+
+			icon_open = QtGui.QIcon ( os.path.join ( CC_PATH, "open.png" ) )
+			actionOpen = menu.addAction ( icon_open, 'Open from Workspace' )
+			actionOpen.triggered.connect ( self.openFileDialog )
+
+			icon_saveas = QtGui.QIcon ( os.path.join ( CC_PATH, "save.png" ) )
+			actionSaveas = menu.addAction ( icon_saveas, 'Save to Workspace' )
+			actionSaveas.triggered.connect ( self.saveFileDialog )
+
+		else:
+			icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
+			action = menu.addAction ( icon_new, 'Create workspace' )
+			action.triggered.connect ( self.createWorkspace )
+		        
+		menu.exec_ ( QtGui.QCursor.pos () )
 
     def contextMenuVersion ( self, item ) :
         menu = QtGui.QMenu ()
