@@ -12,7 +12,7 @@
   </Inputs>
   <Attributes>
     <Attribute Name="Diffuse" Group="Display" Type="double" Min="0" Max="1">1</Attribute>
-    <Attribute Name="Dirt" Group="Display" Type="double" Min="0" Max="1">1</Attribute>
+    <Attribute Name="Dirt" Group="Display" Type="double" Min="0" Max="1">0</Attribute>
     <Attribute Name="Specular" Group="Display" Type="double" Min="0" Max="1">1</Attribute>
     <Attribute Name="SpecularRoughness" PrettyName="Specular Roughness" Group="Display" Type="double" Min="0.000" Max="1">1</Attribute>
     <Attribute Name="IOR" Group="Advanced" Type="double" Min="1" Max="5">1.3</Attribute>

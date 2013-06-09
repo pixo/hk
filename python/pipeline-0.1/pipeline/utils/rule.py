@@ -55,10 +55,11 @@ def getTextureTypes () :
             "spec2irid" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1" ),
             "spec2thick" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1" ),
             "spec2bmp" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1" ),
-            "sss" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1" ),
-            "sssbsct" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
-            "trans" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1" ),
-            "transcol" : ( "RGB", "8-bit", "rgb(127,127,255)", True, "triangle", "1")
+            "sss" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1" ),
+            "ssswidth" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1" ),
+            "sssbsct" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1"),
+            "trans" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1" ),
+            "transcol" : ( "RGB", "8-bit 16-bit", "rgb(127,127,255)", True, "triangle", "1")
             }
 
 def getAssetTypes ():

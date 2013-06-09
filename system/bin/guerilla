@@ -13,6 +13,5 @@ export PYTHONPATH="$pythonpath:$HK_COUCHDB:$PYTHONPATH"
 
 export HK_GUERILLA_LIBRARY="$HK_CODE_PATH/tools/guerilla/$HK_GUERILLA_VER/library"
 export HK_GUERILLA_PLUGINS="$HK_CODE_PATH/tools/guerilla/$HK_GUERILLA_VER/plugins"
-# export HK_GUERILLA_LIBRARY = "$HK_CODE_PATH/tools/guerilla/$HK_GUERILLA_VER/plugins"
 
 /usr/local/soft/guerilla/$HK_GUERILLA_VER/guerilla $@

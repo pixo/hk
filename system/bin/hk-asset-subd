@@ -1,20 +1,44 @@
-#!/usr/bin/env python
-import argparse, os
+#!/usr/autodesk/maya2013-x64/bin/mayapy
+import maya.standalone
+maya.standalone.initialize ( name = "python" )
+import os, argparse
+import maya.cmds as cmds
 
-def cli( src, subd ):
-	if src == None :
-		print ("hk-asset-subd: Please provide an input file. Check the help(-h)")
-		return False
+def cli( input = "", subd="0", output = "" ):
+    if input == None :
+        print ("hk-asset-subd: Please provide an input file. Check the help(-h)")
+        return False
 
-	source = os.path.abspath ( src )
-	fobj, ext = os.path.splitext ( source ) 
-	fobj = "%s_subd%s.obj" % ( fobj, subd )
-	mayap = "maya"
-	os.system ( """%s -batch -file %s -command '''hkExportSubd("%s","%s");''' """ % ( mayap, source, fobj, subd ) )
+    """Load the input file"""
+    if os.path.isabs ( input ):
+        input = os.path.abspath ( input )
+        
+    """Get maya plugins path"""
+    mayaver = os.getenv ( "HK_MAYA_VER" )
+    mayaloc = "/usr/autodesk/maya%s-x64/bin/plug-ins" % mayaver  
+    
+    cmds.file ( input, o = True )
+    cmds.loadPlugin ( os.path.join ( mayaloc, 'objExport.so' ) )
+    
+    if output == "":
+    	output, ext = os.path.splitext ( input ) 
+    	output = "%s_subd%s.obj" % ( output, subd )
+    
+    meshes = cmds.ls ( typ = "mesh" )
+    
+    for mesh in meshes :
+        cmds.polySmooth ( mesh, mth = 0, dv = int ( subd ), bnr= 1, c=1, kb=1,
+                          ksb=1, khe=0, kt=1, kmb=1, suv=1, peh=0, sl=1, dpe=1,
+                          ps=0.1, ro=1, ch=1 )
+    
+    cmds.file ( output, force = True, options = "groups=1;ptgroups=1;materials=0;smoothing=1;normals=1",
+                type = "OBJexport", pr = True, ea = True )
 
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
-	parser.add_argument( "-i", "--input", help = "input file")
-	parser.add_argument( "-s", "--subd", default = "1", help = "subdivision number, default = 1")
-	args = parser.parse_args ()
-	cli ( args.input, args.subd )
+    parser = argparse.ArgumentParser()
+    parser.add_argument( "-i", "--input", help = "input file")
+    parser.add_argument( "-s", "--subd", default = "1", help = "subdivision number, default = 1")
+    parser.add_argument( "-o", "--output", help = "output file")
+    args = parser.parse_args ()
+    cli ( args.input, args.subd, args.output )
+        

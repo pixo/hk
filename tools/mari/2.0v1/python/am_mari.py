@@ -24,7 +24,7 @@ def hkExportChannel ( channel_name = None, wedge = "wedge1", geo = None, dialog 
 	"Get geo and channel"
 	geo_name = geo.name ()
 
-	variation = geo.metadata ("Variation")
+	variation = geo.metadata ("variation")
 
 	"Check channel name"
 	if channel_name == None :
@@ -32,7 +32,7 @@ def hkExportChannel ( channel_name = None, wedge = "wedge1", geo = None, dialog 
 
 	"Reconstruct asset name"
 	slugs = geo_name.split ("_")
-	asset_id = "%s_%s_%s_%s_%s_%s" % ( slugs[0], slugs[1], slugs[2], "tex", slugs[4], str ( variation ) )
+	asset_id = "%s_%s_%s_%s_%s_%s" % ( slugs[0], slugs[1], slugs[2], "tex", slugs[4] )
 
 	"Get wedge name if needed"
 	if dialog :
@@ -41,10 +41,11 @@ def hkExportChannel ( channel_name = None, wedge = "wedge1", geo = None, dialog 
 
 	"Create template"
 	root = core.getRootAssetPath ( asset_id, True )
-	root = os.path.join ( root, wedge, "%s_%s." % ( asset_id, channel_name ) )
+	root = os.path.join ( root, wedge, "%s_%s_%s." % ( asset_id, "$VARIATION",channel_name ) )
 	
 	if  animation :
 		mri_pattern = "$UDIM.$FRAME.tif"
+
 	else :
 		mri_pattern = "$UDIM.tif"
 
@@ -85,7 +86,7 @@ def hkExportAllChannels ( wedge = "wedge1", geo = None, dialog = False, animatio
 
 	return True
 
-def hkImportChannel ( path = "", doc_id = "", channel_name = None, geo = None, animation = False ):
+def hkImportChannel ( path = "", doc_id = "", channel_name = None, variation = 1, geo = None, animation = False ):
 	"Check input geo"
 	if geo == None :
 		geo = mari.geo.current ()
@@ -97,17 +98,18 @@ def hkImportChannel ( path = "", doc_id = "", channel_name = None, geo = None, a
 	if channel_name == None :
 		channel_name = geo.currentChannel().name()
 
-	if not channel_name in geo.channelList() :
+	if not channel_name in geo.channelList () :
 		geo.createChannel ( channel_name, 4096, 4096, 16 )
 		
 	chan = geo.channel ( channel_name )
 	shd = geo.findShader("Norman")
 
 	"Create template"
-	root = os.path.join ( path, "%s_%s." % ( doc_id, channel_name ) )
+	root = os.path.join ( path, "%s_%s_%s." % ( doc_id, variation, channel_name ) )
 	
 	if  animation :
 		mri_pattern = "$UDIM.$FRAME.tif"
+
 	else :
 		mri_pattern = "$UDIM.tif"
 
@@ -117,6 +119,7 @@ def hkImportChannel ( path = "", doc_id = "", channel_name = None, geo = None, a
 	chan.importImages ( path )
 
 	"link channel to shader input"
+
 	if channel_name in ( "diff1col", "spec1", "spec1rgh", "dirt", "dirtcol" ):
 		shd.setInput ( channel_name, chan )
 	
@@ -129,17 +132,19 @@ def hkImportChannels ( path, doc_id, ver ):
 
 	print "doc_id:", doc_id
 	geo = mari.geo.current ()
-	gid = geo.metadata ("ID")
+	variation = PythonQt.QtGui.QInputDialog.getText ( PythonQt.QtGui.QDialog(), 'Input Dialog', 'Variation:')
+	#TODO:check if ID exists
+	gid = geo.metadata ("id")
 	ismod = ( gid.replace ( "mod", "tex" ) == doc_id )
 	isrig = ( gid.replace ( "rig", "tex" ) == doc_id )
 
 	if ismod or isrig :
 		
 		for channel_name in texture_type :
-			texls = glob.glob ( os.path.join ( path, "*%s*.tif" % channel_name ) )
+			texls = glob.glob ( os.path.join ( path, "*_%s_%s.*.tif" % ( variation, channel_name ) ) )
 
 			if len ( texls ) > 0 :
-				hkImportChannel ( path, doc_id, channel_name, geo, False )
+				hkImportChannel ( path, doc_id, channel_name, variation, geo, False )
 
 	else:
 		print "Not a proper asset"
@@ -160,15 +165,17 @@ def hkImportGeo ( path, doc_id, ver ):
 		fobj = "%s_subd%s.obj" % ( fobj, subd )
 		dst = os.path.join ( dst, fobj)
 		cmds = "hk-asset-subd -i %s -s %s -o %s" % ( file, subd, dst )
+		print "cmds ", cmds
 		commands.getoutput ( cmds )
 		geos = mari.geo.load ( dst )
 
 	for geo in geos :
-		geo.setMetadata ( "DBVersion", ver )
-		geo.setMetadata ( "ID", doc_id )
-		geo.setMetadata ( "Variation", 1 )
-		geo.setMetadataEnabled ( "DBVersion", False )
-		geo.setMetadataEnabled ( "ID", False )
+		geo.setMetadata ( "assetversion", ver )
+		geo.setMetadata ( "textureversion", ver )
+		geo.setMetadata ( "id", doc_id )
+		geo.setMetadataEnabled ( "assetversion", False )
+		geo.setMetadataEnabled ( "textureversion", False )
+		geo.setMetadataEnabled ( "id", False )
 		shd = geo.createShader( "Norman", "Lighting/Standalone/Norman" )
 		shd.makeCurrent ()
 
@@ -194,22 +201,6 @@ def pushMari ( db = None, doc_id = "", description = "", item = None,
 
     
     fname = os.path.join ( "/tmp", "%s%s" % ( core.hashTime (), extension ) )
-    # if hkcmds.saveFile ( fname, selection, msgbar ) :
-    #     destination = core.push ( db, doc_id, fname, description, progressbar,
-    #                        msgbar, rename )
-        
-    #     core.transfer ( screenshot, destination, doc_id )
-    #     source = os.path.join ( destination, doc_id + extension )
-        
-    #     print "pushMari():", source
-    #     assetExport ( source )
-        
-    #     if msgbar :
-    #         msgbar ( "Done" )
-        
-    #     return True
-    
-    # return False
     return True
 
 def pullMari (db = None, doc_id = "", ver = "latest" ):
@@ -226,50 +217,7 @@ def pushSelected ( db = None, doc_id = "", description = "", item = None,
                    screenshot = "", msgbar = False, progressbar = False ) :
     return pushMari ( db , doc_id, description, item, screenshot, msgbar,
                       progressbar, selection = True, rename = True, extension = ".mb" )
-  
-# class UipushMari(apps.UiPush3dPack):
-     
-     
-#     launcher = "mari"
-#     screenshot = hkcmds.doScreenshot ( os.path.join ( "/tmp", "%s.jpg" % core.hashTime() ) )
-#     fnPush = {
-#               "model" : pushSelected,
-#               "retopo" : pushFile,
-#               "rig" : pushSelected,
-#               "sculpt" : pushSelected,
-#               "surface" : pushSelected,
-#               "texture" : pushFile,
-#               "animation" : pushFile,
-#               "camera" : pushSelected,
-#               "compout" : pushFile,
-#               "compositing" : pushFile,
-#               "effect" : pushFile,
-#               "layout" : pushFile,
-#               "lighting" : pushFile,
-#               "matte-paint" : pushFile,
-#               "render" : pushFile
-#               }
-         
-#     def pushClicked ( self ) :
-#         db = self.db
-#         doc_id = self.doc_id
-#         description = self.plainTextEdit_comments.toPlainText ()
-#         item = self.item
-#         taskType = self.item.parent().text(0)
-#         screenshot = self.screenshot
-#         msgbar = self.labelStatus.setText
-#         progressbar = self.progressBar
-        
-#         pushed = self.fnPush[ taskType ] ( db, doc_id, description, item,
-#                                            screenshot, msgbar, progressbar )
-
-#         if pushed :
-#             self.close()
-     
-#     def screenshotClicked ( self ) :
-#         self.screenshot = hkcmds.doScreenshot ( os.path.join ( "/tmp", "%s.jpg" % core.hashTime() ) )
-#         self.labelImage.setPixmap ( self.screenshot )
-         
+           
 class UiMariAM(apps.UiAssetManager):
      
     defaultfilter = "ma"
@@ -282,7 +230,8 @@ class UiMariAM(apps.UiAssetManager):
         ver = int ( item.text ( 0 ) )
         self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str ( ver ) ) )
      
-        path = core.getAssetPath ( doc_id, ver )                
+        path = core.getAssetPath ( doc_id, ver )
+        print "importVersion():", path, doc_id, ver       
         hkImportFile ( path, doc_id = doc_id, ver = ver )
         self.statusbar.showMessage("%s pulled" % path )
 

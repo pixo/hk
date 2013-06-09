@@ -389,7 +389,6 @@ def pushFile ( files = list (), description="", db = "", doc_id = False, rename 
                   description =  description, progressbar = False,
                   msgbar = False, rename = rename )
 
-
 def getTextureAttr ( path ):
     textureType = utils.getTextureTypes()
     fname = os.path.basename ( path )
@@ -492,7 +491,7 @@ def textureCheck ( doc_id = "", files = list() ) :
             animTex = "%s_\d*_%s\d*.\d\d\d\d.\d\d\d\d." % ( doc_id, typ )
             pattern = "%s|%s" % ( simpTex, animTex )
             
-            if re.findall ( pattern + "tif$", fname ) or re.findall ( pattern + "exr$", fname ) :
+            if re.findall ( pattern + "tif$", fname ) or re.findall ( pattern + "exr$", fname ) or re.findall ( pattern + "tex$", fname ):
                 print "textureCheck: OK %s" % file
                 to_push.append ( file )
                 not_pushed.remove(file)               
@@ -523,8 +522,8 @@ def texturePush ( db = None, doc_id = "", path = "", description = "",
         for tex in texCheck :
             print ( "texturePush(): %s is wrong" % tex )
             
-        simptex = "%s_%s.%s.%s" % ( doc_id, "<type>", "<udim>", "tif" )
-        animtex = "%s_%s.%s.%s.%s" % ( doc_id, "<type>", "<udim>","<frame>", "tif")
+        simptex = "%s_%s_%s.%s.%s" % ( doc_id, "<variation>", "<type>", "<udim>", "tif" )
+        animtex = "%s_%s_%s.%s.%s.%s" % ( doc_id, "<variation>", "<type>", "<udim>","<frame>", "tif")
         print "texturePush(): expect %s or %s " % ( simptex , animtex)
         
         return False

@@ -477,19 +477,134 @@ class UiCreateAsset(UiCreateOnDb):
         if doc :
             self.lineEdit.setText("")
             self.label_status.setText("%s created" % doc_id)
+        
+        self.close()
 
-class UiCreateTask(UiCreateOnDb):
-        
+
+class UiCreateTask ( QtGui.QWidget ):
+    
+    
     def pushButtonClicked(self):
-        self.label_status.setText("")   
-        dbtyp = self.typ[1]
-        name = self.lineEdit.text()
-        description = self.plainTextEdit.toPlainText()    
-        doc_id = "%s_%s" % ( dbtyp, name )
-        doc = core.createTask(doc_id = doc_id, description = description)
         
-        if doc : 
-            self.label_status.setText("%s created" % doc_id)
+        tasks = utils.getTaskTypes()
+        dbtyp = self.typ[1]
+        fork = self.lineEdit_fork.text()
+        description = self.plainTextEdit_comments.toPlainText()
+        
+        if fork != "" :
+            for i in range( 0, self.listWidget_task.count() ):
+                item = self.listWidget_task.item (i)
+                  
+                if item.checkState() == QtCore.Qt.CheckState.Checked :
+                    task = tasks [ item.text () ]
+                    doc_id = "%s_%s_%s" % ( dbtyp, task, fork )            
+                    doc = core.createTask ( doc_id = doc_id, description = description )
+                    if doc :
+                        self.labelStatus.setText("%s created" % doc_id)
+            self.close()
+        else :
+            self.labelStatus.setText ( "Please provide a Fork name" )
+
+    def createListWidget(self):
+        
+        tasks = utils.getTaskTypes()
+        for i in tasks :
+            self.listWidget_task.addItem( i )
+        
+        for i in range( 0, self.listWidget_task.count() ):
+            item = self.listWidget_task.item(i)
+            icon = icon=os.path.join ( CC_PATH, item.text() + ".png" )
+            item.setIcon ( QtGui.QIcon ( icon ))
+            item.setCheckState( QtCore.Qt.Unchecked )
+                            
+    def signalConnect(self):
+        self.pushButton.clicked.connect( self.pushButtonClicked )
+        self.plainTextEdit_comments.textChanged.connect( self.commentsChanged )
+    
+    def commentsChanged ( self ) :
+        textdoc = self.plainTextEdit_comments.document()
+        description = textdoc.toPlainText()
+        
+        if description == "" :
+            self.pushButton.setEnabled ( False )
+        else :
+            self.pushButton.setEnabled ( True )
+            
+    def __init__(self, parent = None, typ = ( "Type", "typ" ) ):
+        super ( UiCreateTask, self ).__init__( parent )
+        self.typ = typ
+        self.setWindowTitle ("Create Task")
+        self.setObjectName("Form")
+        self.resize(803, 593)
+        self.verticalLayout_2 = QtGui.QVBoxLayout(self)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.verticalLayout_main = QtGui.QVBoxLayout()
+        self.verticalLayout_main.setObjectName("verticalLayout_main")
+        self.horizontalLayout_center = QtGui.QHBoxLayout()
+        self.horizontalLayout_center.setObjectName("horizontalLayout_center")
+        self.verticalLayout_file = QtGui.QVBoxLayout()
+        self.verticalLayout_file.setObjectName("verticalLayout_file")
+        self.label_proj = QtGui.QLabel(self)
+        self.label_proj.setObjectName("label_proj")
+        self.verticalLayout_file.addWidget(self.label_proj)
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.label_fork = QtGui.QLabel(self)
+        self.label_fork.setMinimumSize(QtCore.QSize(30, 0))
+        self.label_fork.setMaximumSize(QtCore.QSize(16, 16))
+        self.label_fork.setObjectName("label_fork")
+        self.horizontalLayout.addWidget(self.label_fork)
+        self.lineEdit_fork = QtGui.QLineEdit(self)
+        self.lineEdit_fork.setObjectName("lineEdit_fork")
+        self.horizontalLayout.addWidget(self.lineEdit_fork)
+        self.verticalLayout_file.addLayout(self.horizontalLayout)
+        self.listWidget_task = QtGui.QListWidget(self)
+        self.listWidget_task.setMinimumSize(QtCore.QSize(300, 0))
+        self.listWidget_task.setObjectName("listWidget_task")
+        self.listWidget_task.setAlternatingRowColors(True)
+        self.verticalLayout_file.addWidget(self.listWidget_task)
+        self.horizontalLayout_center.addLayout(self.verticalLayout_file)
+        self.verticalLayout = QtGui.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.label_comments = QtGui.QLabel(self)
+        self.label_comments.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_comments.setObjectName("label_comments")
+        self.verticalLayout.addWidget(self.label_comments)
+        self.plainTextEdit_comments = QtGui.QPlainTextEdit(self)
+        self.plainTextEdit_comments.setMinimumSize(QtCore.QSize(300, 0))
+        self.plainTextEdit_comments.setObjectName("plainTextEdit_comments")
+        self.verticalLayout.addWidget(self.plainTextEdit_comments)
+        self.horizontalLayout_center.addLayout(self.verticalLayout)
+        self.verticalLayout_main.addLayout(self.horizontalLayout_center)
+        self.horizontalLayout_bottom = QtGui.QHBoxLayout()
+        self.horizontalLayout_bottom.setObjectName("horizontalLayout_bottom")
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_bottom.addItem(spacerItem)
+        self.pushButton = QtGui.QPushButton(self)
+        self.pushButton.setMaximumSize(QtCore.QSize(60, 16777215))
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton.setEnabled ( False )
+        self.horizontalLayout_bottom.addWidget(self.pushButton)
+        self.verticalLayout_main.addLayout(self.horizontalLayout_bottom)
+        self.labelStatus = QtGui.QLabel(self)
+        self.labelStatus.setText("")
+        self.labelStatus.setObjectName("labelStatus")
+        self.verticalLayout_main.addWidget(self.labelStatus)
+        self.verticalLayout_2.addLayout(self.verticalLayout_main)
+        
+        self.createListWidget()
+        self.signalConnect()
+        self.retranslateUi(self)
+       
+        QtCore.QMetaObject.connectSlotsByName(self)
+
+    def retranslateUi(self, Form):
+        Form.setWindowTitle(QtGui.QApplication.translate("Form", "Asset Push", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_proj.setText(QtGui.QApplication.translate("Form", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Create Task :</span><span style=\" font-size:12pt;\"> Project name</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_fork.setText(QtGui.QApplication.translate("Form", "Fork", None, QtGui.QApplication.UnicodeUTF8))
+#         self.listWidget_task.setSortingEnabled(True)
+        self.label_comments.setText(QtGui.QApplication.translate("Form", "<html><head/><body><p><span style=\" font-weight:600;\">Description</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton.setText(QtGui.QApplication.translate("Form", "create", None, QtGui.QApplication.UnicodeUTF8))
     
     
 class UiMainManager(QtGui.QMainWindow):
@@ -779,7 +894,7 @@ class UiAssetManager(UiMainManager):
         doc_id = item.hkid
         nicename = doc_id
         
-        self.createTaskWidget = UiCreateTask(typ = (nicename, doc_id))   
+        self.createTaskWidget = UiCreateTask ( typ = ( nicename, doc_id ) )   
         self.createTaskWidget.show()
         
     def pushVersion ( self ) :
@@ -857,7 +972,7 @@ class UiAssetManager(UiMainManager):
         newAsset.triggered.connect (  self.createAsset )       
         
         """Create new task"""
-        newTask = menu.addAction ( icon_new, 'Add task' % curtext )
+        newTask = menu.addAction ( icon_new, 'Add task' )
         newTask.triggered.connect ( self.createTask )
 
         """Refresh option """
