@@ -16,7 +16,6 @@ except:
     PROJECT = "temp"
     print "assetManager module: Can't set PROJECT \n set PROJECT > tmp"
 
-#TODO: create task and fork for current asset, a menu with all the tickable tasks and fork name ( see UiCreateTask line 480)
 #TODO: create ui for shot creation
 #TODO: preview obj with meshlab
 
@@ -57,9 +56,10 @@ class UiPush ( QtGui.QWidget ) :
             
             if os.path.isfile (path) :
                 dictpath[file] = path
-        self.dictpath=dictpath
                 
+        self.dictpath=dictpath
         lspath = list()
+        
         for key in self.dictpath:
             lspath.append( key )
             
@@ -79,26 +79,27 @@ class UiPush ( QtGui.QWidget ) :
         else:
             lspush = list ()
             self.progressBar.setHidden ( False )
-            self.progressBar.setValue (0)
+            self.progressBar.setValue ( 0 )
             lspush.append ( self.dictpath[ item.text () ] )
-            description = self.plainTextEdit_description.toPlainText()
+            description = self.plainTextEdit_description.toPlainText ()
             
             if self.task in self.pushTask :
-                push = self.pushTask[self.task]
+                push = self.pushTask [ self.task ]
             else:
                 push = core.push
                 
             push( self.db, self.doc_id, lspush, description, self.progressBar,
-                       self.labelStatus.setText )
+                  self.labelStatus.setText )
             
             self.progressBar.setHidden ( True )
             self.labelStatus.setText ( "Done" )
         
     def descriptionChanged( self ):        
-        description = self.plainTextEdit_description.toPlainText()
+        description = self.plainTextEdit_description.toPlainText ()
         
         if description == "" :
             self.pushButton.setEnabled ( False )
+            
         else :
             self.pushButton.setEnabled ( True )
     
@@ -107,18 +108,18 @@ class UiPush ( QtGui.QWidget ) :
         
     def signalConnect(self):
         """ Connect the UI to the Ui_AssetWindow methods """
-        self.pushButton.clicked.connect( self.pushClicked )
-        self.lineEdit_file.textChanged.connect( self.fileLineChanged )
-        self.plainTextEdit_description.textChanged.connect( self.descriptionChanged )
-        self.listWidget_file.clicked.connect( self.liswidget_clicked)
-        self.checkBox.clicked.connect(self.checkBoxClicked)
+        self.pushButton.clicked.connect ( self.pushClicked )
+        self.lineEdit_file.textChanged.connect ( self.fileLineChanged )
+        self.plainTextEdit_description.textChanged.connect ( self.descriptionChanged )
+        self.listWidget_file.clicked.connect ( self.liswidget_clicked)
+        self.checkBox.clicked.connect ( self.checkBoxClicked )
         
     def __init__( self, parent = None, db = None, item = "" ):
         super ( UiPush, self ).__init__( parent )
                 
-        self.setObjectName("Form")
-        self.resize(600, 600)
-        self.verticalLayout_2 = QtGui.QVBoxLayout(self)
+        self.setObjectName ( "Form" )
+        self.resize ( 600, 600 )
+        self.verticalLayout_2 = QtGui.QVBoxLayout ( self )
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.verticalLayout_main = QtGui.QVBoxLayout()
         self.verticalLayout_main.setObjectName("verticalLayout_main")
@@ -169,7 +170,8 @@ class UiPush ( QtGui.QWidget ) :
         self.progressBar.setTextDirection(QtGui.QProgressBar.TopToBottom)
         self.progressBar.setObjectName("progressBar")
         self.horizontalLayout_bottom.addWidget(self.progressBar)
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacerItem = QtGui.QSpacerItem ( 40, 20, QtGui.QSizePolicy.Expanding,
+                                         QtGui.QSizePolicy.Minimum )
         self.horizontalLayout_bottom.addItem(spacerItem)
         self.pushButton = QtGui.QPushButton(self)
         self.pushButton.setMaximumSize(QtCore.QSize(60, 16777215))
@@ -298,7 +300,8 @@ class UiPush3dPack ( QtGui.QWidget ) :
         self.verticalLayout_3.addWidget(self.labelImage)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacerItem = QtGui.QSpacerItem( 40, 20, QtGui.QSizePolicy.Expanding,
+                                        QtGui.QSizePolicy.Minimum )
         self.horizontalLayout.addItem(spacerItem)
         self.screenshotButton = QtGui.QPushButton(self)
         self.screenshotButton.setObjectName("screenshotButton")
@@ -323,7 +326,8 @@ class UiPush3dPack ( QtGui.QWidget ) :
         self.progressBar.setTextDirection(QtGui.QProgressBar.TopToBottom)
         self.progressBar.setObjectName("progressBar")
         self.horizontalLayout_bottom.addWidget(self.progressBar)
-        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacerItem1 = QtGui.QSpacerItem ( 40, 20, QtGui.QSizePolicy.Expanding,
+                                          QtGui.QSizePolicy.Minimum )
         self.horizontalLayout_bottom.addItem(spacerItem1)
         self.pushButton = QtGui.QPushButton(self)
         self.pushButton.setMaximumSize(QtCore.QSize(60, 16777215))
@@ -478,13 +482,13 @@ class UiCreateAsset(UiCreateOnDb):
             self.lineEdit.setText("")
             self.label_status.setText("%s created" % doc_id)
         
-        self.close()
+        self.close ()
 
 
-class UiCreateTask ( QtGui.QWidget ):
+class UiCreateTask ( QtGui.QWidget ) :
     
     
-    def pushButtonClicked(self):
+    def pushButtonClicked ( self ) :
         
         tasks = utils.getTaskTypes()
         dbtyp = self.typ[1]
@@ -492,50 +496,104 @@ class UiCreateTask ( QtGui.QWidget ):
         description = self.plainTextEdit_comments.toPlainText()
         
         if fork != "" :
-            for i in range( 0, self.listWidget_task.count() ):
+            
+            for i in range ( 0, self.listWidget_task.count() ):
                 item = self.listWidget_task.item (i)
                   
-                if item.checkState() == QtCore.Qt.CheckState.Checked :
+                if item.checkState () == QtCore.Qt.CheckState.Checked :
                     task = tasks [ item.text () ]
                     doc_id = "%s_%s_%s" % ( dbtyp, task, fork )            
                     doc = core.createTask ( doc_id = doc_id, description = description )
+                    
                     if doc :
-                        self.labelStatus.setText("%s created" % doc_id)
-            self.close()
+                        self.labelStatus.setText ( "%s created" % doc_id )
+                        
+            self.close ()
+            
         else :
             self.labelStatus.setText ( "Please provide a Fork name" )
 
-    def createListWidget(self):
+    def createListWidget ( self ) :
+        """Clear previous task list"""
+        self.listWidget_task.clear ()
         
-        tasks = utils.getTaskTypes()
-        for i in tasks :
-            self.listWidget_task.addItem( i )
+        """Get fork lineEdit """
+        fork = self.lineEdit_fork.text()
         
-        for i in range( 0, self.listWidget_task.count() ):
-            item = self.listWidget_task.item(i)
-            icon = icon=os.path.join ( CC_PATH, item.text() + ".png" )
-            item.setIcon ( QtGui.QIcon ( icon ))
-            item.setCheckState( QtCore.Qt.Unchecked )
-                            
-    def signalConnect(self):
-        self.pushButton.clicked.connect( self.pushButtonClicked )
-        self.plainTextEdit_comments.textChanged.connect( self.commentsChanged )
+        """Get asset id"""
+        asset_id = self.typ[1].replace ( os.getenv ( "HK_PROJECT" )+"_", "" )
+        
+        """Get Description test"""
+        textdoc = self.plainTextEdit_comments.document ()
+        description = textdoc.toPlainText ()
+        
+        if fork != "" :
+
+            """Check if description is not empty to enable it"""
+            if description != "":
+                self.pushButton.setEnabled ( True )
+            
+            else:
+                self.pushButton.setEnabled ( False )
+                        
+            """Create task items"""            
+            for i in self.taskTypes :
+                self.listWidget_task.addItem ( i )
+            
+            """Set task status"""
+            for i in range ( 0, self.listWidget_task.count () ) :
+                """get items task"""
+                item = self.listWidget_task.item ( i )
+        
+                """get item name"""
+                itemText = item.text ()
+                
+                """create task id from asset id, item text and fork line """
+                itemId = self.taskTypes [ itemText ]
+                task = "%s_%s_%s" % ( asset_id, itemId, fork, )
+                icon = os.path.join ( CC_PATH, itemText + ".png" )
+                item.setIcon ( QtGui.QIcon ( icon ) )
+                
+                """if task exist change bg color"""
+                if not ( task in self.tasks ) : 
+                    item.setCheckState ( QtCore.Qt.Unchecked )
+                else:
+                    item.setBackground ( QtGui.QColor ( 128, 255, 128 ) )
+        
+        else :
+            """Set create button false if fork is empty"""
+            self.pushButton.setEnabled ( False )
+
+                    
+                    
+    def signalConnect ( self ) :
+        self.pushButton.clicked.connect ( self.pushButtonClicked )
+        self.lineEdit_fork.textChanged.connect ( self.createListWidget )
+        self.plainTextEdit_comments.textChanged.connect ( self.commentsChanged )
     
     def commentsChanged ( self ) :
-        textdoc = self.plainTextEdit_comments.document()
-        description = textdoc.toPlainText()
         
-        if description == "" :
+        textdoc = self.plainTextEdit_comments.document ()
+        fork = self.lineEdit_fork.text ()
+        description = textdoc.toPlainText ()
+        
+        if description == "" or fork == "":
             self.pushButton.setEnabled ( False )
+            
         else :
             self.pushButton.setEnabled ( True )
             
-    def __init__(self, parent = None, typ = ( "Type", "typ" ) ):
+    def __init__(self, parent = None, db = None, typ = ( "Type", "typ" ) ):
         super ( UiCreateTask, self ).__init__( parent )
+        
+        self.db = db
         self.typ = typ
-        self.setWindowTitle ("Create Task")
-        self.setObjectName("Form")
-        self.resize(803, 593)
+        self.tasks = utils.lsDb ( self.db, "task", self.typ[1] )
+        self.taskTypes = utils.getTaskTypes ()
+        
+        self.setWindowTitle ( "Create Task" )
+        self.setObjectName ( "Form" )
+        self.resize ( 803, 593 )
         self.verticalLayout_2 = QtGui.QVBoxLayout(self)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.verticalLayout_main = QtGui.QVBoxLayout()
@@ -578,7 +636,8 @@ class UiCreateTask ( QtGui.QWidget ):
         self.verticalLayout_main.addLayout(self.horizontalLayout_center)
         self.horizontalLayout_bottom = QtGui.QHBoxLayout()
         self.horizontalLayout_bottom.setObjectName("horizontalLayout_bottom")
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacerItem = QtGui.QSpacerItem( 40, 20, QtGui.QSizePolicy.Expanding,
+                                        QtGui.QSizePolicy.Minimum )
         self.horizontalLayout_bottom.addItem(spacerItem)
         self.pushButton = QtGui.QPushButton(self)
         self.pushButton.setMaximumSize(QtCore.QSize(60, 16777215))
@@ -600,9 +659,8 @@ class UiCreateTask ( QtGui.QWidget ):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QtGui.QApplication.translate("Form", "Asset Push", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_proj.setText(QtGui.QApplication.translate("Form", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Create Task :</span><span style=\" font-size:12pt;\"> Project name</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_proj.setText(QtGui.QApplication.translate("Form", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Create Task :</span><span style=\" font-size:12pt;\"> %s </span></p></body></html>" % self.typ[1], None, QtGui.QApplication.UnicodeUTF8))
         self.label_fork.setText(QtGui.QApplication.translate("Form", "Fork", None, QtGui.QApplication.UnicodeUTF8))
-#         self.listWidget_task.setSortingEnabled(True)
         self.label_comments.setText(QtGui.QApplication.translate("Form", "<html><head/><body><p><span style=\" font-weight:600;\">Description</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton.setText(QtGui.QApplication.translate("Form", "create", None, QtGui.QApplication.UnicodeUTF8))
     
@@ -894,7 +952,7 @@ class UiAssetManager(UiMainManager):
         doc_id = item.hkid
         nicename = doc_id
         
-        self.createTaskWidget = UiCreateTask ( typ = ( nicename, doc_id ) )   
+        self.createTaskWidget = UiCreateTask ( db = self.db, typ = ( nicename, doc_id ) )   
         self.createTaskWidget.show()
         
     def pushVersion ( self ) :
@@ -966,10 +1024,12 @@ class UiAssetManager(UiMainManager):
         menu = QtGui.QMenu ()
         curtext = self.comboBox_a.currentText()
         icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
-        
-        """Create new asset"""
-        newAsset = menu.addAction ( icon_new, 'Add %s' % curtext )
-        newAsset.triggered.connect (  self.createAsset )       
+       
+        """Do not allow to create asset from asset or task"""        
+        if not ( curtext in ("asset", "task")):
+            """Create new asset"""
+            newAsset = menu.addAction ( icon_new, 'Add %s' % curtext )
+            newAsset.triggered.connect (  self.createAsset )       
         
         """Create new task"""
         newTask = menu.addAction ( icon_new, 'Add task' )
@@ -1115,70 +1175,6 @@ class UiAssetManager(UiMainManager):
             item.sortChildren(0, order)
             
         self.filterTree()
-            
-#     def itemExpandedTask ( self, item ) :
-#         if item.child(0).hktype == "none" :
-#             task_dict = self.typ_dict [ self.comboBox_a.currentText () ][1]
-#             
-#             task = task_dict [ item.text (0) ]
-#             
-#             parentId = item.parent().hkid
-#             startkey = "%s_%s" % ( parentId, task )
-# #             itNameLs = utils.lsDb ( self.db, "asset_task", startkey )
-#             itNameLs = utils.lsDb ( self.db, task, startkey )
-#             icon_empty = os.path.join ( CC_PATH, "empty.png" )
-#             
-#             if len ( itNameLs ) > 0 :
-#                 item.removeChild ( item.child (0) )         
-#             
-#             for itName in itNameLs :
-#                 itemChild = QtGui.QTreeWidgetItem ( item )
-#                 itemChild.setText ( 0, itName.split ( "_" ) [-1] )
-#                 itemChild.hktype = "fork"
-#                 itemChild.hkbranch = item.hkbranch
-#                 icon = os.path.join ( CC_PATH, "fork.png" )
-#                 itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
-#                 itemChild.versions = dict ()
-#                 itemChild.hkid = "%s_%s" % ( PROJECT, itName )
-#                 itemChild.dbdoc = self.db [ itemChild.hkid ]
-#                 
-#                 item_none = QtGui.QTreeWidgetItem ( itemChild )
-#                 item_none.hktype = "none"
-#                 item_none.hkbranch = "empty"
-#                 item_none.setText ( 0, "Empty" )
-#                 item_none.setIcon ( 0, QtGui.QIcon ( icon_empty ) )
-#                 item_none.setText ( 0, "Empty" )
-#                 item_none.setHidden = True
-# 
-#             order = QtCore.Qt.AscendingOrder    
-#             item.sortChildren ( 0, order )
-#         
-#     def itemExpandedFork ( self, item ) :
-#         
-#         if item.child(0).hktype == "none" :
-#             font = QtGui.QFont ()
-#             font.setItalic ( True )
-# 
-#             if item.versions == dict ():
-#                 item.versions = item.dbdoc [ "versions" ]
-#                 
-#                 if len ( item.versions ) > 0:
-#                     brush = QtGui.QBrush ( QtGui.QColor ( 128, 128, 128 ) )
-#                     
-#                     for ver in item.versions :
-#                         itemChild = QtGui.QTreeWidgetItem ( item )
-#                         itemChild.setFont ( 0, font )
-#                         itemChild.setForeground ( 0, brush )
-#                         icon = os.path.join ( CC_PATH, "file.png" )
-#                         itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
-#                         itemChild.setText ( 0, "%03d" % float ( ver ) )
-#                         itemChild.hkbranch = item.hkbranch
-#                         itemChild.hktype = "version"
-#                         itemChild.info = item.versions [ ver ]
-#                         
-#                     order = QtCore.Qt.DescendingOrder
-#                     item.sortChildren ( 0, order )
-#                     item.removeChild ( item.child ( 0 ) )
                     
     def itemExpandedTask ( self, item ) :
         
@@ -1383,4 +1379,4 @@ def systemAM () :
     sys.exit()
     
 if __name__ == '__main__':
-    systemAM()
+    systemAM ()
