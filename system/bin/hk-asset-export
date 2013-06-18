@@ -37,7 +37,7 @@ def abcExporter ( destination = "", start = 1, end = 1, renderOnly = True, strip
     attrs = "," + attrs
     attrs = attrs.replace( ",", " -attr ")
                      
-    mel.eval ( 'AbcExport -j "-frameRange %s %s %s %s %s -file %s";' % ( start, end, attrs, ro, strip, destination ) )
+    mel.eval ( 'AbcExport -j "-frameRange %s %s %s %s %s %s -file %s";' % ( start, end, attrs, ro, "-uvWrite", strip, destination ) )
 
 def cli ( input = None, obj = True, abc = True, start = 1, end = 1, ro = 1, strip = 1 ) :
 
