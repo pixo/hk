@@ -6,6 +6,18 @@ import maya.cmds as cmds
 import maya.mel as mel
 import glob
 
+def setAssetVersion ( path ):
+    """Get root path"""
+    rootList = cmds.ls ("root")
+    
+    if rootList :
+        version = int ( path.split ( os.sep )[-2] )
+        """Set asset version"""
+        cmds.setAttr ( "root.asset_version", lock = False )
+        cmds.setAttr ( "root.asset_version", version )
+        cmds.setAttr ( "root.asset_version", lock = True )
+        cmds.file ( s = True )
+        
 def objExporter ( destination = "", start = 1, end = 1 ):    
     start = int ( start )
     end = int ( end )
@@ -33,7 +45,7 @@ def abcExporter ( destination = "", start = 1, end = 1, renderOnly = True, strip
     if not renderOnly :
         ro = ""
      
-    attrs = "version,asset"
+    attrs = "asset,asset_version,texture_version,variation"
     attrs = "," + attrs
     attrs = attrs.replace( ",", " -attr ")
                      
@@ -42,9 +54,21 @@ def abcExporter ( destination = "", start = 1, end = 1, renderOnly = True, strip
 def cli ( input = None, obj = True, abc = True, start = 1, end = 1, ro = 1, strip = 1 ) :
 
     """Load the input file"""
-    if os.path.isabs ( input ):
+    if not os.path.isabs ( input ):
         input = os.path.abspath ( input )
+    
+    """check if file"""    
+    if not os.path.isfile ( input ):
+        return 1
+    
+    """check if correct ext"""
+    base, ext = os.path.splitext ( input )
+    if not (ext in ( ".mb", ".ma", ".obj" )):
+        return 1
+    
+    """open the file"""
     cmds.file ( input, o = True )
+
 
     """Get maya plugins path"""
     mayaver = os.getenv ( "HK_MAYA_VER" )
@@ -55,10 +79,12 @@ def cli ( input = None, obj = True, abc = True, start = 1, end = 1, ro = 1, stri
     cmds.loadPlugin ( os.path.join ( mayaloc, 'AbcExport.so' ) )
     
     """Get the input directory to change permission"""
-    base, ext = os.path.splitext ( input )
     dirname = os.path.dirname ( input )
     os.chmod ( input, 0775 )
     os.chmod ( dirname, 0775 )
+    
+    """set the version and save"""
+    setAssetVersion ( input )
 
     """Exporting to obj abc gpj"""
     if obj :
@@ -82,8 +108,8 @@ if __name__ == '__main__':
     parser.add_argument ( "-ro", "--renderOnly", default = "1", help = "export render object only, default 1" )
     parser.add_argument ( "-strip", "--stripNameSpace", default = "1", help = "strip namespace, default = 1" )
     parser.add_argument ( "-f", "--first", default = 1, help = "First frame, default frame 1" )
-    parser.add_argument( "-l", "--last", default = 1, help = "Last frame, default frame 1")
-    args = parser.parse_args()
+    parser.add_argument ( "-l", "--last", default = 1, help = "Last frame, default frame 1" )
+    args = parser.parse_args ()
 
     if args.input == None:
             print "No input file provided.Please check help, -h"

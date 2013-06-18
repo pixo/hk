@@ -24,36 +24,49 @@ def createAssetStructure ( doc_id, msgbar ):
   assetList = cmds.ls ( "%s:*" % doc_id )
   if len ( assetList ) == 0 :
 
-    """Set the root namespace"""
-#     if not cmds.namespace ( exists = doc_id ) :
-#         cmds.namespace ( add = doc_id )
-#         cmds.namespace ( set = doc_id )
-
     """create structure"""
     root = cmds.createNode ( "transform", n = "root" )
     trs_master = cmds.createNode ( "transform", n = "master_trs" )
     trs_shot = cmds.createNode ( "transform", n = "shot_trs" )
     trs_aux = cmds.createNode ( "transform", n = "aux_trs" )
 
-    grp_model = cmds.createNode ( "transform", n = "model_grp" )
-    grp_rig = cmds.createNode ( "transform", n = "rig_grp" )
-    grp_look = cmds.createNode ( "transform", n = "look_grp" )
-    grp_render = cmds.createNode ( "transform", n = "render_grp" )
-#     cmds.namespace ( set = ":" )
-
-    cmds.parent ( render_grp, model)
-    cmds.parent ( model, rig , look, trs_aux )
+    face_grp = cmds.createNode ( "transform", n = "face_grp" )
+    body_grp = cmds.createNode ( "transform", n = "body_grp" )
+    cloth_grp = cmds.createNode ( "transform", n = "cloth_grp" )
+    render_grp = cmds.createNode ( "transform", n = "render_grp" )
+    model_grp = cmds.createNode ( "transform", n = "model_grp" )
+    rig_grp = cmds.createNode ( "transform", n = "rig_grp" )
+    look_grp = cmds.createNode ( "transform", n = "look_grp" )   
+    
+    cmds.parent ( face_grp, render_grp )
+    cmds.parent ( body_grp, render_grp )
+    cmds.parent ( cloth_grp, render_grp )
+    cmds.parent ( render_grp, model_grp )
+    cmds.parent ( model_grp, rig_grp , look_grp, trs_aux )
     cmds.parent ( trs_aux, trs_shot )
     cmds.parent ( trs_shot, trs_master )
     cmds.parent ( trs_master, root )
 
     """create attribute"""
+    #asset attr
     cmds.addAttr ( root, shortName = "asset", dataType = "string" )
     cmds.setAttr ( "%s.%s" % ( root, "asset" ), doc_id, typ = "string" )
     cmds.setAttr ( "%s.%s" % ( root, "asset" ), lock = True )
-    cmds.addAttr ( root, shortName = "version", attributeType = "short" )
-    cmds.setAttr ( "%s.%s" % ( root, "version" ), lock = True )
+      
+    #asset version attr
+    cmds.addAttr ( root, shortName = "asset_version", attributeType = "short", dv = 1 )
+    cmds.setAttr ( "%s.%s" % ( root, "asset_version" ), lock = True )
 
+    #texture version attr
+    cmds.addAttr ( root, shortName = "texture_version", attributeType = "short", dv = 1 )
+    cmds.setAttr ( "%s.%s" % ( root, "texture_version" ), lock = True )
+
+    #variation attr
+    cmds.addAttr ( root, shortName = "variation", attributeType = "short", dv = 1, min = 1 )
+
+    #select root structure
+    cmds.select ( root, r = True)
+    
   else:
 
     msgbar ( "%s already exists" % doc_id )
@@ -66,15 +79,21 @@ def doScreenshot ( filename = "" ) :
     view.readColorBuffer ( image, True )
     image.resize ( 640, 480, True )
     image.writeToFile ( filename, 'jpg' )
+    
     return filename
     
 
 def saveFile ( filename = "", exportsel = False, msgbar = None ) :
     
+    
     if exportsel :
-        if len ( cmds.ls ( sl = True ) ) == 0 :
-            msgbar ( "Please select an asset to export" )
+        selection = cmds.ls ( "root" )
+        
+        if not selection :
+            msgbar ( "There's no asset root node" )
             return False
+        
+        cmds.select ( selection[0], r =True )
             
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
     ext = os.path.splitext ( filename )[-1]
@@ -117,7 +136,7 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
       
       if saveFile ( fname, selection, msgbar ) :
           destination = core.push ( db, doc_id, fname, description, progressbar,
-                             msgbar, rename )
+                        msgbar, rename )
           
           core.transfer ( screenshot, destination, doc_id )
           source = os.path.join ( destination, doc_id + extension )
@@ -128,7 +147,7 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
           if msgbar :
               msgbar ( "Done" )
           
-          return True
+          return destination
       
       return False
 
@@ -152,10 +171,11 @@ def pushFile ( db = None, doc_id = "", description = "", item = None,
 
 def pushSelected ( db = None, doc_id = "", description = "", item = None,
                    screenshot = "", msgbar = False, progressbar = False ) :
+    
     return pushMaya ( db , doc_id, description, item, screenshot, msgbar,
                       progressbar, selection = True, rename = True, extension = ".mb" )
 
-         
+      
 class UiPushMaya(apps.UiPush3dPack):
      
      
@@ -191,26 +211,46 @@ class UiPushMaya(apps.UiPush3dPack):
               'lay':'layout',
               'cam':'camera'
              }
-         
+  
+    def checkScene ( self, doc_id ):
+        rootList = cmds.ls ( "root" )
+                
+        if rootList :
+            asset = cmds.getAttr ( "root.asset" )
+            
+            if asset == doc_id :
+                return True
+            
+            else:
+                self.labelStatus.setText ( "Wrong, try to publish %s to %s " % ( asset, doc_id ) )
+                return False
+        else :
+            self.labelStatus.setText ( "There is no root asset node is the scene" )
+            return False       
 
     def pushClicked ( self ) :
-
-        db = self.db
         doc_id = self.doc_id
-        description = self.plainTextEdit_comments.toPlainText ()
-        item = self.item
-        taskType = self.varpush [ doc_id.split ( "_" ) [3] ]
-        screenshot = self.screenshot
-        msgbar = self.labelStatus.setText
-        progressbar = self.progressBar
         
-        pushed = self.fnPush[ taskType ] ( db, doc_id, description, item,
-                                           screenshot, msgbar, progressbar )
-
-        if pushed :
-            self.close()
+        if self.checkScene ( doc_id ):
+            """Set variables"""
+            db = self.db
+            description = self.plainTextEdit_comments.toPlainText ()
+            item = self.item
+            taskType = self.varpush [ doc_id.split ( "_" ) [3] ]
+            screenshot = self.screenshot
+            msgbar = self.labelStatus.setText
+            progressbar = self.progressBar
+        
+            """Push asset"""
+            pushed = self.fnPush[ taskType ] ( db, doc_id, description, item, screenshot, msgbar, progressbar )
+  
+            if pushed :
+                version = int ( pushed.split ( os.sep )[-1] )
+                cmds.setAttr ( "root.asset_version", lock = False )
+                cmds.setAttr ( "root.asset_version", version )
+                cmds.setAttr ( "root.asset_version", lock = True )
+                self.close()
      
-
     def screenshotClicked ( self ) :
         self.screenshot = doScreenshot ( os.path.join ( "/tmp", "%s.jpg" % core.hashTime() ) )
         self.labelImage.setPixmap ( self.screenshot )
@@ -304,9 +344,9 @@ class UiMayaAM(apps.UiAssetManager):
             actionSaveas.triggered.connect ( self.saveFileDialog )
 
             """save to workspace"""
-            icon_create = QtGui.QIcon ( os.path.join ( CC_PATH, "create.png" ) )
-            actionSaveas = menu.addAction ( icon_create, 'Create asset structure' )
-            actionSaveas.triggered.connect ( self.createAssetStructure )
+            icon_structure = QtGui.QIcon ( os.path.join ( CC_PATH, "structure.png" ) )
+            actionStructure = menu.addAction ( icon_structure, 'Create asset structure' )
+            actionStructure.triggered.connect ( self.createAssetStructure )
 
         else:
             """If not existing create action createWorkspace """
