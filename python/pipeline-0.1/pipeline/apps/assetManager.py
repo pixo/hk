@@ -1372,7 +1372,7 @@ class UiAssetManager(UiMainManager):
         self.comboTypeChange ()
                 
 def systemAM () :
-    app = QtGui.QApplication ( sys.argv )    
+    app = QtGui.QApplication ( sys.argv )
     main = UiAssetManager()
     main.show()
     app.exec_()

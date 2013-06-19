@@ -16,7 +16,7 @@ def setAssetVersion ( path ):
         cmds.setAttr ( "root.asset_version", lock = False )
         cmds.setAttr ( "root.asset_version", version )
         cmds.setAttr ( "root.asset_version", lock = True )
-        cmds.file ( s = True )
+        cmds.file ( save = True )
         
 def objExporter ( destination = "", start = 1, end = 1 ):    
     start = int ( start )
@@ -45,7 +45,7 @@ def abcExporter ( destination = "", start = 1, end = 1, renderOnly = True, strip
     if not renderOnly :
         ro = ""
      
-    attrs = "asset,asset_version,texture_version,variation"
+    attrs = "asset,texture_version,variation"
     attrs = "," + attrs
     attrs = attrs.replace( ",", " -attr ")
                      
@@ -83,10 +83,10 @@ def cli ( input = None, obj = True, abc = True, start = 1, end = 1, ro = 1, stri
     os.chmod ( input, 0775 )
     os.chmod ( dirname, 0775 )
     
-    """set the version and save"""
-    setAssetVersion ( input )
+#     """set the version and save"""
+#     setAssetVersion ( input )
 
-    """Exporting to obj abc gpj"""
+    """Exporting to obj abc """
     if obj :
         dst = base + ".obj"
         objExporter ( dst, start, end )
@@ -95,7 +95,6 @@ def cli ( input = None, obj = True, abc = True, start = 1, end = 1, ro = 1, stri
         dst = base + ".abc"
         abcExporter ( dst, start, end, renderOnly = 1, stripNS = 1 )
     
-    cmds.file ( save = True)
     files = glob.glob ( "%s/*" % dirname )
     files.append ( dirname )
     for file in files : os.chmod ( file, 0555 )
@@ -106,7 +105,7 @@ if __name__ == '__main__':
     parser.add_argument ( "-obj", "--obj", default = "1", help = "convert to obj file, default = 1" )
     parser.add_argument ( "-abc", "--alembic", default = "1", help = "convert to alembic file, default = 1" )
     parser.add_argument ( "-ro", "--renderOnly", default = "1", help = "export render object only, default 1" )
-    parser.add_argument ( "-strip", "--stripNameSpace", default = "1", help = "strip namespace, default = 1" )
+    parser.add_argument ( "-sns", "--stripNameSpace", default = "1", help = "strip namespace, default = 1" )
     parser.add_argument ( "-f", "--first", default = 1, help = "First frame, default frame 1" )
     parser.add_argument ( "-l", "--last", default = 1, help = "Last frame, default frame 1" )
     args = parser.parse_args ()
