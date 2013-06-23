@@ -63,7 +63,8 @@ def getTextureTypes () :
             }
 
 def getAssetTypes ():
-    return {'character':'chr',
+    return {'camera':'cam',
+            'character':'chr',
             'environment':'env',
             'material':'mtl',
             'prop':'prp',
@@ -75,7 +76,6 @@ def getAssetTypes ():
 def getTaskTypes ():                    
     return {'animation':'ani',
             'bashcomp':'bcmp',
-            'camera':'cam',
             'composite':'rcmp',
             'mattepaint':'dmp',
             'dynamic':'dyn',
@@ -86,6 +86,8 @@ def getTaskTypes ():
             'override' : 'ovr',
             'particle':'pcl',
             'render':'ren',
+            'rendercam':'rca',
+            'projcam':'pca',
             'rig' : 'rig',
             'retopo':'rtp',
             'rotoscopy':'rot',

@@ -912,12 +912,18 @@ class UiAssetManager(UiMainManager):
                 'texture':'tex',
                 'effect':'vfx'
                 }
-    
+
+    camera_task ={
+                'rendercam':'rca',
+                'projcam':'pca',
+                }
+
     #TODO:replace by utils.getAssetTypes ()    
     typ_dict = {
                 "asset": ( "asset", asset_task ),
                 "task": ( "task", asset_task ),
                 "character": ( "chr", asset_task ),
+                "camera": ( "cam", camera_task ),
                 "vehicle": ( "vcl", asset_task ),
                 "prop": ( "prp", asset_task ),
                 "environment": ( "env", asset_task ),
@@ -935,7 +941,8 @@ class UiAssetManager(UiMainManager):
                   "vfx" : "effect",
                   "mtl" : "material",
                   "shot" : "shot",
-                  "seq" : "sequence"
+                  "seq" : "sequence",
+                  "cam" : "camera"
                   }
     
     icon_empty = os.path.join ( CC_PATH, "empty.png" )

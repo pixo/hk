@@ -142,7 +142,6 @@ def referenceFile ( filename = "", namespace = "" ):
         
 def instanceAsset ( namespace = "" ):
     """Find new namespace"""
-    
     ns = namespace
     name ="%s:root" % ns
     
