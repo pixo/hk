@@ -5,18 +5,6 @@ import sys, argparse, os
 import maya.cmds as cmds
 import maya.mel as mel
 import glob
-
-def setAssetVersion ( path ):
-    """Get root path"""
-    rootList = cmds.ls ("root")
-    
-    if rootList :
-        version = int ( path.split ( os.sep )[-2] )
-        """Set asset version"""
-        cmds.setAttr ( "root.asset_version", lock = False )
-        cmds.setAttr ( "root.asset_version", version )
-        cmds.setAttr ( "root.asset_version", lock = True )
-        cmds.file ( save = True )
         
 def objExporter ( destination = "", start = 1, end = 1 ):    
     start = int ( start )
@@ -32,27 +20,16 @@ def objExporter ( destination = "", start = 1, end = 1 ):
         cmds.file ( dst, force = True, options = "groups=1;ptgroups=1;materials=0;smoothing=1;normals=1",
                     type = "OBJexport", pr = True, ea = True )
 
-def abcExporter ( destination = "", start = 1, end = 1, renderOnly = True, stripNS = True ):
+def abcExporter ( destination = "", start = "1", end = "1" ):
+        
+    attrs = "-attr asset -attr texture_version -attr variation"
+    cmd = 'AbcExport -j "-frameRange %s %s %s -ro -uvWrite -file %s";' % ( str( start ), str ( end ), attrs,  destination )
+    mel.eval ( cmd )
+
+def cli ( input = None, obj = True, abc = True, start = 1, end = 1 ) :
+    obj = bool ( int ( obj ) )
+    abc = bool ( int ( abc ) )
     
-    strip = "-stripNamespaces"
-    ro = "-ro"
-
-    """Check if namespace is needed"""
-    if not stripNS :
-        strip = ""
-    
-    """Check if renderonly is needed"""    
-    if not renderOnly :
-        ro = ""
-     
-    attrs = "asset,texture_version,variation"
-    attrs = "," + attrs
-    attrs = attrs.replace( ",", " -attr ")
-                     
-    mel.eval ( 'AbcExport -j "-frameRange %s %s %s %s %s %s -file %s";' % ( start, end, attrs, ro, "-uvWrite", strip, destination ) )
-
-def cli ( input = None, obj = True, abc = True, start = 1, end = 1, ro = 1, strip = 1 ) :
-
     """Load the input file"""
     if not os.path.isabs ( input ):
         input = os.path.abspath ( input )
@@ -69,7 +46,6 @@ def cli ( input = None, obj = True, abc = True, start = 1, end = 1, ro = 1, stri
     """open the file"""
     cmds.file ( input, o = True )
 
-
     """Get maya plugins path"""
     mayaver = os.getenv ( "HK_MAYA_VER" )
     mayaloc = "/usr/autodesk/maya%s-x64/bin/plug-ins" % mayaver  
@@ -83,17 +59,14 @@ def cli ( input = None, obj = True, abc = True, start = 1, end = 1, ro = 1, stri
     os.chmod ( input, 0775 )
     os.chmod ( dirname, 0775 )
     
-#     """set the version and save"""
-#     setAssetVersion ( input )
-
     """Exporting to obj abc """
+    if abc :
+        dst = base + ".abc"
+        abcExporter ( destination = dst, start = start, end = end )
+        
     if obj :
         dst = base + ".obj"
         objExporter ( dst, start, end )
-
-    if abc :
-        dst = base + ".abc"
-        abcExporter ( dst, start, end, renderOnly = 1, stripNS = 1 )
     
     files = glob.glob ( "%s/*" % dirname )
     files.append ( dirname )
@@ -102,19 +75,17 @@ def cli ( input = None, obj = True, abc = True, start = 1, end = 1, ro = 1, stri
 if __name__ == '__main__':
     parser = argparse.ArgumentParser ()
     parser.add_argument ( "-i", "--input", help = "input file obj, ma, mb" )
-    parser.add_argument ( "-obj", "--obj", default = "1", help = "convert to obj file, default = 1" )
+    parser.add_argument ( "-obj", "--obj", default = "0", help = "convert to obj file, default = 1" )
     parser.add_argument ( "-abc", "--alembic", default = "1", help = "convert to alembic file, default = 1" )
-    parser.add_argument ( "-ro", "--renderOnly", default = "1", help = "export render object only, default 1" )
-    parser.add_argument ( "-sns", "--stripNameSpace", default = "1", help = "strip namespace, default = 1" )
     parser.add_argument ( "-f", "--first", default = 1, help = "First frame, default frame 1" )
     parser.add_argument ( "-l", "--last", default = 1, help = "Last frame, default frame 1" )
     args = parser.parse_args ()
 
     if args.input == None:
             print "No input file provided.Please check help, -h"
+            
     else:
         source = os.path.abspath ( args.input )
         print "Exporting ...\n"
-        cli ( source, bool ( int ( args.obj ) ), bool ( int ( args.alembic ) ),
-              args.first, args.last, bool ( int ( args.renderOnly ) ), bool ( int ( args.stripNameSpace ) ) )
+        cli ( source, args.obj, args.alembic, args.first, args.last )
         

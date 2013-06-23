@@ -46,8 +46,9 @@ logpath="$HK_USER_REPO"
 export HK_PIPELINE="$HK_CODE_PATH/python/pipeline-$HK_PIPELINE_VER"
 export HK_COUCHDB="$HK_CODE_PATH/python/couchdb-python"
 export HK_PYSIDE="$HK_CODE_PATH/python/pyside"
-pythonpath="$HK_CODE_PATH/python/pipeline-$HK_PIPELINE_VER:$HK_CODE_PATH/python/json"
-export PYTHONPATH="$pythonpath:$PYTHONPATH"
+argparse="$HK_CODE_PATH/python/argparse"
+json="$HK_CODE_PATH/python/json"
+export PYTHONPATH="$HK_PIPELINE:$json:$argparse:$PYTHONPATH"
 
 #Set PS1
 export PS1='\[\033[1;34m\]|\u@\h\[\033[1;37m\]|\t\[\033[1;31m\]|$devmode$HK_PROJECT>\[\033[0;33m\]\w$ \[\033[00m\]'
@@ -96,7 +97,7 @@ def createProject( name = "", description = "Default", serveradress = "",
         return False
                 
     assets = utils.getAssetTypes ()
-    tasks = utils.getTaskTypes ()
+    tasks = utils.getAssetTasks ()
     
     doc = {
             "_id": "%s" % name,

@@ -1,22 +1,11 @@
 #!/usr/autodesk/maya2013-x64/bin/mayapy
+       
 import maya.standalone
 maya.standalone.initialize ( name = 'python' )
 import sys, os
 import maya.cmds as cmds
 import maya.mel as mel
 import glob
-
-def setAssetVersion ( path ):
-    """Get root path"""
-    rootList = cmds.ls ("root")
-    
-    if rootList :
-        version = int ( path.split ( os.sep )[-2] )
-        """Set asset version"""
-        cmds.setAttr ( "root.asset_version", lock = False )
-        cmds.setAttr ( "root.asset_version", version )
-        cmds.setAttr ( "root.asset_version", lock = True )
-        cmds.file ( s = True )
         
 def objExporter ( destination = "", start = 1, end = 1 ):    
     start = int ( start )
@@ -45,7 +34,7 @@ def abcExporter ( destination = "", start = 1, end = 1, renderOnly = True, strip
     if not renderOnly :
         ro = ""
      
-    attrs = "asset,asset_version,texture_version"
+    attrs = "asset,texture_version,variation"
     attrs = "," + attrs
     attrs = attrs.replace( ",", " -attr ")
                      
@@ -83,22 +72,18 @@ def cli ( input = None, obj = True, abc = True, start = 1, end = 1, ro = 1, stri
     os.chmod ( input, 0775 )
     os.chmod ( dirname, 0775 )
     
-    """set the version and save"""
-    setAssetVersion ( input )
-
-    """Exporting to obj abc gpj"""
+    """Exporting to obj abc """
     if obj :
         dst = base + ".obj"
         objExporter ( dst, start, end )
 
     if abc :
         dst = base + ".abc"
-        abcExporter ( dst, start, end, renderOnly = 1, stripNS = 1 )
+        abcExporter ( dst, start, end, renderOnly = 1, stripNS = 0 )
     
-    cmds.file ( save = True)
     files = glob.glob ( "%s/*" % dirname )
     files.append ( dirname )
     for file in files : os.chmod ( file, 0555 )
     
-# input = "/homeworks/projects/testing/chr/mickey/mod/main/008/testing_chr_mickey_mod_main.mb"
-# cli ( input = input, obj = True, abc = True, start = 1, end = 1, ro = 1, strip = 1 )
+input = "/homeworks/projects/fan/shot/sit001/lay/a/001/fan_shot_sit001_lay_a.mb"
+cli ( input = input, obj = False, abc = True, start = 1, end = 1, ro = 1, strip = strip )

@@ -73,7 +73,7 @@ def getAssetTypes ():
             'vehicle':'vcl',
             'effect':'vfx'}
         
-def getTaskTypes ():                    
+def getAssetTasks ():                    
     return {'animation':'ani',
             'bashcomp':'bcmp',
             'composite':'rcmp',

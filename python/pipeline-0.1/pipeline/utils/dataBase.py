@@ -59,7 +59,7 @@ def lsDb( db = None , view = "", startkey = "", endkey = "" ):
 
 def createDbViews (db):
     asset = rule.getAssetTypes ()
-    task = rule.getTaskTypes()
+    task = rule.getAssetTasks()
     
     views = dict()
     views['project']= {'map': 'function(doc) {\n  if(doc.type == "project") {\n    emit(doc.name, doc);\n}\n}'}

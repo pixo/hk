@@ -490,7 +490,7 @@ class UiCreateTask ( QtGui.QWidget ) :
     
     def pushButtonClicked ( self ) :
         
-        tasks = utils.getTaskTypes()
+        tasks = utils.getAssetTasks()
         dbtyp = self.typ[1]
         fork = self.lineEdit_fork.text()
         description = self.plainTextEdit_comments.toPlainText()
@@ -589,7 +589,7 @@ class UiCreateTask ( QtGui.QWidget ) :
         self.db = db
         self.typ = typ
         self.tasks = utils.lsDb ( self.db, "task", self.typ[1] )
-        self.taskTypes = utils.getTaskTypes ()
+        self.taskTypes = utils.getAssetTasks ()
         
         self.setWindowTitle ( "Create Task" )
         self.setObjectName ( "Form" )
@@ -899,7 +899,7 @@ class UiAssetManager(UiMainManager):
     
     sequence_task = shot_task
     
-    #TODO:replace by utils.getTaskTypes ()
+    #TODO:replace by utils.getAssetTasks ()
     asset_task ={
                 'bashcomp':'bcmp',
                 'comp':'rcmp',

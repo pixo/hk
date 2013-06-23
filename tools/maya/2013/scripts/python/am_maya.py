@@ -20,8 +20,6 @@ def assetExport ( source = "", obj=True, abc=True, first= 1, last = 1 ):
     return commands.getoutput( cmd )
 
 def createAssetStructure ( doc_id, msgbar ):
-
-        
     
     if not cmds.objExists ( "%s:root" % doc_id ) :
         
@@ -62,6 +60,10 @@ def createAssetStructure ( doc_id, msgbar ):
             cmds.parent ( trs_master, root )
             
             """create attribute"""
+            #Lock and hide root transform attr
+            for attr in ( "tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy","sz" ):
+                cmds.setAttr ( "%s.%s" % ( root, attr ), lock = True, keyable = False, channelBox = False )
+            
             #asset attr
             cmds.addAttr ( root, shortName = "asset", dataType = "string" )
             cmds.setAttr ( "%s.%s" % ( root, "asset" ), doc_id, typ = "string" )
@@ -83,7 +85,87 @@ def createAssetStructure ( doc_id, msgbar ):
     else:
         msgbar ( "%s exists" % doc_id )
 
+def createCameraStructure ( doc_id, msgbar ):
+    
+    if not cmds.objExists ( "%s:root" % doc_id ) :
+        
+        if not cmds.objExists ( "root" ) :
+            
+            """Create structure"""
+            
+            """Create structure"""
+            root = cmds.createNode ( "transform", n = "root" )
+            trs_master = cmds.createNode ( "transform", n = "master_trs" )
+            trs_shot = cmds.createNode ( "transform", n = "shot_trs" )
+            trs_aux = cmds.createNode ( "transform", n = "aux_trs" )
+            
+            """Create the groups"""
+            rig_grp = cmds.createNode ( "transform", n = "rig_grp" )
+            render_grp = cmds.createNode ( "transform", n = "render_grp" )
+            camera_grp = cmds.createNode ( "transform", n = "camera_grp" )
+            cmds.setAttr ( "%s.inheritsTransform" % camera_grp, 0 )
+            
+            """Create cameras"""
+            anim_cam = cmds.camera ( n = "anim_cam" )
+            offset_cam = cmds.camera ( n = "offset_cam" )
+            shake_cam = cmds.camera ( n = "shake_cam" )
+            render_cam = cmds.camera ( n = "render_cam" )
+            
+            for cam in ( anim_cam, offset_cam, shake_cam ) :
+                cmds.setAttr ( "%s.visibility" % cam, 0 )
 
+            """Parent camera"""                                    
+            cmds.parent ( shake_cam, offset_cam )
+            cmds.parent ( offset_cam, anim_cam )
+            cmds.parent ( anim_cam, rig_grp )
+            cmds.parent ( render_cam, camera_grp )
+            cmds.parentConstraint ( shake_cam, camera_grp )
+            
+            """Parent the groups"""
+            cmds.parent ( camera_grp, render_grp )
+            cmds.parent ( render_grp, trs_aux )
+            cmds.parent ( rig_grp, trs_aux )
+            cmds.parent ( trs_aux, trs_shot )
+            cmds.parent ( trs_shot, trs_master )
+            cmds.parent ( trs_master, root )
+            
+            """create attribute"""
+            #transform attr
+            for attr in ( "tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy","sz" ):
+                cmds.setAttr ( "%s.%s" % ( root, attr ), lock = True, keyable = False, channelBox = False )
+                        
+            #asset attr
+            cmds.addAttr ( root, shortName = "asset", dataType = "string" )
+            cmds.setAttr ( "%s.%s" % ( root, "asset" ), doc_id, typ = "string" )
+            cmds.setAttr ( "%s.%s" % ( root, "asset" ), lock = True )
+              
+            #texture version attr
+            cmds.addAttr ( root, shortName = "texture_version", attributeType = "short", dv = 1, min = 1 )
+            cmds.setAttr ( "%s.%s" % ( root, "texture_version" ), lock = True )
+            
+            #variation attr
+            cmds.addAttr ( root, shortName = "variation", attributeType = "short", dv = 1, min = 1 )
+            
+            #start-end attr
+#             cmds.addAttr ( root, shortName = "frame_start", attributeType = "short", dv = 1, min = 0 )
+#             cmds.addAttr ( root, shortName = "frame_end", attributeType = "short", dv = 24, min = 0 )            
+
+            #select root structure
+            cmds.select ( root, r = True)
+            
+        else:
+            msgbar ( "root node exists" )
+            
+    else:
+        msgbar ( "%s exists" % doc_id )
+
+def createStructure ( doc_id, msgbar ):
+    
+    if doc_id.split( "_" )[1] == "cam":
+        createCameraStructure ( doc_id, msgbar )
+    else:
+        createAssetStructure ( doc_id, msgbar )
+    
 def doScreenshot ( filename = "" ) :
     image = api.MImage ()
     view = apiUI.M3dView.active3dView ()
@@ -240,7 +322,9 @@ class UiPushMaya(apps.UiPush3dPack):
               "layout" : pushFile,
               "lighting" : pushFile,
               "matte-paint" : pushFile,
-              "render" : pushFile
+              "render" : pushFile,
+              "rendercam" : pushSelected,
+              "projcam" : pushSelected
               }
 
                 
@@ -253,7 +337,8 @@ class UiPushMaya(apps.UiPush3dPack):
               'tex':'texture',
               'vfx':'effect',
               'lay':'layout',
-              'cam':'camera'
+              'rca':'rendercam',
+              'pca':'projcam',
              }
   
     def checkScene ( self, doc_id ):
@@ -362,11 +447,11 @@ class UiMayaAM(apps.UiAssetManager):
         openFile ( fname )
 
 
-    def createAssetStructure ( self ) :
+    def createStructure ( self ) :
 
       item = self.treeWidget_a.currentItem ()
       doc_id = item.hkid
-      createAssetStructure ( doc_id, self.statusbar.showMessage )
+      createStructure ( doc_id, self.statusbar.showMessage )
 
 
     def contextMenuTask ( self, item ) :
@@ -399,7 +484,7 @@ class UiMayaAM(apps.UiAssetManager):
             """save to workspace"""
             icon_structure = QtGui.QIcon ( os.path.join ( CC_PATH, "structure.png" ) )
             actionStructure = menu.addAction ( icon_structure, 'Create asset structure' )
-            actionStructure.triggered.connect ( self.createAssetStructure )
+            actionStructure.triggered.connect ( self.createStructure )
 
         else:
             """If not existing create action createWorkspace """
