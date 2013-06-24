@@ -15,8 +15,8 @@ import PySide.QtGui as QtGui
 CC_PATH = utils.getCCPath()
 PROJECT = utils.getProjectName()
 
-def assetExport ( source = "", obj=True, abc=True, first= 1, last = 1 ):
-    cmd = """hk-asset-export -i %s -obj %d -abc %d -f %d -l %d """ % ( source, int(obj), int(abc), first, last )   
+def assetExport ( source = "", gpj = True, obj = False, abc = False, first = 1, last = 1 ):
+    cmd = """hk-asset-export -i %s -gpj %d -obj %d -abc %d -f %d -l %d """ % ( source, int ( gpj ), int(obj), int(abc), first, last )   
     return commands.getoutput( cmd )
 
 def createAssetStructure ( doc_id, msgbar ):
@@ -46,6 +46,10 @@ def createAssetStructure ( doc_id, msgbar ):
             """Set attribute so the modeling can't move without any rig"""
             cmds.setAttr( "%s.inheritsTransform" % model_grp, 0 )
             
+            """Guerilla attr"""
+            cmds.addAttr ( rig_grp, shortName = "GuerillaExport", attributeType = "bool", dv = 0, min = 0, max = 1 )
+            cmds.addAttr ( look_grp, shortName = "GuerillaExport", attributeType = "bool", dv = 0, min = 0, max = 1 )
+            
             """Parent the groups"""
             cmds.parent ( faceprim_grp, render_grp )
             cmds.parent ( bodyprim_grp, render_grp )
@@ -59,7 +63,7 @@ def createAssetStructure ( doc_id, msgbar ):
             cmds.parent ( trs_shot, trs_master )
             cmds.parent ( trs_master, root )
             
-            """create attribute"""
+            """create attributes"""
             #Lock and hide root transform attr
             for attr in ( "tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy","sz" ):
                 cmds.setAttr ( "%s.%s" % ( root, attr ), lock = True, keyable = False, channelBox = False )
@@ -68,13 +72,22 @@ def createAssetStructure ( doc_id, msgbar ):
             cmds.addAttr ( root, shortName = "asset", dataType = "string" )
             cmds.setAttr ( "%s.%s" % ( root, "asset" ), doc_id, typ = "string" )
             cmds.setAttr ( "%s.%s" % ( root, "asset" ), lock = True )
-              
-            #texture version attr
-            cmds.addAttr ( root, shortName = "texture_version", attributeType = "short", dv = 1, min = 1 )
-            cmds.setAttr ( "%s.%s" % ( root, "texture_version" ), lock = True )
             
+            #texture version attr
+            cmds.addAttr ( root, shortName = "texturever", attributeType = "short", dv = 1, min = 1 )
+            cmds.setAttr ( "%s.%s" % ( root, "texturever" ), lock = True )
+  
             #variation attr
             cmds.addAttr ( root, shortName = "variation", attributeType = "short", dv = 1, min = 1 )
+                        
+            #guerilla tag
+            cmds.addAttr ( root, shortName = "GuerillaTags", dataType = "string" )
+            cmds.setAttr ( "%s.%s" % ( root, "GuerillaTags" ), doc_id, typ = "string" )
+            
+            #guerilla attrs
+            guerillaAttrToExport = "asset,texturever,variation"
+            cmds.addAttr ( root, shortName = "GuerillaAttrToExport", dataType = "string" )
+            cmds.setAttr ( "%s.%s" % ( root, "GuerillaAttrToExport" ), guerillaAttrToExport, typ = "string" )
             
             #select root structure
             cmds.select ( root, r = True)
@@ -90,9 +103,7 @@ def createCameraStructure ( doc_id, msgbar ):
     if not cmds.objExists ( "%s:root" % doc_id ) :
         
         if not cmds.objExists ( "root" ) :
-            
-            """Create structure"""
-            
+                        
             """Create structure"""
             root = cmds.createNode ( "transform", n = "root" )
             trs_master = cmds.createNode ( "transform", n = "master_trs" )
@@ -104,6 +115,9 @@ def createCameraStructure ( doc_id, msgbar ):
             render_grp = cmds.createNode ( "transform", n = "render_grp" )
             camera_grp = cmds.createNode ( "transform", n = "camera_grp" )
             cmds.setAttr ( "%s.inheritsTransform" % camera_grp, 0 )
+            
+            """Guerilla attr"""
+            cmds.addAttr ( rig_grp, shortName = "GuerillaExport", attributeType = "bool", dv = 0, min = 0, max = 1 )
             
             """Create cameras"""
             anim_cam = cmds.camera ( n = "anim_cam" )
@@ -119,8 +133,9 @@ def createCameraStructure ( doc_id, msgbar ):
             cmds.parent ( offset_cam, anim_cam )
             cmds.parent ( anim_cam, rig_grp )
             cmds.parent ( render_cam, camera_grp )
-            cmds.parentConstraint ( shake_cam, camera_grp )
-            
+            constraint = cmds.parentConstraint ( shake_cam, camera_grp )
+            cmds.addAttr ( constraint, shortName = "GuerillaExport", attributeType = "bool", dv = 0, min = 0, max = 1 )
+                        
             """Parent the groups"""
             cmds.parent ( camera_grp, render_grp )
             cmds.parent ( render_grp, trs_aux )
@@ -146,10 +161,6 @@ def createCameraStructure ( doc_id, msgbar ):
             #variation attr
             cmds.addAttr ( root, shortName = "variation", attributeType = "short", dv = 1, min = 1 )
             
-            #start-end attr
-#             cmds.addAttr ( root, shortName = "frame_start", attributeType = "short", dv = 1, min = 0 )
-#             cmds.addAttr ( root, shortName = "frame_end", attributeType = "short", dv = 24, min = 0 )            
-
             #select root structure
             cmds.select ( root, r = True)
             
@@ -238,8 +249,6 @@ def instanceAsset ( namespace = "" ):
     root = cmds.instance ( "%s:root" % namespace , name = name )[0]
     
     """Get model_grp path"""
-#     model_grp = cmds.ls ( "%s:model_grp" % namespace )[0]
-#     model_grp = model_grp.replace ( "%s:root" % namespace, "%s:root" % ns )
     model_grp = "%s:root|%s:master_trs|%s:shot_trs|%s:aux_trs|%s:model_grp" % ( ns, namespace, namespace, namespace, namespace )
     
     """Lock attributes"""

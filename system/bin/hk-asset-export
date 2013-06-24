@@ -7,28 +7,31 @@ import maya.mel as mel
 import glob
         
 def objExporter ( destination = "", start = 1, end = 1 ):    
-    start = int ( start )
-    end = int ( end )
-    
+        
     if start != end :
         base, ext = os.path.splitext ( destination )
         destination = base + ".%04d.obj"
     
-    for frame in range ( start, (end+1) ):
+    for frame in range ( start, ( end + 1 ) ):
         dst = ( destination % frame ) if start != end else destination
         cmds.currentTime ( frame )
         cmds.file ( dst, force = True, options = "groups=1;ptgroups=1;materials=0;smoothing=1;normals=1",
                     type = "OBJexport", pr = True, ea = True )
 
 def abcExporter ( destination = "", start = "1", end = "1" ):
-        
     attrs = "-attr asset -attr texture_version -attr variation"
     cmd = 'AbcExport -j "-frameRange %s %s %s -ro -uvWrite -file %s";' % ( str( start ), str ( end ), attrs,  destination )
     mel.eval ( cmd )
 
-def cli ( input = None, obj = True, abc = True, start = 1, end = 1 ) :
-    obj = bool ( int ( obj ) )
+def gpjExporter ( destination = "", start = 1, end = 1 ):    
+    cmds.GuerillaExport ( m = 1, a = 1, framesToExport = 3, customRange = ( start, end ), pf = destination )
+
+def cli ( input = None, start = 1, end = 1, gpj = True, abc = True, obj = True ) :
+    start = int ( start )
+    end = int ( end )
+    gpj = bool ( int ( gpj ) )
     abc = bool ( int ( abc ) )
+    obj = bool ( int ( obj ) )
     
     """Load the input file"""
     if not os.path.isabs ( input ):
@@ -46,37 +49,47 @@ def cli ( input = None, obj = True, abc = True, start = 1, end = 1 ) :
     """open the file"""
     cmds.file ( input, o = True )
 
-    """Get maya plugins path"""
+    """get maya plugins path"""
     mayaver = os.getenv ( "HK_MAYA_VER" )
     mayaloc = "/usr/autodesk/maya%s-x64/bin/plug-ins" % mayaver  
     
-    """Load maya plugins"""
-    cmds.loadPlugin ( os.path.join ( mayaloc, 'objExport.so' ) )
-    cmds.loadPlugin ( os.path.join ( mayaloc, 'AbcExport.so' ) )
+    """get guerilla plugins path"""
+    guerillaver = os.getenv ( "HK_GUERILLA_VER" )
+    guerillaloc = "/usr/local/soft/guerilla/%s/guerilla_for_maya/plug-ins" % guerillaver
     
-    """Get the input directory to change permission"""
+    """get the input directory to change permission"""
     dirname = os.path.dirname ( input )
     os.chmod ( input, 0775 )
     os.chmod ( dirname, 0775 )
     
-    """Exporting to obj abc """
+    """exporting obj abc gprj """
+    if gpj:
+        cmds.loadPlugin ( os.path.join ( guerillaloc, 'guerilla2013.so' ) )
+        dst = base + ".gproject"
+        gpjExporter ( destination = dst, start = start, end = end )
+    
     if abc :
+        cmds.loadPlugin ( os.path.join ( mayaloc, 'AbcExport.so' ) )
         dst = base + ".abc"
         abcExporter ( destination = dst, start = start, end = end )
         
     if obj :
+        cmds.loadPlugin ( os.path.join ( mayaloc, 'objExport.so' ) )
         dst = base + ".obj"
-        objExporter ( dst, start, end )
+        objExporter ( destination = dst, start = start, end = end )
     
+    """file access setup"""
     files = glob.glob ( "%s/*" % dirname )
     files.append ( dirname )
+    
     for file in files : os.chmod ( file, 0555 )
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser ()
     parser.add_argument ( "-i", "--input", help = "input file obj, ma, mb" )
-    parser.add_argument ( "-obj", "--obj", default = "0", help = "convert to obj file, default = 1" )
-    parser.add_argument ( "-abc", "--alembic", default = "1", help = "convert to alembic file, default = 1" )
+    parser.add_argument ( "-obj", "--obj", default = "0", help = "convert to obj file, default = 0" )
+    parser.add_argument ( "-abc", "--alembic", default = "0", help = "convert to alembic file, default = 0" )
+    parser.add_argument ( "-gpj", "--guerilla", default = "1", help = "convert to alembic file, default = 1" )
     parser.add_argument ( "-f", "--first", default = 1, help = "First frame, default frame 1" )
     parser.add_argument ( "-l", "--last", default = 1, help = "Last frame, default frame 1" )
     args = parser.parse_args ()
@@ -87,5 +100,6 @@ if __name__ == '__main__':
     else:
         source = os.path.abspath ( args.input )
         print "Exporting ...\n"
-        cli ( source, args.obj, args.alembic, args.first, args.last )
+        cli ( input = source, start = args.first, end = args.last,
+              gpj = args.guerilla, abc = args.alembic, obj = args.obj )
         
