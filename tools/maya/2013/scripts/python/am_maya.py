@@ -120,10 +120,10 @@ def createCameraStructure ( doc_id, msgbar ):
             cmds.addAttr ( rig_grp, shortName = "GuerillaExport", attributeType = "bool", dv = 0, min = 0, max = 1 )
             
             """Create cameras"""
-            anim_cam = cmds.camera ( n = "anim_cam" )
-            offset_cam = cmds.camera ( n = "offset_cam" )
-            shake_cam = cmds.camera ( n = "shake_cam" )
-            render_cam = cmds.camera ( n = "render_cam" )
+            anim_cam = cmds.camera ( n = "anim_cam" )[0]
+            offset_cam = cmds.camera ( n = "offset_cam" )[0]
+            shake_cam = cmds.camera ( n = "shake_cam" )[0]
+            render_cam = cmds.camera ( n = "render_cam" )[0]
             
             for cam in ( anim_cam, offset_cam, shake_cam ) :
                 cmds.setAttr ( "%s.visibility" % cam, 0 )
