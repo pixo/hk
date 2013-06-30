@@ -16,6 +16,7 @@ except:
     PROJECT = "temp"
     print "assetManager module: Can't set PROJECT \n set PROJECT > tmp"
 
+#TODO: Add reference task
 #TODO: create ui for shot creation
 #TODO: preview obj with meshlab
 

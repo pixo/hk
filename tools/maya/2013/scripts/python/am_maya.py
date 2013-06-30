@@ -23,10 +23,10 @@ def createAssetStructure ( doc_id, msgbar ):
     
     if not cmds.objExists ( "%s:root" % doc_id ) :
         
-        if not cmds.objExists ( "root" ) :
-            
+        if not cmds.objExists ( doc_id ) :
+                        
             """Create structure"""
-            root = cmds.createNode ( "transform", n = "root" )
+            root = cmds.createNode ( "transform", n = doc_id )
             trs_master = cmds.createNode ( "transform", n = "master_trs" )
             trs_shot = cmds.createNode ( "transform", n = "shot_trs" )
             trs_aux = cmds.createNode ( "transform", n = "aux_trs" )
@@ -93,7 +93,7 @@ def createAssetStructure ( doc_id, msgbar ):
             cmds.select ( root, r = True)
             
         else:
-            msgbar ( "root node exists" )
+            msgbar ( "%s exists" % doc_id )
             
     else:
         msgbar ( "%s exists" % doc_id )
@@ -102,10 +102,10 @@ def createCameraStructure ( doc_id, msgbar ):
     
     if not cmds.objExists ( "%s:root" % doc_id ) :
         
-        if not cmds.objExists ( "root" ) :
+        if not cmds.objExists ( doc_id ) :
                         
             """Create structure"""
-            root = cmds.createNode ( "transform", n = "root" )
+            root = cmds.createNode ( "transform", n = doc_id )
             trs_master = cmds.createNode ( "transform", n = "master_trs" )
             trs_shot = cmds.createNode ( "transform", n = "shot_trs" )
             trs_aux = cmds.createNode ( "transform", n = "aux_trs" )
@@ -165,7 +165,7 @@ def createCameraStructure ( doc_id, msgbar ):
             cmds.select ( root, r = True)
             
         else:
-            msgbar ( "root node exists" )
+            msgbar ( "%s exists" % doc_id )
             
     else:
         msgbar ( "%s exists" % doc_id )
@@ -187,15 +187,36 @@ def doScreenshot ( filename = "" ) :
     return filename
     
 
-def saveFile ( filename = "", exportsel = False, msgbar = None ) :
+def saveFile ( filename = "", exportsel = False, msgbar = None, doc_id = "" ) :
+    
     if exportsel :
-        selection = cmds.ls ( "root" )
         
-        if not selection :
-            msgbar ( "There's no asset root node" )
+        assemblies = cmds.ls ( sl = True, l = True )
+        
+        if len ( assemblies) == 0:
+            assemblies = cmds.ls ( assemblies= True )
+            
+        else :
+            assemblies = [ assemblies[0].split("|")[1] ]
+            
+        asset = ""
+        
+        for obj in assemblies :
+            assetUd = cmds.listAttr ( obj, ud = True )
+             
+            if not ( assetUd == None ) and "asset" in assetUd :
+                assetId = cmds.getAttr ( "%s.asset" % obj ) 
+                
+                if assetId == doc_id :
+                    asset = obj 
+                    break
+             
+        if obj == "" :
+            msgbar ( "There's no asset %s " % doc_id )
             return False
         
-        cmds.select ( selection[0], r =True )
+        cmds.rename ( asset, "root" )
+        cmds.select ( "root", r =True )
             
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
     ext = os.path.splitext ( filename )[-1]
@@ -206,7 +227,11 @@ def saveFile ( filename = "", exportsel = False, msgbar = None ) :
     cmds.file ( filename, force=True, options="v=0;", type = extension[ext],
                 pr = True, es = exportsel, ea = (not exportsel))
     
+    if exportsel :
+        cmds.rename ( "root", asset )
+        
     return os.path.exists ( filename )
+
 
 def saveSelected ( filename = "", msgbar = None ) :
     saveFile ( filename, True, msgbar )
@@ -224,14 +249,14 @@ def importFile ( filename ):
     cmds.file ( filename, i=True, options="v=0;", type = extension[ext],
                 ra=True, mergeNamespacesOnClash=True, namespace=":", pr=True,
                 loadReferenceDepth="all" )
+
     
 def referenceFile ( filename = "", namespace = "" ):
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary" }
     ext = os.path.splitext ( filename )[-1]
-    
-#     file -r -type "mayaBinary" -gl -loadReferenceDepth "all" -mergeNamespacesOnClash false -namespace "sphere" -options "v=0;" "/home/pixo/maya/projects/default/scenes/sphere.mb";
     cmds.file ( filename, r = True, type = extension[ext], gl = True, loadReferenceDepth = "all",
                 mergeNamespacesOnClash = False, namespace = namespace, options = "v=0;" )
+        
         
 def instanceAsset ( namespace = "" ):
     """Find new namespace"""
@@ -258,7 +283,6 @@ def instanceAsset ( namespace = "" ):
     
 def referenceOrInstance ( file, doc_id ) :
     asset = "%s:root" % doc_id
-    
     if  cmds.objExists ( asset ) :
         instanceAsset ( doc_id )                
     else:
@@ -271,7 +295,7 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
     if not ( screenshot == "" ) :
       fname = os.path.join ( "/tmp", "%s%s" % ( core.hashTime (), extension ) )
       
-      if saveFile ( fname, selection, msgbar ) :
+      if saveFile ( fname, selection, msgbar, doc_id) :
           destination = core.push ( db, doc_id, fname, description, progressbar,
                         msgbar, rename )
           core.transfer ( screenshot, destination, doc_id )
@@ -310,6 +334,19 @@ def pushSelected ( db = None, doc_id = "", description = "", item = None,
     return pushMaya ( db , doc_id, description, item, screenshot, msgbar,
                       progressbar, selection = True, rename = True, extension = ".mb" )
 
+def checkScene ( doc_id ):
+    """We shouldn't have any node named 'root', Check if it's the case"""
+    if cmds.objExists ( "root" ) :
+    
+        self.labelStatus.setText ( "You shouldn't have any named 'root' node in your scene" )
+        return False       
+    
+    return True
+
+def normalizeScene ( doc_id ) :
+    """"""
+    if cmds.objExists ( "root" ):
+        cmds.rename ( "root", doc_id )
       
 class UiPushMaya(apps.UiPush3dPack):
      
@@ -350,26 +387,11 @@ class UiPushMaya(apps.UiPush3dPack):
               'pca':'projcam',
              }
   
-    def checkScene ( self, doc_id ):
-        rootList = cmds.ls ( "root" )
-                
-        if rootList :
-            asset = cmds.getAttr ( "root.asset" )
-            
-            if asset == doc_id :
-                return True
-            
-            else:
-                self.labelStatus.setText ( "Wrong, try to publish %s to %s " % ( asset, doc_id ) )
-                return False
-        else :
-            self.labelStatus.setText ( "There is no root asset node is the scene" )
-            return False       
 
     def pushClicked ( self ) :
         doc_id = self.doc_id
         
-        if self.checkScene ( doc_id ):
+        if checkScene ( doc_id ):
             """Set variables"""
             db = self.db
             description = self.plainTextEdit_comments.toPlainText ()
@@ -402,14 +424,20 @@ class UiMayaAM(apps.UiAssetManager):
         item = self.treeWidget_a.currentItem ()
         doc_id = item.parent().hkid
         ver = int ( item.text ( 0 ) )
-        self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str ( ver ) ) )
-     
-        path = core.getAssetPath ( doc_id, ver )
-        files = glob.glob(os.path.join(path,"*.ma"))
-        files.extend(glob.glob(os.path.join(path,"*.mb")))
+        
+        if checkScene ( doc_id ):
+             
+            self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str ( ver ) ) )
          
-        importFile ( files [0] )
-        self.statusbar.showMessage("%s pulled" % files[0] )
+            path = core.getAssetPath ( doc_id, ver )
+            files = glob.glob(os.path.join(path,"*.ma"))
+            files.extend(glob.glob(os.path.join(path,"*.mb")))
+             
+            importFile ( files [0] )
+            
+            normalizeScene ( doc_id )
+            
+            self.statusbar.showMessage ( "%s pulled" % files[0] )
 
     def referenceVersion ( self ) :
 
