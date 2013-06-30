@@ -12,8 +12,8 @@ def getAssetTypes():
         result[ params [param] ] = param
     return result
 
-def getTaskTypes():
-    params = utils.getTaskTypes ()
+def getAssetTasks():
+    params = utils.getAssetTasks ()
     result = dict()
     for param in params :
         result[ params [param] ] = param
@@ -91,7 +91,7 @@ def hkAssetChanged ():
 
 def hkAssetUpdate ( node = None, param = "" ) :
     #Get param filter
-    paramfilter = { "type":getAssetTypes () , "task":getTaskTypes () }
+    paramfilter = { "type":getAssetTypes () , "task":getAssetTasks () }
 
     #Check the arg are provided
     if node == None :
