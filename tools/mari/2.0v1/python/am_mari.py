@@ -150,24 +150,20 @@ def hkImportChannels ( path, doc_id, ver ):
 		print "Not a proper asset"
 
 def hkImportGeo ( path, doc_id, ver ):
-	files = glob.glob ( os.path.join( path, "*.obj" ) )
+	files = glob.glob ( os.path.join( path, "*.mb" ) )
 	file = files[0] 
 	subd = PythonQt.QtGui.QInputDialog.getText ( PythonQt.QtGui.QDialog(), 'Input Dialog', 'Subd level:')
 	print "importing %s " % file
 
-	if subd in ( "", "0" ) :
-		geos = mari.geo.load ( file )
-	
-	else :
-		dst = core.getWorkspaceFromId ( doc_id )
-		fname = os.path.basename ( file ) 
-		fobj, ext = os.path.splitext ( fname ) 
-		fobj = "%s_subd%s.obj" % ( fobj, subd )
-		dst = os.path.join ( dst, fobj)
-		cmds = "hk-asset-subd -i %s -s %s -o %s" % ( file, subd, dst )
-		print "cmds ", cmds
-		commands.getoutput ( cmds )
-		geos = mari.geo.load ( dst )
+	dst = core.getWorkspaceFromId ( doc_id )
+	fname = os.path.basename ( file ) 
+	fobj, ext = os.path.splitext ( fname ) 
+	fobj = "%s_subd%s.obj" % ( fobj, subd )
+	dst = os.path.join ( dst, fobj)
+	cmds = "hk-asset-subd -i %s -s %s -o %s" % ( file, subd, dst )
+	print "cmds ", cmds
+	commands.getoutput ( cmds )
+	geos = mari.geo.load ( dst )
 
 	for geo in geos :
 		geo.setMetadata ( "assetversion", ver )
