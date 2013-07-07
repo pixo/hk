@@ -80,6 +80,7 @@ def getAssetTasks ():
             'mattepaint':'dmp',
             'dynamic':'dyn',
             'fluid':'fld',
+            'ibl':'ibl',
             'layout':'lay',
             'lighting':'lit',
             'model':'mod',

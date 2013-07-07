@@ -4,8 +4,16 @@ import sys, os
 import pipeline.core as core
 
 def cli ( files ):
+
 	for file in files:
-		core.textureBuild ( os.path.abspath ( file ) )
+		
+		if file.find ("_ibl_") >= 0 :
+			mode = "latlong"
+
+		else:
+			mode = "ww"
+
+		core.textureBuild ( path = os.path.abspath ( file ), mode = mode )
 
 if __name__ == '__main__':
 	args = sys.argv

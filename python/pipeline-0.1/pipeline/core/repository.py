@@ -236,19 +236,19 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
             dst_file = dst_file[1:]
              
         tmp_file = os.path.join ( tmp_dir, dst_file )
-                       
-        dirname = os.path.dirname(tmp_file)
-        if not os.path.exists(dirname):
-            os.makedirs(dirname)
-          
-        shutil.copy ( src, tmp_file )
-        msg = "%s" % tmp_file
-          
+        
         """ Store the files names in a list to avoid to call 
             the database for each source file """
         files_attr.append ( dst_file )
-         
-         
+                    
+        """Create temporary directory"""
+        dirname = os.path.dirname ( tmp_file )
+        if not os.path.exists ( dirname ):
+            os.makedirs(dirname)
+        
+        """Copy files to temporary directory"""  
+        shutil.copy ( src, tmp_file )
+                            
         if progressbar :
             progress_value += progress_step
             progressbar.setProperty ( "value", progress_value )
@@ -256,9 +256,7 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
             print progress_value 
              
         if msgbar :
-            msgbar ( msg )
-        else :
-            print msg
+            msgbar ( dst_file )
              
     """ Get latest version """
     doc = db [ doc_id ]
@@ -266,6 +264,7 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
     ver = len ( ver_attr ) + 1
     path_attr = os.path.join ( dst_dir, "%03d" % ver )
     repo = os.path.expandvars ( path_attr )
+    
     """Rename the temp dir"""
     os.rename( tmp_dir, repo )
     os.system( "chmod -R 555  %s" % repo )
@@ -373,18 +372,18 @@ def pushDir ( db = "", doc_id = "", path = list(), description = "" ):
     """Return the published directory"""
     return repo
 
-def pushFile ( files = list (), description="", db = "", doc_id = False, rename = True ):
+def pushFile ( db = "", doc_id = False, path = list (), description="", rename = True ):
      
     if db == None :
         db = utils.getDb()
          
-    if type(files) == str:
-        files = list([files])
+    if type ( path ) == str:
+        path = list ( [ path ] )
 
     if not doc_id:
-        doc_id = getIdFromPath ( files[0] )
+        doc_id = getIdFromPath ( path[0] )
     
-    return push ( db = db , doc_id = doc_id , src_ls = files ,
+    return push ( db = db , doc_id = doc_id , src_ls = path ,
                   description =  description, progressbar = False,
                   msgbar = False, rename = rename )
 
@@ -402,21 +401,27 @@ def getTextureAttr ( path ):
         
     return ( False, False )
 
-def textureBuild ( path = "", texfilter = None ):
+def textureBuild ( path = "", mode = "ww", texfilter = None ):
     """Guerilla texture build"""
+    
     #TODO: Add Gamma support
-    if texfilter == None: 
-        texattr = getTextureAttr ( path )[1]
+    if texfilter == None :
+        if mode == "latlong":
+            texfilter = "triangle"
         
-        if not texattr :  
-            return False
-        
-        texfilter = texattr[4]
-        texgamma = texattr[5]
+        else:
+            texattr = getTextureAttr ( path )[1]
+            
+            if not texattr :  
+                return False
+            
+            texfilter = texattr[4]
+            texgamma = texattr[5]
         
     file, ext = os.path.splitext ( path )
     tex = file + ".tex"
-    cmd = """render --buildtex --in %s --mode "ww" --filter %s --out %s""" % ( path, texfilter, tex )
+    
+    cmd = """render --buildtex --in %s --mode %s --filter %s --out %s""" % ( path, mode, texfilter, tex )
     os.system ( cmd )
     print "buildtex: building %s" % tex
     return True

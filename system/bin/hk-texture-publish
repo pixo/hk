@@ -29,7 +29,7 @@ def cli ( path, description ):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument( "-p", "--publish", help = "input directory")
+    parser.add_argument( "-p", "--push", help = "input directory")
     parser.add_argument( "-c", "--comment", help = "comment")
     args = parser.parse_args()
 
@@ -39,4 +39,4 @@ if __name__ == '__main__':
     elif args.comment == None:
         print "No comment provided. Please check help, -h"
     else:
-       cli ( args.publish, args.comment )
+       cli ( args.push, args.comment )
