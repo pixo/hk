@@ -7,9 +7,9 @@ ASSET_MANAGER = apps.UiAssetManager ()
 
 def getAssetTypes():
     params = utils.getAssetTypes ()
-    result = dict()
+    result = dict ()
     for param in params :
-        result[ params [param] ] = param
+        result [ params [ param ] ] = param
     return result
 
 def getAssetTasks():
@@ -263,11 +263,13 @@ def hkGetPath ( node = None ) :
                     value = value.lower().replace ( " ", "" )
                     
                     # Get the file name
-                    if param != "versions":
+                    if param != "versions" :
                         fname += "_%s" % value
                     
                     # Get file path
+                    # if param != "aov" :
                     path = os.path.join ( path, value )
+
 
         ext = ""
         kextension = node.knob ( 'extension' )

@@ -153,14 +153,7 @@ def createCameraStructure ( doc_id, msgbar ):
             cmds.addAttr ( root, shortName = "asset", dataType = "string" )
             cmds.setAttr ( "%s.%s" % ( root, "asset" ), doc_id, typ = "string" )
             cmds.setAttr ( "%s.%s" % ( root, "asset" ), lock = True )
-              
-            #texture version attr
-            cmds.addAttr ( root, shortName = "texture_version", attributeType = "short", dv = 1, min = 1 )
-            cmds.setAttr ( "%s.%s" % ( root, "texture_version" ), lock = True )
-            
-            #variation attr
-            cmds.addAttr ( root, shortName = "variation", attributeType = "short", dv = 1, min = 1 )
-            
+                          
             #select root structure
             cmds.select ( root, r = True)
             

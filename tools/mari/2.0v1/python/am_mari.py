@@ -24,15 +24,13 @@ def hkExportChannel ( channel_name = None, wedge = "wedge1", geo = None, dialog 
 	"Get geo and channel"
 	geo_name = geo.name ()
 
-	variation = geo.metadata ("variation")
-
 	"Check channel name"
 	if channel_name == None :
 		channel_name = geo.currentChannel().name() 
 
 	"Reconstruct asset name"
 	slugs = geo_name.split ("_")
-	asset_id = "%s_%s_%s_%s_%s_%s" % ( slugs[0], slugs[1], slugs[2], "tex", slugs[4] )
+	asset_id = "%s_%s_%s_%s_%s" % ( slugs[0], slugs[1], slugs[2], "tex", slugs[4] )
 
 	"Get wedge name if needed"
 	if dialog :
@@ -56,7 +54,8 @@ def hkExportChannel ( channel_name = None, wedge = "wedge1", geo = None, dialog 
 	    
 	"flatten and export each image in the channel"
 	chan.exportImagesFlattened ( path )
-	pattern = path.replace ( "$UDIM", "*" )
+	pattern = path.replace ( "$VARIATION", "*" )
+	pattern = pattern.replace ( "$UDIM", "*" )
 	hkTextureExport ( pattern )
 	print "hkExportChannel () : %s %s " % ( root, channel_name )
 	return True

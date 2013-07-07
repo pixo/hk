@@ -12,6 +12,7 @@ export PYTHONPATH="$pythonpath:$HK_COUCHDB:$PYTHONPATH"
 # export PYTHONPATH="$HK_COUCHDB:/usr/local/soft/nuke/7.0v2/plugins:/usr/local/soft/nuke/7.0v2/lib/python2.6/lib-dynload:/usr/local/soft/nuke/7.0v2/plugins/modules:/usr/local/soft/nuke/7.0v2/lib/python2.6/site-packages:/usr/local/soft/nuke/7.0v2/lib/python26.zip:/usr/local/soft/nuke/7.0v2/lib/python2.6:/usr/local/soft/nuke/7.0v2/lib/python2.6/plat-linux2:/usr/local/soft/nuke/7.0v2/lib/python2.6/lib-tk:/usr/local/soft/nuke/7.0v2/lib/python2.6/lib-old:$PYTHONPATH"
 
 export HK_GUERILLA_LIBRARY="$HK_CODE_PATH/tools/guerilla/$HK_GUERILLA_VER/library"
-export HK_GUERILLA_PLUGINS="$HK_CODE_PATH/tools/guerilla/$HK_GUERILLA_VER/plugins"
+# export HK_GUERILLA_PLUGINS="$HK_CODE_PATH/tools/guerilla/$HK_GUERILLA_VER/plugins"
+export HK_GUERILLA_PLUGINS="$HK_CODE_PATH/tools/guerilla/common/plugins"
 
 /usr/local/soft/guerilla/$HK_GUERILLA_VER/guerilla $@

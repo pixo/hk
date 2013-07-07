@@ -17,6 +17,7 @@
     <Attribute Name="SpecularRoughness" PrettyName="Specular Roughness" Group="Display" Type="double" Min="0.000" Max="1">1</Attribute>
     <Attribute Name="IOR" Group="Advanced" Type="double" Min="1" Max="5">1.3</Attribute>
     <Attribute Name="CE" PrettyName="Conserve Energy" Group="Advanced" Type="double" Min="0" Max="1">1</Attribute>
+    <Attribute Name="shadeUV" PrettyName="Force UV Shading" Group="Advanced" Type="bool" >0</Attribute>
   </Attributes>
   <Tags>
     <Tag>_notcacheable</Tag>
@@ -106,10 +107,20 @@
         Diffuse += nwi * gl_LightSource[i].diffuse.rgb * lightVisibility; 
     }
 
-    Output.rgb = lighting_mode==0 ? #diff1col.rgb : Diffuse * $Diffuse * #diff1col.rgb * mix ( 1, Kt, $CE );
-    Output.rgb += lighting_mode==2 ? vec3 ( Specular * #spec1.r * $Specular ): vec3(0.0);
-    Output.rgb = mix ( Output.rgb, Diffuse * #dirtcol.rgb, $Dirt * #dirt.r );
+    float conserv = mix ( 1, Kt, $CE );
+    conserv = lighting_mode == 0 ? 1 : conserv;
+    float kdirt = #dirt.r * $Dirt ;
+    vec3 nodiff = int ( $shadeUV ) == 0 ? vec3 ( 1 ) : n ;//Diffuse * conserv;
+    Diffuse = lighting_mode == 0 ? nodiff : Diffuse * conserv;
+    Specular = lighting_mode == 2 ? Specular * $Specular : vec3(0.0);
+
+    vec3 outdiff = Diffuse * $Diffuse * #diff1col.rgb;
+    vec3 outdirt = Diffuse * #dirtcol.rgb;
+    vec3 outspec = vec3 ( Specular * #spec1.r );
+
+    Output.rgb = mix ( outdiff + outspec, outdirt, kdirt );
     Output.a = #diff1col.a;
+
                 ]]></Body>
             </Shader>
         </Context>

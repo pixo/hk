@@ -210,12 +210,12 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
     """ Copy all the files in the destination directory """
     progress_value = 0
     progress_step = 100.0/len ( file_list )
-    files_attr = list()
+    files_attr = list ()
     wspace = getWorkspaceFromId ( doc_id )
              
     """ Iterate over all the provided source files """
     for src in file_list :
-        """ Because some peoples use to name directories with points """
+        """Get file dir"""
         file_space = os.path.dirname ( src )
         """file space in case we need to publish directories """
         file_space = file_space.replace( wspace, "" )
@@ -260,8 +260,7 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
         else :
             print msg
              
-    """ Get latest version number because somebody may push a new version 
-        during the process """
+    """ Get latest version """
     doc = db [ doc_id ]
     ver_attr = doc [ "versions" ]
     ver = len ( ver_attr ) + 1
@@ -417,7 +416,6 @@ def textureBuild ( path = "", texfilter = None ):
         
     file, ext = os.path.splitext ( path )
     tex = file + ".tex"
-    #TODO:call the project render binary with HK_GUERILLAVER
     cmd = """render --buildtex --in %s --mode "ww" --filter %s --out %s""" % ( path, texfilter, tex )
     os.system ( cmd )
     print "buildtex: building %s" % tex
@@ -479,22 +477,36 @@ def textureExport ( path = "", progressbar = False ):
     return True
 
 def textureCheck ( doc_id = "", files = list() ) :
-    textureType = utils.getTextureTypes()
-    to_push = list()
+    textureType = utils.getTextureTypes ()
     not_pushed = list ( files )
         
     for file in files :
-        fname = os.path.basename(file)
+        fname = os.path.basename ( file )
         
         for typ in textureType :
             simpTex = "%s_\d*_%s\d*.\d\d\d\d." % ( doc_id, typ )
+            simpTex = simpTex + "tif|" + simpTex + "exr"
             animTex = "%s_\d*_%s\d*.\d\d\d\d.\d\d\d\d." % ( doc_id, typ )
+            animTex = animTex + "tif|" + animTex + "exr"
             pattern = "%s|%s" % ( simpTex, animTex )
-            
-            if re.findall ( pattern + "tif$", fname ) or re.findall ( pattern + "exr$", fname ) or re.findall ( pattern + "tex$", fname ):
-                print "textureCheck: OK %s" % file
-                to_push.append ( file )
-                not_pushed.remove(file)               
+                        
+            if re.findall ( pattern, fname ):
+                """check if the textures are builded"""
+                texfile = ""
+                fext = fname.split (".")[-1]
+                                
+                if fext != "tex":
+                    for ext in ( "tif", "exr" ):
+                        if fext == ext:
+                            texfile = file.replace ( ".%s" % ext, ".tex" )
+                        
+                    if os.path.exists ( texfile ):
+                        not_pushed.remove ( file )
+                        not_pushed.remove ( texfile )  
+                        print "textureCheck: %s OK" % fname
+                    
+                    else:
+                        print "textureCheck: missing .tex for %s" % fname
 
     return not_pushed
 
@@ -510,12 +522,7 @@ def texturePush ( db = None, doc_id = "", path = "", description = "",
     texCheck = textureCheck ( doc_id, files )
     
     if len ( texCheck ) == 0 :  
-        pushed = pushDir ( db, doc_id, path, description )
-        #TODO: Repair textureExport
-#         os.chmod ( pushed, 0775 )
-#         textureExport ( pushed )
-#         os.chmod ( pushed, 0555 )
-        
+        pushed = pushDir ( db, doc_id, path, description )        
         return pushed
     
     else :
@@ -528,47 +535,3 @@ def texturePush ( db = None, doc_id = "", path = "", description = "",
         
         return False
        
-# def assetExport ( source = "", obj=True, abc=True, gproject = True ):   
-#     destination = os.path.dirname ( source )
-#     fname = os.path.basename ( source )
-#     name, ext = os.path.splitext ( fname )
-#         
-#     mayaver = os.getenv ( "HK_MAYA_VER" )
-#     guerillaver = os.getenv ( "HK_GUERILLA_VER" )
-#     
-#     mayaloc = "/usr/autodesk/maya%s-x64" % mayaver
-#     mayap = "%s/bin/maya" % mayaloc
-# #     mayap = "maya"
-#     guerilla_plugins = "/usr/local/soft/guerilla/%s/guerilla_for_maya/plug-ins" % guerillaver
-#     os.system( "chmod 775 %s %s" % ( source, destination ) )
-#         
-#     fobj = objcmd = fabc = abccmd = fgpj = gpjcmd = ""
-#     
-#     if not obj == None :
-#         fobj = os.path.join ( destination, name + ".obj" )
-#         objcmd = """ loadPlugin \\"%s/bin/plug-ins/objExport.so\\"; file -force -options \\"groups=1;ptgroups=1;materials=0;smoothing=1;normals=1\\" -type \\"OBJexport\\" -pr -ea \\"%s\\"; """ % (mayaloc, fobj)   
-#     
-#     if not abc == None :
-#         fabc = os.path.join ( destination, name + ".abc" )
-#         abccmd = """ loadPlugin \\"%s/bin/plug-ins/AbcExport.so\\"; AbcExport -j \\"-frameRange 1 1 -file %s\\"; """ % ( mayaloc, fabc )
-#     
-#     if not gproject == None :
-#         fgpj = os.path.join ( destination, name + ".gproject" )
-#         gpjcmd = """ loadPlugin \\"%s/guerilla2013.so\\"; GuerillaExport -m 1 -a 1 -pf \\"%s\\";file -f -save; """ % ( guerilla_plugins, fgpj )
-#         fgpj = os.path.join ( destination, name + ".g*" )
-# 
-#     cmd = """%s -batch -file %s -command "%s %s %s" """ % ( mayap, source, objcmd, abccmd, gpjcmd )
-#     chmodLock = "chmod 555 %s %s %s %s %s"% ( fobj, fabc, fgpj, source, destination )
-#     
-#     os.system( cmd )
-#     os.system( chmodLock )
-# #     for path in ( fobj, fabc, fgpj, source, destination ): os.chmod ( path, 0555)
-#     return True
-# def mayaToObj ( source ) :
-#     assetExport ( source, True, None, None )
-#     
-# def mayaToAbc ( source ) :
-#     assetExport( source, None, True, None )
-# 
-# def mayaToGuerilla ( source ) :
-#     assetExport(source, None, None, True)
