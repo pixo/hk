@@ -522,8 +522,16 @@ def texturePush ( db = None, doc_id = "", path = "", description = "",
     files = list ()
     
     for file in lsdir:
-        files.append( os.path.join ( path, file ) )
+        base, ext = os.path.splitext ( file )        
         
+        if ext != ".mra":
+            files.append ( os.path.join ( path, file ) )
+        
+        else:
+            if not ( file.find ( doc_id ) == 0 ) :
+                print file, "should begin with %s" % doc_id
+                return 1
+                
     texCheck = textureCheck ( doc_id, files )
     
     if len ( texCheck ) == 0 :  

@@ -17,6 +17,12 @@ def getTextureTypes () :
             "diff1colbk" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
             "diff1rgh" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1" ),
             "diff1rghbk": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
+            "diff2" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
+            "diff2bk" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
+            "diff2col" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
+            "diff2colbk" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
+            "diff2rgh" : ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1" ),
+            "diff2rghbk": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
             "veltcol" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
             "velt": ( "R", "8-bit", "rgb(255,255,255)", True, "triangle", "1"),
             "veltbcol" : ( "RGB", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "sRGB" ),
@@ -59,7 +65,8 @@ def getTextureTypes () :
             "ssswidth" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1" ),
             "sssbsct" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1"),
             "trans" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1" ),
-            "transcol" : ( "RGB", "8-bit 16-bit", "rgb(127,127,255)", True, "triangle", "1")
+            "transcol" : ( "RGB", "8-bit 16-bit", "rgb(127,127,255)", True, "triangle", "1"),
+            "dens" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1" )
             }
 
 def getAssetTypes ():
@@ -71,7 +78,7 @@ def getAssetTypes ():
             'sequence':'seq',
             'shot':'shot',
             'vehicle':'vcl',
-            'effect':'vfx'}
+            'effect':'fx'}
         
 def getAssetTasks ():                    
     return {'animation':'ani',
@@ -96,4 +103,5 @@ def getAssetTasks ():
             'shader':'shd',
             'surface':'sur',
             'texture':'tex',
-            'effect':'vfx'}
+            'texgroom':'tgr'
+            }

@@ -33,7 +33,7 @@ if __name__ == '__main__':
     parser.add_argument( "-c", "--comment", help = "comment")
     args = parser.parse_args()
 
-    if args.publish == None:
+    if args.push == None:
         print "No directory to publish provided. Please check help, -h"
     
     elif args.comment == None:

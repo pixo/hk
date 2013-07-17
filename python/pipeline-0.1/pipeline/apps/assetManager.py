@@ -894,8 +894,7 @@ class UiAssetManager(UiMainManager):
                 'render':'ren',
                 'rotoscopy':'rot',
                 'sculpt':'sct',
-                'texture':'tex',
-                'effect':'vfx'
+                'texture':'tex'
                 }
     
     sequence_task = shot_task
@@ -911,7 +910,8 @@ class UiAssetManager(UiMainManager):
                 'retopo':'rtp',
                 'sculpt':'sct',
                 'texture':'tex',
-                'effect':'vfx'
+                'texgroom':'tgr',
+                'effect':'fx'
                 }
 
     camera_task ={
@@ -928,7 +928,7 @@ class UiAssetManager(UiMainManager):
                 "vehicle": ( "vcl", asset_task ),
                 "prop": ( "prp", asset_task ),
                 "environment": ( "env", asset_task ),
-                "effect" : ( "vfx", effect_task ),
+                "effect" : ( "fx", effect_task ),
                 "material" : ( "mtl", material_task ),
                 "shot" : ( "shot", shot_task ),
                 "sequence" : ( "seq", sequence_task )
@@ -939,7 +939,7 @@ class UiAssetManager(UiMainManager):
                   "vcl":"vehicle",
                   "prp":"prop",
                   "env":"environment",
-                  "vfx" : "effect",
+                  "fx" : "effect",
                   "mtl" : "material",
                   "shot" : "shot",
                   "seq" : "sequence",
