@@ -52,22 +52,34 @@ def getRootAssetPath ( doc_id = "", local = False):
     path = os.path.join ( root, path )
     return path
     
-def getAssetVersions ( doc_id ):
+def getAssetVersions ( doc_id = "" ):
     path = getRootAssetPath ( doc_id )
-    versions = os.listdir(path)
-    versions.sort()
+    versions = os.listdir ( path )
+    versions.sort ()
     
     return versions
 
-def getAssetPath ( doc_id = "", ver = "last", local = False ):
-    if ver == "last" :
-        ver = getAssetVersions ( doc_id = doc_id )
-        ver = ver[-1]
+def getAssetPath ( doc_id = "", version = "last" ):
+    if version == "last" :
+        version = getAssetVersions ( doc_id = doc_id )
+        version = version[-1]
          
-    path = getRootAssetPath ( doc_id = doc_id, local = local )
-    path = os.path.join ( path, "%03d" % float(ver) )
+    path = getRootAssetPath ( doc_id = doc_id, local = False )
+    path = os.path.join ( path, "%03d" % float ( version ) )
     
     return path
+
+def getAssetLocalPath ( doc_id = "", version = 1 ):
+    count = 1
+    fdir = getRootAssetPath ( doc_id, True )
+    name = "%s.v%03d.base" % ( doc_id, version )
+    dst = os.path.join ( fdir, name ) 
+    
+    while os.path.exists ( dst ) :
+        dst = os.path.join ( fdir, name + str ( count ) )
+        count += 1
+    
+    return dst
 
 def getWorkspaceFromId ( doc_id = "" ):
     """Get user asset workspace from doc_id"""
@@ -109,18 +121,6 @@ def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) 
             os.makedirs ( dirname )
         shutil.copy ( fil, files [ fil ] )
     os.system( "chmod -R 555  %s" % destination )
-
-def pullNiceName ( doc_id = "", ver = 1 ):
-    count = 1
-    fdir = getRootAssetPath ( doc_id, True )
-    name = "%s.v%03d.base" % ( doc_id, ver )
-    dst = os.path.join ( fdir, name ) 
-    
-    while os.path.exists ( dst ) :
-        dst = os.path.join ( fdir, name + str ( count ) )
-        count += 1
-    
-    return dst
         
 def pull ( doc_id = "", ver = "latest", extension = "",progressbar = False,
            msgbar = False ):
@@ -133,8 +133,8 @@ def pull ( doc_id = "", ver = "latest", extension = "",progressbar = False,
         return False
     
     """ Get asset local, network path """
-    src = getAssetPath ( doc_id = doc_id, ver = ver )
-    dst = pullNiceName ( doc_id = doc_id, ver = ver)
+    src = getAssetPath ( doc_id = doc_id, version = ver )
+    dst = getAssetLocalPath ( doc_id = doc_id, version = ver)
          
     if not os.path.exists ( dst ):
         os.makedirs ( dst, 0775 )

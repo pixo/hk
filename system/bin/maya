@@ -2,10 +2,18 @@
 
 echo "Running hk-maya $HK_MAYA_VER..."
 
-headbang="$HK_ROOT/codes/private/tools/maya/$HK_MAYA_VER/headbang2"
+#private tools
+private="$HK_ROOT/codes/private/tools/maya/$HK_MAYA_VER"
+headbang="$private/headbang2"
+nighshade="$private/scripts/nightshade_scripts"
+nighshade_icons="$private/icons/nightshade_icons/%B"
+mel="$headbang:$nighshade"
+export XBMLANGPATH="$nighshade_icons:$XBMLANGPATH"
+
+#public tools
 script="$HK_CODE_PATH/tools/maya/$HK_MAYA_VER/scripts"
-mel="$script/mel:$headbang"
-python="$script/python" 
+mel="$script/mel:$mel"
+python="$script/python"
 plugin="/usr/local/soft/guerilla/$HK_GUERILLA_VER/guerilla_for_maya/plug-ins:$headbang"
 plugin="$HK_CODE_PATH/tools/maya/$HK_MAYA_VER/plugins:$plugin"
 
