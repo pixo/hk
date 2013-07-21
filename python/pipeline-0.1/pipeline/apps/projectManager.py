@@ -47,6 +47,7 @@ class UiProjectCreator ( QtGui.QMainWindow ):
             msg = "'%s' added to db '%s'" % ( name, database )
             self.statusbar.showMessage ( msg )
             print msg
+            self.close ()
     
     def descriptionChanged( self ):  
         description = self.plainTextEdit.toPlainText()

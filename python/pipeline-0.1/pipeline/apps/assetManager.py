@@ -1106,13 +1106,14 @@ class UiAssetManager(UiMainManager):
             
     def refreshBranch ( self ):
         item = self.treeWidget_a.currentItem ()
-        item.takeChildren()
-        icon_empty = os.path.join ( CC_PATH, "hk_title.png" )
-        item_none = QtGui.QTreeWidgetItem( item )
-        item_none.hktype = "none"
-        item_none.setText ( 0, "Empty" )
-        item_none.setIcon ( 0, QtGui.QIcon(icon_empty ) )
-        self.itemExpanded ( item )
+        if item != None :
+            item.takeChildren()
+            icon_empty = os.path.join ( CC_PATH, "hk_title.png" )
+            item_none = QtGui.QTreeWidgetItem ( item )
+            item_none.hktype = "none"
+            item_none.setText ( 0, "Empty" )
+            item_none.setIcon ( 0, QtGui.QIcon(icon_empty ) )
+            self.itemExpanded ( item )
             
     def itemExpandedSequence ( self, item ) :
         itChildCount = item.childCount ()

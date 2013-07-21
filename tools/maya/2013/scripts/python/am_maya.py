@@ -1,5 +1,5 @@
 '''
-Created on Feb 9, 2013
+Created on Feb 9, 2013openFile
 
 @author: pixo
 '''
@@ -15,7 +15,7 @@ import PySide.QtGui as QtGui
 CC_PATH = utils.getCCPath()
 PROJECT = utils.getProjectName()
 
-def assetExport ( source = "", gpj = True, obj = False, abc = False, first = 1, last = 1 ):
+def assetExport ( source = "", gpj = True, obj = False, abc = True, first = 1, last = 1 ):
     cmd = """hk-asset-export -i %s -gpj %d -obj %d -abc %d -f %d -l %d """ % ( source, int ( gpj ), int(obj), int(abc), first, last )   
     return commands.getoutput( cmd )
 
@@ -212,13 +212,16 @@ def saveFile ( filename = "", exportsel = False, msgbar = None, doc_id = "" ) :
         cmds.select ( "root", r =True )
             
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
-    ext = os.path.splitext ( filename )[-1]
+    filename, ext = os.path.splitext ( filename )[-1]
     
-    if ext == "" :
+    if exportsel :
+        ext = ".mb"
+    else:
         ext = ".ma"
          
+    filename = filename + ext
     cmds.file ( filename, force=True, options="v=0;", type = extension[ext],
-                pr = True, es = exportsel, ea = (not exportsel))
+                pr = True, es = exportsel, ea = ( not exportsel ) )
     
     if exportsel :
         cmds.rename ( "root", asset )
@@ -307,7 +310,6 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
       msgbar ( "Please make a screenshot" )
 
 def pullMaya (db = None, doc_id = "", ver = "latest" ):
-
     path = core.getAssetPath ( doc_id, ver )
     files = glob.glob ( os.path.join ( path, "*.ma" ) )
     files.extend ( glob.glob ( os.path.join ( path, "*.mb" ) ) )
@@ -471,21 +473,26 @@ class UiMayaAM(apps.UiAssetManager):
          
         self.progressBar.setHidden ( True )
         
-
-    def openFile ( self, fname ) :
-
-        openFile ( fname )
-
-
+        
     def createStructure ( self ) :
-
+        
       item = self.treeWidget_a.currentItem ()
       doc_id = item.hkid
       createStructure ( doc_id, self.statusbar.showMessage )
+        
+        
+    def openFile ( self, fname ) :
+        
+        openFile ( fname )
 
 
+    def saveFile(self,fname):
+        
+        saveFile ( fname )
+        
+        
     def contextMenuTask ( self, item ) :
-
+        
         item = self.treeWidget_a.currentItem ()
         menu = QtGui.QMenu ()
         
