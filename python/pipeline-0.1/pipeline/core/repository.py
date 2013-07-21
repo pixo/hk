@@ -49,7 +49,7 @@ def getRootAssetPath ( doc_id = "", local = False):
     else:
         root = os.getenv ( "HK_REPO" )
         
-    path = os.path.join(root, path )
+    path = os.path.join ( root, path )
     return path
     
 def getAssetVersions ( doc_id ):
@@ -61,7 +61,7 @@ def getAssetVersions ( doc_id ):
 
 def getAssetPath ( doc_id = "", ver = "last", local = False ):
     if ver == "last" :
-        ver = getAssetVersions ( doc_id = doc_id, local = local )
+        ver = getAssetVersions ( doc_id = doc_id )
         ver = ver[-1]
          
     path = getRootAssetPath ( doc_id = doc_id, local = local )
@@ -103,13 +103,25 @@ def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) 
             print "Warning: %s doesn't exist" % src
     
     os.system( "chmod 775  %s" % destination )
-    for file in files:                
-        dirname = os.path.dirname ( files[file] )
+    for fil in files:                
+        dirname = os.path.dirname ( files [ fil ] )
         if not os.path.exists ( dirname ) :
-            os.makedirs(dirname)
-        shutil.copy ( file, files[file] )
+            os.makedirs ( dirname )
+        shutil.copy ( fil, files [ fil ] )
     os.system( "chmod -R 555  %s" % destination )
-         
+
+def pullNiceName ( doc_id = "", ver = 1 ):
+    count = 1
+    fdir = getRootAssetPath ( doc_id, True )
+    name = "%s.v%03d.base" % ( doc_id, ver )
+    dst = os.path.join ( fdir, name ) 
+    
+    while os.path.exists ( dst ) :
+        dst = os.path.join ( fdir, name + str ( count ) )
+        count += 1
+    
+    return dst
+        
 def pull ( doc_id = "", ver = "latest", extension = "",progressbar = False,
            msgbar = False ):
      
@@ -122,15 +134,15 @@ def pull ( doc_id = "", ver = "latest", extension = "",progressbar = False,
     
     """ Get asset local, network path """
     src = getAssetPath ( doc_id = doc_id, ver = ver )
-    dst = getAssetPath ( doc_id = doc_id, ver = ver, local = True )
+    dst = pullNiceName ( doc_id = doc_id, ver = ver)
          
     if not os.path.exists ( dst ):
-        os.makedirs(dst, 0775)
+        os.makedirs ( dst, 0775 )
          
         lsdir = list()
         for root, subFolders, files in os.walk(src):
             for file in files:
-                lsdir.append( os.path.join( root, file ) )
+                lsdir.append ( os.path.join ( root, file ) )
          
         progress_value = 0
         progress_step = 100.0 / len(lsdir) if len(lsdir) != 0 else 1
@@ -143,7 +155,6 @@ def pull ( doc_id = "", ver = "latest", extension = "",progressbar = False,
             if not os.path.exists ( dirname ):
                 os.makedirs( dirname , 0775 )
                   
-            #TODO:check the file exist ,increment it if it exists
             if extension != "":
                 if os.path.splitext(fulldst)[-1] == extension:
                     shutil.copyfile( file, fulldst)
@@ -154,9 +165,10 @@ def pull ( doc_id = "", ver = "latest", extension = "",progressbar = False,
                         msgbar(msg)
                     
             else:
-                shutil.copyfile( file, fulldst)
-                pulled.append(fulldst)
+                shutil.copyfile ( file, fulldst )
+                pulled.append ( fulldst )
                 msg = "Pulled: %s" % fulldst
+                
                 print msg
                 if msgbar :
                     msgbar(msg)
