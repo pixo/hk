@@ -54,10 +54,20 @@ def getRootAssetPath ( doc_id = "", local = False):
     
 def getAssetVersions ( doc_id = "" ):
     path = getRootAssetPath ( doc_id )
-    versions = os.listdir ( path )
+    versions = glob.glob ( path + os.sep +"[0-9][0-9][0-9]" )
     versions.sort ()
-    
     return versions
+
+def getAssetTypeFromId ( doc_id ):
+    return doc_id.split("_")[1]
+
+def getAssetTaskFromId ( doc_id ):
+    return doc_id.split("_")[3]
+
+def getIdFromPushedFile ( fname ):
+    basename = os.path.basename ( fname )
+    doc_id = os.path.splitext ( basename )[0]
+    return doc_id
 
 def getAssetPath ( doc_id = "", version = "last" ):
     if version == "last" :
@@ -66,7 +76,6 @@ def getAssetPath ( doc_id = "", version = "last" ):
          
     path = getRootAssetPath ( doc_id = doc_id, local = False )
     path = os.path.join ( path, "%03d" % float ( version ) )
-    
     return path
 
 def getAssetLocalPath ( doc_id = "", version = 1 ):
@@ -122,7 +131,7 @@ def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) 
         shutil.copy ( fil, files [ fil ] )
     os.system( "chmod -R 555  %s" % destination )
         
-def pull ( doc_id = "", ver = "latest", extension = "",progressbar = False,
+def pull ( doc_id = "", ver = "latest", extension = "", progressbar = False,
            msgbar = False ):
      
     """Get the files from the repository """
@@ -156,7 +165,7 @@ def pull ( doc_id = "", ver = "latest", extension = "",progressbar = False,
                 os.makedirs( dirname , 0775 )
                   
             if extension != "":
-                if os.path.splitext(fulldst)[-1] == extension:
+                if os.path.splitext ( fulldst )[-1] == extension:
                     shutil.copyfile( file, fulldst)
                     pulled.append(fulldst)
                     msg = "Pulled: %s" % fulldst

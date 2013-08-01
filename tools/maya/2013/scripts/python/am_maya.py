@@ -179,7 +179,6 @@ def doScreenshot ( filename = "" ) :
     
     return filename
     
-
 def saveFile ( filename = "", exportsel = False, msgbar = None, doc_id = "" ) :
     
     if exportsel :
@@ -212,7 +211,8 @@ def saveFile ( filename = "", exportsel = False, msgbar = None, doc_id = "" ) :
         cmds.select ( "root", r =True )
             
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
-    filename, ext = os.path.splitext ( filename )[-1]
+    print "filename", filename
+    filename, ext = os.path.splitext ( filename )
     
     if exportsel :
         ext = ".mb"
@@ -226,19 +226,19 @@ def saveFile ( filename = "", exportsel = False, msgbar = None, doc_id = "" ) :
     if exportsel :
         cmds.rename ( "root", asset )
         
-    return os.path.exists ( filename )
-
-
+    if os.path.exists ( filename ) :
+        return filename
+    else :
+        return False
+     
 def saveSelected ( filename = "", msgbar = None ) :
     saveFile ( filename, True, msgbar )
-
 
 def openFile ( filename ):
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
     ext = os.path.splitext ( filename )[-1]
     cmds.file ( filename, f=True, options="v=0;", type = extension[ext], o = True )
     
-
 def importFile ( filename ):
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary", ".obj":"OBJ" }
     ext = os.path.splitext ( filename )[-1]
@@ -246,14 +246,17 @@ def importFile ( filename ):
                 ra=True, mergeNamespacesOnClash=True, namespace=":", pr=True,
                 loadReferenceDepth="all" )
 
-    
 def referenceFile ( filename = "", namespace = "" ):
     extension = { ".ma":"mayaAscii", ".mb":"mayaBinary" }
     ext = os.path.splitext ( filename )[-1]
+    
+    if namespace == "" :
+        namespace = os.path.basename ( filename )
+        namespace = os.path.splitext (namespace)[0]
+    
     cmds.file ( filename, r = True, type = extension[ext], gl = True, loadReferenceDepth = "all",
                 mergeNamespacesOnClash = False, namespace = namespace, options = "v=0;" )
-        
-        
+          
 def instanceAsset ( namespace = "" ):
     """Find new namespace"""
     ns = namespace
@@ -274,7 +277,7 @@ def instanceAsset ( namespace = "" ):
     
     """Lock attributes"""
     cmds.setAttr ( "%s.%s" % ( root, "asset" ), lock = True )
-    cmds.setAttr ( "%s.%s" % ( root, "texture_version" ), lock = True )
+    cmds.setAttr ( "%s.%s" % ( root, "texturever" ), lock = True )
     cmds.setAttr( "%s.inheritsTransform" % model_grp, 0 )
     
 def referenceOrInstance ( file, doc_id ) :
@@ -290,8 +293,9 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
 
     if not ( screenshot == "" ) :
       fname = os.path.join ( "/tmp", "%s%s" % ( core.hashTime (), extension ) )
+      fname = saveFile ( fname, selection, msgbar, doc_id)
       
-      if saveFile ( fname, selection, msgbar, doc_id) :
+      if fname :
           destination = core.push ( db, doc_id, fname, description, progressbar,
                         msgbar, rename )
           core.transfer ( screenshot, destination, doc_id )
@@ -309,7 +313,7 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
     else :
       msgbar ( "Please make a screenshot" )
 
-def pullMaya (db = None, doc_id = "", ver = "latest" ):
+def pullMaya ( db = None, doc_id = "", ver = "latest" ):
     path = core.getAssetPath ( doc_id, ver )
     files = glob.glob ( os.path.join ( path, "*.ma" ) )
     files.extend ( glob.glob ( os.path.join ( path, "*.mb" ) ) )
@@ -413,6 +417,7 @@ class UiMayaAM(apps.UiAssetManager):
     defaultfilter = "ma"
     launcher = "maya"
     defaultsuffix = "mb"
+    ma_task = ["lay"] 
     
     def importVersion ( self ) :
 
@@ -461,10 +466,18 @@ class UiMayaAM(apps.UiAssetManager):
         self.progressBar.setHidden ( False )
         item = self.treeWidget_a.currentItem ()
         doc_id = item.parent().hkid
+        task = doc_id.split("_")[3]
+        
+        #TODO:clean this with a dict that contain task and extension
+        if task in self.ma_task:
+            ext =".ma"
+        else:
+            ext =".mb"
+            
         ver = int ( item.text ( 0 ) )
         self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str(ver) ) )
         
-        pull = core.pull ( doc_id = doc_id, ver = ver , extension = ".mb",
+        pull = core.pull ( doc_id = doc_id, ver = ver , extension = ext,
                            progressbar = self.progressBar,
                            msgbar = self.statusbar.showMessage)
         if pull :
@@ -480,16 +493,13 @@ class UiMayaAM(apps.UiAssetManager):
       doc_id = item.hkid
       createStructure ( doc_id, self.statusbar.showMessage )
         
-        
     def openFile ( self, fname ) :
         
         openFile ( fname )
 
-
     def saveFile(self,fname):
         
         saveFile ( fname )
-        
         
     def contextMenuTask ( self, item ) :
         
@@ -531,7 +541,6 @@ class UiMayaAM(apps.UiAssetManager):
                     
         menu.exec_ ( QtGui.QCursor.pos () )
 
-
     def contextMenuVersion ( self, item ) :
 
         menu = QtGui.QMenu ()
@@ -553,3 +562,13 @@ class UiMayaAM(apps.UiAssetManager):
         
         menu.exec_( QtGui.QCursor.pos () )
         
+class MayaReferencer :
+    scnrefs = list();
+    
+    def __init__(self):
+        self.scnrefs = self.getSceneReferences()
+        
+    def getSceneReferences ( self ):
+        return list ()
+    
+    

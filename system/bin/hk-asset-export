@@ -26,7 +26,7 @@ def abcExporter ( destination = "", start = "1", end = "1" ):
 def gpjExporter ( destination = "", start = 1, end = 1 ):    
     cmds.GuerillaExport ( m = 1, a = 1, framesToExport = 3, customRange = ( start, end ), pf = destination )
 
-def cli ( input = None, start = 1, end = 1, gpj = True, abc = True, obj = True ) :
+def cli ( input = None, start = 1, end = 1, gpj = True, abc = False, obj = True ) :
     start = int ( start )
     end = int ( end )
     gpj = bool ( int ( gpj ) )

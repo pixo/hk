@@ -16,7 +16,7 @@ except:
     PROJECT = "temp"
     print "assetManager module: Can't set PROJECT \n set PROJECT > tmp"
 
-#TODO: Add reference task
+#TODO: Add image reference task
 #TODO: create ui for shot creation
 #TODO: preview obj with meshlab
 
@@ -1106,7 +1106,7 @@ class UiAssetManager(UiMainManager):
             
     def refreshBranch ( self ):
         item = self.treeWidget_a.currentItem ()
-        if item != None :
+        if item :
             item.takeChildren()
             icon_empty = os.path.join ( CC_PATH, "hk_title.png" )
             item_none = QtGui.QTreeWidgetItem ( item )
