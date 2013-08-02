@@ -19,7 +19,7 @@ def createAsset( db = None, doc_id = "", description = "", overdoc = dict() ):
     """
 
     if db == None:
-        db = utils.getDb()
+        db = utils.getDb ()
         
     """ Get datas from doc_id """
     project, typ, asset = doc_id.split ( "_" )

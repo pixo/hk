@@ -453,7 +453,7 @@ class UiCreateOnDb ( QtGui.QWidget ) :
         QtCore.QMetaObject.connectSlotsByName(self)
 
 
-class UiCreateAsset(UiCreateOnDb):
+class UiCreateAsset ( UiCreateOnDb ):
         
     def pushButtonClicked(self):
         self.label_status.setText("")
@@ -491,7 +491,7 @@ class UiCreateTask ( QtGui.QWidget ) :
     
     def pushButtonClicked ( self ) :
         
-        tasks = utils.getAssetTasks()
+        tasks = utils.getAssetTasks ()
         dbtyp = self.typ[1]
         fork = self.lineEdit_fork.text()
         description = self.plainTextEdit_comments.toPlainText()

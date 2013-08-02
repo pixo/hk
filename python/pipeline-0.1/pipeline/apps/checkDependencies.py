@@ -46,7 +46,6 @@ class UiCheckDependencies ( QtGui.QMainWindow ):
         repo = os.getenv ( "HK_REPO" )
         result = path.replace ( repo + os.sep, "" )
         version = result.split ( os.sep )[5] 
-        print version
         return version 
     
     def getVersionsList ( self, id = "" ):
@@ -62,49 +61,110 @@ class UiCheckDependencies ( QtGui.QMainWindow ):
         fname = os.path.basename ( path )
         doc_id, ext = os.path.splitext ( fname ) 
         return doc_id
-    
-    def buildTree (self):
+                        
+    def updateInfos ( self, comboBox ):
+        current_version = comboBox.currentText ()
+        doc_id = comboBox.doc.id
+        ver = str ( int ( current_version ) )        
+        versions = comboBox.doc [ "versions" ]
+        path = versions [ ver ]["path" ]
         
+        if current_version == comboBox.versions [ -1 ] :
+            bg_color = QtGui.QColor ( 128, 255, 128 )
+        
+        else:
+            bg_color = QtGui.QColor ( 255, 128, 128 )
+            
+        comboBox.docItem.setBackground ( bg_color )
+
+        """Set the data to the plain text"""
+        creator  = "Creator:\t%s\n" % versions [ ver ] [ 'creator' ]
+        created  = "\nCreated:\t%s\n" % versions [ ver ] [ 'created' ]
+        description = "\nDescription:\n\t%s\n" % versions [ ver ] [ 'description' ]
+        
+        pathinfo = "\nPath:\n\t%s\n" % os.path.expandvars( versions [ ver ] [ "path" ] )
+        
+        files ="\n\t".join ( map ( str, versions [ ver ] [ "files" ] ) )
+        files = "\nFiles:\n\t%s\n" % files
+         
+        infos = creator + created + description + pathinfo + files
+        self.plainTextEdit_description.setPlainText ( infos )
+
+        """Set the screenshot"""
+        screenshot = "%s.jpg" % doc_id
+        screenshot = os.path.join( path, screenshot )
+        
+        if not os.path.exists ( screenshot ) :
+            screenshot = os.path.join( CC_PATH, "hk_title_medium.png" )
+
+        self.labelImage.setPixmap( screenshot )
+
+    def comboxChanged ( self, value ):
+
+        for i in range( 0, self.tableWidget.rowCount() ):
+            comboBox = self.tableWidget.cellWidget ( i, 0 )
+                        
+            if comboBox.hasFocus():
+                self.updateInfos ( comboBox )
+
+    def tableClicked (self, item):        
+        comboBox = self.tableWidget.cellWidget ( item.row (), 0  )
+        self.updateInfos ( comboBox )
+        
+    def buildTable (self):        
         paths = self.getPaths ()
-        """Setup the items fonts"""    
-        font = QtGui.QFont ()
-        font.setPointSize ( 10 )
-        font.setWeight ( 75 )
-        font.setItalic ( False )
-        font.setBold ( True )
-        print paths
+        row = len ( paths )
+        
+        self.tableWidget = QtGui.QTableWidget ( row, 2 )
+        self.tableWidget.setHorizontalScrollBarPolicy ( QtCore.Qt.ScrollBarAlwaysOff )
+        self.tableWidget.setAlternatingRowColors ( True )
+        self.tableWidget.horizontalHeader().setStretchLastSection ( True )
+        self.tableWidget.horizontalHeader().setMinimumSectionSize ( 200 )
+        self.tableWidget.verticalHeader().hide ()
+        self.tableWidget.horizontalHeader().hide ()
+        self.tableWidget.setSelectionMode ( QtGui.QAbstractItemView.SingleSelection )
+        self.tableWidget.setSelectionBehavior ( QtGui.QAbstractItemView.SelectRows )
+        self.tableWidget.resizeColumnToContents ( True )
+        self.tableWidget.setMouseTracking ( False )
+        self.verticalLayout.addWidget( self.tableWidget )
+        self.tableWidget.itemClicked.connect ( self.tableClicked )
+        self.tableWidget.cellClicked.connect ( self.comboxChanged )
+                
+        count = 0
+        
         for path in paths :
             
             doc_id = self.getDocIdFromPath ( path )
-            current_version = self.getVersionFromPath ( path )
-            
-            asset = QtGui.QTreeWidgetItem ( self.treeWidget )
-            asset.setFont ( 0, font )
-            asset.setText ( 0, doc_id )
-            
+            current_version = self.getVersionFromPath ( path )       
             versions = self.getVersionsList ( doc_id )
             
-            kcol = 0.75
+            comboBox = QtGui.QComboBox ( )
+            comboBox.doc = self.db [ doc_id ]
+            comboBox.addItems ( versions )
+            comboBox.setCurrentIndex ( comboBox.findText ( current_version ) )
+            comboBox.activated.connect ( self.comboxChanged )
+            comboBox.versions = versions
+            
             if current_version == versions [ -1 ] :
-                as_color = QtGui.QColor ( 128, 255, 128 )
-                cv_color = QtGui.QColor ( 128 * kcol, 255 * kcol, 128 * kcol )
+                bg_color = QtGui.QColor ( 128, 255, 128 )
+            
             else:
-                as_color = QtGui.QColor ( 255, 128, 128 )
-                cv_color = QtGui.QColor ( 255 * kcol, 128 * kcol, 128 * kcol )
+                bg_color = QtGui.QColor ( 255, 128, 128 )
+
+            item = QtGui.QTableWidgetItem ( doc_id )
+            item.setFlags ( QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled )
+            item.setBackground ( bg_color )
+            comboBox.docItem = item
             
-            asset.setBackground ( 0, as_color )
-            
-            for version in versions :
-                asset_version = QtGui.QTreeWidgetItem ( asset ) 
-                asset_version.setText ( 0, version )
-                
-                if version == current_version :
-                    asset_version.setBackground ( 0, cv_color )
-            
-            
+            self.tableWidget.setCellWidget ( count, 0, comboBox )
+            self.tableWidget.setItem ( count, 1, item )
+                        
+            count += 1
+
     def __init__(self, parent=None):
         super ( UiCheckDependencies, self).__init__(parent)
         
+        self.db = utils.getDb ()
         self.setObjectName("MainWindow")
         self.resize(642, 726)
         self.centralwidget = QtGui.QWidget ( self )
@@ -128,11 +188,7 @@ class UiCheckDependencies ( QtGui.QMainWindow ):
         self.label_proj.setObjectName("label_proj")
         self.horizontalLayout_6.addWidget(self.label_proj)
         self.verticalLayout.addLayout(self.horizontalLayout_6)
-        self.treeWidget = QtGui.QTreeWidget(self.centralwidget)
-        self.treeWidget.setAlternatingRowColors(True)
-        self.treeWidget.setObjectName("treeWidget")
-        self.treeWidget.headerItem().setText ( 0, "asset" )
-        self.verticalLayout.addWidget(self.treeWidget)
+                        
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.verticalLayout_2 = QtGui.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -160,7 +216,8 @@ class UiCheckDependencies ( QtGui.QMainWindow ):
                                     \"/><span style=\" font-size:12pt;font-weight:600;
                                     \">:</span><span style=\" font-size:12pt;
                                     \"> '%s'</span></p></body></html>""" % (os.getenv ( "HK_PROJECT" ) ) )       
-        self.buildTree ()
+        
+        self.buildTable ()
         
         QtCore.QMetaObject.connectSlotsByName(self)
                 

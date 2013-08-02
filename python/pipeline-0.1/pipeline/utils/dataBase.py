@@ -20,20 +20,24 @@ def getDb ( dbname = "" , serveradress = "" ) :
     
     if serveradress == "" or serveradress == None :
         serveradress = getServer ()
+        
         if serveradress == "" or serveradress == None :
             print "getDb(): can't get the server address '%s'" % str(serveradress)
             return False
     
     if dbname == "" or dbname == None  :
         dbname = os.getenv ( "HK_DB" )
+        
         if dbname == "" or dbname == None:
             print "getDb(): wrong dbname '%s'" % str(serveradress)
+            
             return False
         
     server = couchdb.Server ( serveradress )
     
     if dbname in server :
         return server [ dbname ]
+    
     else :
         return False
 
