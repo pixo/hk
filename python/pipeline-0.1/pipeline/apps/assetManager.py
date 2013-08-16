@@ -456,8 +456,8 @@ class UiCreateOnDb ( QtGui.QWidget ) :
 class UiCreateAsset ( UiCreateOnDb ):
         
     def pushButtonClicked(self):
-        self.label_status.setText("")
-        dbtyp = self.typ[1]
+        self.label_status.setText ( "" )
+        dbtyp = self.typ [1]
         name = self.lineEdit.text()
         
         if name == "":
@@ -477,7 +477,7 @@ class UiCreateAsset ( UiCreateOnDb ):
             
         description = self.plainTextEdit.toPlainText()    
         doc_id = "%s_%s_%s" % ( PROJECT, dbtyp, name )
-        doc = core.createAsset ( doc_id = doc_id, description = description)
+        doc = core.createAsset ( doc_id = doc_id, description = description )
         
         if doc :
             self.lineEdit.setText("")
@@ -552,7 +552,7 @@ class UiCreateTask ( QtGui.QWidget ) :
                 """create task id from asset id, item text and fork line """
                 itemId = self.taskTypes [ itemText ]
                 task = "%s_%s_%s" % ( asset_id, itemId, fork, )
-                icon = os.path.join ( CC_PATH, itemText + ".png" )
+                icon = os.path.join ( CC_PATH, itemId + ".png" )
                 item.setIcon ( QtGui.QIcon ( icon ) )
                 
                 """if task exist change bg color"""
@@ -863,100 +863,23 @@ class UiAssetManager(UiMainManager):
     fileFilters = "Maya (*.ma *.mb);;Wavefront (*.obj *.Obj *.OBJ)"
     defaultsuffix = "obj"
     
-    #TODO:find a way to generalize the following task and asset stuff
-    pushls = ("texture",
-              "render",
-              "compout")
+    #TODO: add push dir ui for texture grooming render etc
+    pushls = ( "texture",
+               "render",
+               "compout" )
     
-    effect_task = {
-                   'particle':'pcl',
-                   'fluid':'fld',
-                   'dynamic':'dyn'
-                   }
-    
-    material_task = {
-                     'shader':'shd'
-#                      'override' : 'ovr'
-                     }
-        
-    shot_task = {
-                'animation':'ani',
-                'bashcomp':'bcmp',
-                'camera':'cam',
-                'composite':'rcmp',
-                'mattepaint':'dmp',
-                'dynamic':'dyn',
-                'fluid':'fld',
-                'layout':'lay',
-                'lighting':'lit',
-                'model':'mod',
-                'particle':'pcl',
-                'render':'ren',
-                'rotoscopy':'rot',
-                'sculpt':'sct',
-                'texture':'tex'
-                }
-    
-    sequence_task = shot_task
-    
-    #TODO:replace by utils.getAssetTasks ()
-    asset_task ={
-                'bashcomp':'bcmp',
-                'comp':'rcmp',
-                'mattepaint':'dmp',
-                'model':'mod',
-                'render':'ren',
-                'rig' : 'rig',
-                'retopo':'rtp',
-                'sculpt':'sct',
-                'texture':'tex',
-                'texgroom':'tgr',
-                'effect':'fx'
-                }
-
-    camera_task ={
-                'rendercam':'rca',
-                'projcam':'pca',
-                }
-
-    #TODO:replace by utils.getAssetTypes ()    
-    typ_dict = {
-                "asset": ( "asset", asset_task ),
-                "task": ( "task", asset_task ),
-                "character": ( "chr", asset_task ),
-                "camera": ( "cam", camera_task ),
-                "vehicle": ( "vcl", asset_task ),
-                "prop": ( "prp", asset_task ),
-                "environment": ( "env", asset_task ),
-                "effect" : ( "fx", effect_task ),
-                "material" : ( "mtl", material_task ),
-                "shot" : ( "shot", shot_task ),
-                "sequence" : ( "seq", sequence_task )
-                }
-    #should be temp all icon should be name eg chr.png, prp.png, etc
-    icons_dict = {
-                  "chr":"character",
-                  "vcl":"vehicle",
-                  "prp":"prop",
-                  "env":"environment",
-                  "fx" : "effect",
-                  "mtl" : "material",
-                  "shot" : "shot",
-                  "seq" : "sequence",
-                  "cam" : "camera"
-                  }
-    
+    assettype = utils.getAssetTypes ()
+            
     icon_empty = os.path.join ( CC_PATH, "empty.png" )
     
     def createAsset ( self ) :
         nicename = self.comboBox_a.currentText()
-        typ = self.typ_dict[nicename][0]
-        
+        typ = self.assettype [ nicename ]
         self.createAssetWidget = UiCreateAsset ( typ = ( nicename, typ ) )
         self.createAssetWidget.show()
         
     def createTask ( self ) :
-        item = self.treeWidget_a.currentItem()
+        item = self.treeWidget_a.currentItem ()
         doc_id = item.hkid
         nicename = doc_id
         
@@ -968,7 +891,7 @@ class UiAssetManager(UiMainManager):
         task = item.parent().text(0) 
         
         if task in self.pushls:
-            self.pushVersionWin = UiPushLs (db = self.db, item = item)
+            self.pushVersionWin = UiPushLs ( db = self.db, item = item )
             
         else:
             self.pushVersionWin = UiPush ( db = self.db, item = item )
@@ -1153,26 +1076,26 @@ class UiAssetManager(UiMainManager):
         if item.child ( 0 ).hktype == "none" :
             icon_empty = os.path.join ( CC_PATH, "empty.png" )
             doc_id = item.hkid
-            task_dict = utils.lsDb ( self.db, "task", doc_id )            
+            tasks = utils.lsDb ( self.db, "task", doc_id )            
             font = item.font(0)
             font.setPointSize ( 9.5 )
             
-            if len ( task_dict ) > 0 :
+            if len ( tasks ) > 0 :
                 brush = QtGui.QBrush( QtGui.QColor ( 150, 150, 150 ) )
                 item.removeChild ( item.child (0) )
             
-            for task in task_dict :
+            for task in tasks :
                 itemChild = QtGui.QTreeWidgetItem ( item )
                 itemChild.setForeground(0,brush)
                 itemChild.setText (0, task )
                 itemChild.setFont( 0, font )
-                icon=os.path.join ( CC_PATH,task + ".png" )
-                itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
                 itemChild.hktype = "task"
                 itemChild.hkbranch = task.split("_")[2]
                 itemChild.hkid = "%s_%s" % ( PROJECT, task )
                 itemChild.versions = dict ()
                 itemChild.dbdoc = self.db [ "%s_%s" % ( PROJECT, task ) ]
+                icon = os.path.join ( CC_PATH, itemChild.hkbranch + ".png" )
+                itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
      
                 item_none = QtGui.QTreeWidgetItem( itemChild )
                 item_none.hktype = "none"
@@ -1276,13 +1199,14 @@ class UiAssetManager(UiMainManager):
         else:
             self.statusbar.showMessage("")
             
-    def setComboTask ( self, task_dict ) :
+    def setComboTask ( self ) :
+        task_dict = utils.getAssetTasks ()
         self.comboBox_b.clear ()
         icon = os.path.join ( CC_PATH, "cross.png" )
         self.comboBox_b.addItem ( QtGui.QIcon ( icon ), "No filter" )
         
         for key in task_dict :
-            icon = os.path.join ( CC_PATH, key + ".png" )
+            icon = os.path.join ( CC_PATH, task_dict [ key ] + ".png" )
             self.comboBox_b.addItem ( QtGui.QIcon ( icon ), key )
         
     def filterTree ( self ) :
@@ -1301,9 +1225,11 @@ class UiAssetManager(UiMainManager):
             it.next()
             
     def comboTypeChange ( self ) :                    
-        currtext = self.comboBox_a.currentText ()           
-        self.typ = self.typ_dict [ currtext ] [0]
-        self.setComboTask ( self.typ_dict [ currtext ] [1] )
+        currtext = self.comboBox_a.currentText ()
+        assettype = self.assettype
+        assettype [ "asset" ] = "asset"
+        assettype [ "task" ] = "task"
+        self.typ = assettype [ currtext ]
         startkey = PROJECT
         hktype = "asset"
         
@@ -1313,7 +1239,7 @@ class UiAssetManager(UiMainManager):
             startkey = "%s_%s" % ( startkey, self.typ )
 
         """List assets"""         
-        obj_ls = utils.lsDb ( self.db, self.typ, startkey )    
+        asset_ls = utils.lsDb ( self.db, self.typ, startkey )    
         
         """Clear the tree"""
         icon_empty = os.path.join ( CC_PATH, "empty.png" )              
@@ -1327,7 +1253,7 @@ class UiAssetManager(UiMainManager):
         font.setBold ( True )
         
         """Create the items"""
-        for asset in obj_ls :
+        for asset in asset_ls :
             """Set the item attributes"""
             item_asset = QtGui.QTreeWidgetItem ( self.treeWidget_a )
             assplit = asset.split ( "_" )
@@ -1346,7 +1272,7 @@ class UiAssetManager(UiMainManager):
             """UI look"""
             item_asset.setFont ( 0, font )
             item_asset.setText ( 0, name )
-            icon = os.path.join ( CC_PATH, self.icons_dict [ typ] + ".png" )
+            icon = os.path.join ( CC_PATH, typ + ".png" )
             item_asset.setIcon ( 0, QtGui.QIcon ( icon ) )
             
             """Children"""
@@ -1363,22 +1289,26 @@ class UiAssetManager(UiMainManager):
         
     def createWidget ( self ) :
         """Create the type combobox"""
+        assettype = self.assettype
+        assettype ["asset"] = "asset"
+        assettype ["task"] = "task"
         
         item = list (("asset","task"))
         tmp = list ()
-        
-        for key in self.typ_dict : 
-            if not (key in ("asset","task")):
-                tmp.append (key)
-        
+         
+        for key in assettype : 
+            if not ( key in item ):
+                tmp.append ( key )
+         
         tmp.sort ()
         item = item + tmp
-        
+         
         for key in item :
-            icon = os.path.join ( CC_PATH, key + ".png" )
+            icon = os.path.join ( CC_PATH, assettype [ key ] + ".png" )
             self.comboBox_a.addItem ( QtGui.QIcon ( icon ), key )
-    
+                
         self.comboTypeChange ()
+        self.setComboTask ()
                 
 def systemAM () :
     app = QtGui.QApplication ( sys.argv )

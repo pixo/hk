@@ -26,7 +26,7 @@ def createAsset( db = None, doc_id = "", description = "", overdoc = dict() ):
     name = "%s_%s" % ( typ, asset )
     
     """ Check the asset doesn't exist """
-    asset_ls = utils.lsDb(db, typ, doc_id)
+    asset_ls = utils.lsDb ( db, typ, doc_id )
     if not ( name in asset_ls ) :
         """ Create the asset structure """
         doc = {

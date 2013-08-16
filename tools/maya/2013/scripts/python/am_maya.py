@@ -11,9 +11,11 @@ import pipeline.apps as apps
 import pipeline.utils as utils
 import pipeline.core as core
 import PySide.QtGui as QtGui
+import checkDeps_maya
 
 CC_PATH = utils.getCCPath()
 PROJECT = utils.getProjectName()
+CHECK_DEPS = None
 
 def assetExport ( source = "", gpj = True, obj = False, abc = True, first = 1, last = 1 ):
     cmd = """hk-asset-export -i %s -gpj %d -obj %d -abc %d -f %d -l %d """ % ( source, int ( gpj ), int(obj), int(abc), first, last )   
@@ -481,7 +483,13 @@ class UiMayaAM(apps.UiAssetManager):
                            progressbar = self.progressBar,
                            msgbar = self.statusbar.showMessage)
         if pull :
-            openFile ( pull [ 0 ] )
+            global CHECK_DEPS
+            fpath = pull [ 0 ]
+        
+            if os.path.exists ( fpath ):
+                CHECK_DEPS = checkDeps_maya.UiCheckDependenciesMaya ( fpath )
+                CHECK_DEPS.show ()
+                
             self.statusbar.showMessage("%s %s pulled" % ( doc_id, str(ver) ))
          
         self.progressBar.setHidden ( True )
@@ -492,6 +500,23 @@ class UiMayaAM(apps.UiAssetManager):
       item = self.treeWidget_a.currentItem ()
       doc_id = item.hkid
       createStructure ( doc_id, self.statusbar.showMessage )
+      
+    def openFileDialog ( self ) :
+        item = self.treeWidget_a.currentItem()
+        hkid = item.hkid
+        path = hkid.replace("_",os.sep)
+        path = os.path.join ( os.getenv("HK_USER_REPO"), path )
+        fdialog = QtGui.QFileDialog ()
+        fdialog.setDefaultSuffix ( self.defaultsuffix )
+        fname = fdialog.getOpenFileName ( self, caption = 'Open file from workspace',
+                                          dir = path, filter = self.fileFilters )
+        
+        global CHECK_DEPS
+        fpath = fname[0]
+    
+        if os.path.exists ( fpath ):
+            CHECK_DEPS = checkDeps_maya.UiCheckDependenciesMaya ( fpath )
+            CHECK_DEPS.show ()
         
     def openFile ( self, fname ) :
         
