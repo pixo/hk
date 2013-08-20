@@ -18,6 +18,7 @@ PROJECT = utils.getProjectName()
 CHECK_DEPS = None
 
 def assetExport ( source = "", gpj = True, obj = False, abc = True, first = 1, last = 1 ):
+    
     cmd = """hk-asset-export -i %s -gpj %d -obj %d -abc %d -f %d -l %d """ % ( source, int ( gpj ), int(obj), int(abc), first, last )   
     return commands.getoutput( cmd )
 
@@ -295,14 +296,14 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
 
     if not ( screenshot == "" ) :
       fname = os.path.join ( "/tmp", "%s%s" % ( core.hashTime (), extension ) )
-      fname = saveFile ( fname, selection, msgbar, doc_id)
+      fname = saveFile ( fname, selection, msgbar, doc_id )
       
       if fname :
           destination = core.push ( db, doc_id, fname, description, progressbar,
-                        msgbar, rename )
+                                    msgbar, rename )
           core.transfer ( screenshot, destination, doc_id )
           source = os.path.join ( destination, doc_id + extension )
-          print "pushMaya():", source
+          print "pushMaya():", source          
           assetExport ( source )
           
           if msgbar :
@@ -326,7 +327,7 @@ def pushFile ( db = None, doc_id = "", description = "", item = None,
                screenshot = "", msgbar = False, progressbar = False ) :
 
     return pushMaya ( db , doc_id, description, item, screenshot, msgbar,
-                      progressbar, selection = False, rename = True, extension = ".mb" )
+                      progressbar, selection = False, rename = True, extension = ".ma" )
 
 
 def pushSelected ( db = None, doc_id = "", description = "", item = None,
