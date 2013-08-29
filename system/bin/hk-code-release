@@ -20,7 +20,8 @@ if [ -a "$user_code_path" -a -a "$code_path" ]
 		exclude_args="$dev_qtui $pyc $eclipse $pydev $sys $couchapp"
 
 		#sync
-		rsync --progress -rvuh $args $exclude_args $user_code_path/* $code_path
+		sudo rsync --progress -rvuh $args $exclude_args $user_code_path/* $code_path
+		
 	else
 		echo "hk-code-release: You should be log into a project. Use hk-project command to login"
 fi

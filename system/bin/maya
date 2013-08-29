@@ -17,9 +17,10 @@ python="$script/python"
 plugin="/usr/local/soft/guerilla/$HK_GUERILLA_VER/guerilla_for_maya/plug-ins:$headbang"
 plugin="$HK_CODE_PATH/tools/maya/$HK_MAYA_VER/plugins:$plugin"
 
-export LD_LIBRARY_PATH="$HK_CODE_PATH/python/pyside/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$HK_CODE_PATH/python/pyside/lib:$HK_CODE_PATH/python/couchdb-python/lib:$LD_LIBRARY_PATH"
 export MAYA_PLUG_IN_PATH="$plugin:$MAYA_PLUG_IN_PATH"
 export MAYA_SCRIPT_PATH="$mel:$MAYA_SCRIPT_PATH"
 export PYTHONPATH="$HK_PYSIDE:$HK_COUCHDB:$python:$PYTHONPATH"
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjpeg.so.62
 
 /usr/autodesk/maya$HK_MAYA_VER-x64/bin/maya $@
