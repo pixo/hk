@@ -1,0 +1,3 @@
+print "hk-mel loaded\n";
+source "cometRename.mel";
+source "hkSubd.mel";
