@@ -668,7 +668,7 @@ class UiCreateTask ( QtGui.QWidget ) :
     
 class UiMainManager(QtGui.QMainWindow):
         
-    db = utils.getDb ()
+    db = None
     launcher = "terminal"
         
     def init ( self ) :
@@ -752,6 +752,7 @@ class UiMainManager(QtGui.QMainWindow):
         
     def __init__(self, parent=None):
         super(UiMainManager, self).__init__(parent)
+        self.db = utils.getDb ()
         self.setObjectName("MainWindow")
         self.setWindowTitle("asset manager")
         self.resize(600, 700)
