@@ -1,3 +1,10 @@
+import sys
+from PySide import QtGui
 import pipeline.apps as apps
 
-print "ok"
+if __name__ == '__main__':
+    app = QtGui.QApplication ( sys.argv )    
+    main = apps.UiAssetManager()
+    main.show()
+    app.exec_()
+    sys.exit()
