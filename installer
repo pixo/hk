@@ -1,35 +1,39 @@
-#!/bin/sh
+#!/bin/bash
 
+#Set homeworks
 if [ -z "$HK_ROOT" ]; then
     echo export HK_ROOT=/homeworks >> $HOME/.bashrc
     HK_ROOT=/homeworks
+fi
+
+#Set PATH
+if [ $PATH != *$HK_ROOT/codes/public/system/sbin* ]
+then
+    echo export PATH=\$HK_ROOT/codes/public/system/sbin:\$PATH >> $HOME/.bashrc
 fi
 
 #homeworks directories
 sudo mkdir -p $HK_ROOT/projects
 sudo mkdir -p $HK_ROOT/codes/public
 sudo mkdir -p $HK_ROOT/codes/private
-sudo chmod 775 /homeworks/codes/public #A modifier, present pour le hk-code-release
-sudo chmod 775 /homeworks/projects
-sudo chown -R $USER /homeworks/projects
+sudo chmod 775 $HK_ROOT/projects
+sudo chown -R $USER $HK_ROOT/projects
+sudo chown -R $USER $HK_ROOT/codes
+# sudo chmod 775 $HK_ROOT/codes/public #A modifier, present pour le hk-code-release
 
 #user directories
 sudo mkdir -p $HK_ROOT/users/$USER
 sudo chmod 775 $HK_ROOT/users/$USER
 sudo chown -R $USER $HK_ROOT/users/$USER
-
 mkdir -p $HK_ROOT/users/$USER/projects
-mkdir -p $HK_ROOT/users/$USER/codes/private
-mkdir -p $HK_ROOT/users/$USER/codes/public
 
 #Copy Asset Manager
 sudo cp -rv python system tools $HK_ROOT/codes/public
-cp -rv `pwd`/* $HK_ROOT/users/$USER/codes/public
 
-#set bin vars
-if [ $PATH != *$HK_ROOT/codes/public/system/sbin* ]
-then
-    echo export PATH=\$HK_ROOT/codes/public/system/sbin:\$PATH >> $HOME/.bashrc
+if [ "-d" == $1 ]; then
+	#Developers
+	echo "####DEVMODE####"
+	mkdir -p $HK_ROOT/users/$USER/codes/private
+	mkdir -p $HK_ROOT/users/$USER/codes/public
+	cp -rv `pwd`/* `pwd`/.git $HK_ROOT/users/$USER/codes/public
 fi
-
-exit

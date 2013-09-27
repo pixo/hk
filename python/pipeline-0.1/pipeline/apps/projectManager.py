@@ -33,14 +33,15 @@ class UiProjectCreator ( QtGui.QMainWindow ):
             
         description = self.plainTextEdit.toPlainText()
         user = self.lineEdit_2.text()
-        passw = self.lineEdit_3.text()
-        adress = self.lineEdit_4.text()
+        password = self.lineEdit_3.text()
+        server = self.lineEdit_4.text()
         database = self.lineEdit_5.text()  
-        server = "http://%s:%s@%s/" % ( user, passw, adress )
-        
+                
         doc = core.createProject( name = name,
                                  description = description,
-                                 serveradress = server,
+                                 user = user,
+                                 password = password,
+                                 server = server,
                                  dbname = database )
         
         if doc :

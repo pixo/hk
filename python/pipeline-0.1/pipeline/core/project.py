@@ -6,7 +6,7 @@ Created on Jan 11, 2013
 import os,time
 import pipeline.utils as utils
 
-def createProjectEnv ( name = "", dbname = "" ):
+def createProjectEnv ( name = "", user="admin", password = "admin", server = "127.0.0.1:5984", dbname = "" ):
     
     if dbname == "":
         dbname = "projects"
@@ -16,9 +16,8 @@ source $HOME/.bashrc
 
 #Set environment variables
 export HK_DB=%s
-HK_DB_USER="admin:admin"
-export HK_DB_SERVER="http://$HK_DB_USER@127.0.0.1:5984/"
-#export HK_DB_SERVER="https://$HK_DB_USER@homeworks.iriscouch.com"
+HK_DB_USER="%s:%s"
+export HK_DB_SERVER="http://$HK_DB_USER@%s/"
 
 export HK_COAT_VER=4-0-03
 export HK_COAT_VER_T=4-0-03
@@ -58,8 +57,9 @@ if ! ([ -d $logpath ])
       then
         mkdir -p $logpath
 fi
-""" % ( dbname )
+""" % ( dbname, user, password, server )
 
+    # Get the project env file
     file = utils.getProjectEnv ( name )
     
     if file :
@@ -85,14 +85,14 @@ def lsProjects(db, project=""):
         
     return proj_ls
     
-def createProject( name = "", description = "Default", serveradress = "",
+def createProject ( name = "", description = "Default", user = "admin", password = "admin", server = "",
                    dbname = "projects", overdoc = dict () ):
         
     if name == "" :
         print "CreateProject(): Please provide a project name"
         return False
     
-    if serveradress == "" or serveradress == None :
+    if server == "" or server == None :
         print "CreateProject(): No server adress provided"
         return False
                 
@@ -111,13 +111,14 @@ def createProject( name = "", description = "Default", serveradress = "",
             }    
     doc.update( overdoc )
     
-    env = createProjectEnv ( name, dbname )
+    env = createProjectEnv ( name, user, password, server, dbname )
     
     if env :
-        db = utils.getDb ( dbname, serveradress )
+        adress = "http://%s:%s@%s/" % ( user, password, server )
+        db = utils.getDb ( dbname, adress )
         
         if not db :
-            db = utils.createDb ( dbname, serveradress )
+            db = utils.createDb ( dbname, adress )
             
         else :
             project = lsProjects ( db, name )
