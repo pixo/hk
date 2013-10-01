@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [[ $1 == "-d" ]]
+	then
+		HK_ONLINE='/codes'
+		HK_LOCAL=$HK_CODE_PATH
+	else
+		HK_ONLINE='/projects/'$HK_PROJECT
+		HK_LOCAL=$HK_REPO/$HK_PROJECT
+fi
+
+# lftp ftp://$HK_HOST_SERVER -e "
+# set ftp:ssl-allow no;
+# mirror --only-newer --verbose -x \#recycle -x .Trash-1000 $HK_ONLINE $HK_LOCAL;
+# quit
+# "
+# lftp ftp://$HK_HOST_USER@$HK_HOST -e "
+# set ftp:ssl-allow no;
+# mirror --only-newer --reverse --verbose -x \#recycle -x .Trash-1000 $HK_LOCAL $HK_ONLINE;
+# quit
+# "

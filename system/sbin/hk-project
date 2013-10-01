@@ -19,7 +19,7 @@ if [ -n "$HK_ROOT" ]
 					then
 						echo "hk-project: Empty project"
 						exit
-				fi	
+				fi
 				
 				export PATH=$HK_CODE_PATH/system/bin:$PATH
 				export HK_DEV_MODE=$devmode
@@ -28,7 +28,7 @@ if [ -n "$HK_ROOT" ]
 				export HK_USER_REPO="$HK_HOME/projects"
 				export HK_PROJECT_ENV="$HK_REPO/$project/config/$project.env"
 				export PYTHONPATH=$HK_CODE_PATH/python/couchdb-python:$PYTHONPATH
-
+				
 				if [ -a $HK_PROJECT_ENV ]
 				  	then
 				  		export HK_PROJECT=$project
@@ -36,6 +36,7 @@ if [ -n "$HK_ROOT" ]
 				    else
 				    	echo "hk-project:project '$project' doesn't exists."
 				fi
+				
 		else
 				echo "hk-project:You already are in the project '$HK_PROJECT'. Please use the command 'exit' to leave the current project and try again."
 		fi

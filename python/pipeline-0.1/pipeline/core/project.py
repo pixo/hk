@@ -6,19 +6,30 @@ Created on Jan 11, 2013
 import os,time
 import pipeline.utils as utils
 
-def createProjectEnv ( name = "", dbname = "" ):
+def lsProjects ( db, project = "" ):
+    endkey = u"%s\u0fff" % ( project )
+    design = utils.getDesign ()
+    view = db.view("_design/%s/_view/%s" % ( design, "project" ),
+                   startkey = project, endkey = endkey )
+    proj_ls = list ()
+    
+    for row in view.rows :
+        proj_ls.append ( row ["value"] ["name"] )
+        
+    return proj_ls
+
+def createProjectEnv ( name = "", dbname = "", db_user = "", db_password  = "",
+                         db_host  = "", repo_user  = "", repo_password = "", repo_host = "" ):
     
     if dbname == "":
         dbname = "projects"
         
     env = r"""
 source $HOME/.bashrc
+source $HK_ROOT/users/$USER/.$HK_PROJECT
 
 #Set environment variables
 export HK_DB=%s
-HK_DB_USER="admin:admin"
-export HK_DB_SERVER="http://$HK_DB_USER@127.0.0.1:5984/"
-#export HK_DB_SERVER="https://$HK_DB_USER@homeworks.iriscouch.com"
 
 export HK_COAT_VER=4-0-03
 export HK_COAT_VER_T=4-0-03
@@ -60,39 +71,41 @@ if ! ([ -d $logpath ])
 fi
 """ % ( dbname )
 
-    file = utils.getProjectEnv ( name )
-    
-    if file :
-        if utils.createFile ( file, env ):
-            print "createProjectEnv(): %s created " % file
-            return file
+    # Get the project env file
+    file_env = utils.getProjectEnv ( name )
+        
+    if file_env :
+        if utils.createFile ( file_env, env ):
+            print "createProjectEnv(): %s created " % file_env
+            return file_env
         else:
-            print "createProjectEnv(): can't create %s " % file
+            print "createProjectEnv(): can't create %s " % file_env
             return False
     else:
-        print "createProjectEnv(): can't get project env %s " % file
+        print "createProjectEnv(): can't get project env %s " % file_env
         return False
-
-def lsProjects(db, project=""):
-    endkey = u"%s\u0fff" % ( project )
-    design = utils.getDesign ()
-    view = db.view("_design/%s/_view/%s" % ( design, "project" ),
-                   startkey = project, endkey = endkey )
-    proj_ls = list ()
     
-    for row in view.rows :
-        proj_ls.append ( row ["value"] ["name"] )
-        
-    return proj_ls
+def createProjectCred ( name, db_server, host_server ):
+    #Create credential file
+    cred = """
+            export HK_DB_SERVER='%s'
+            export HK_HOST_SERVER='%s'
+            """ % ( db_server, host_server )
+            
+    file_cred = os.path.join ( os.getenv ( "$HK_ROOT" ), "users", os.getenv ( "$USER" ) )
+    file_cred = os.path.join ( file_cred , "." + name )
+    path = utils.createFile ( file_cred, cred )
+    os.chmod ( path, 600 )
     
-def createProject( name = "", description = "Default", serveradress = "",
-                   dbname = "projects", overdoc = dict () ):
+def createProject ( name = "", description = "Default", db_user = "admin", db_password = "admin", db_server = "",
+                        host_user = "homeworks", host_password = "admin", host_server = "",
+                        dbname = "projects", overdoc = dict () ):
         
     if name == "" :
         print "CreateProject(): Please provide a project name"
         return False
     
-    if serveradress == "" or serveradress == None :
+    if db_server == "" or db_server == None :
         print "CreateProject(): No server adress provided"
         return False
                 
@@ -112,12 +125,16 @@ def createProject( name = "", description = "Default", serveradress = "",
     doc.update( overdoc )
     
     env = createProjectEnv ( name, dbname )
-    
+        
     if env :
-        db = utils.getDb ( dbname, serveradress )
+        db_server = "%s:%s@%s" % ( db_user, db_password, db_server )
+        adress = "http://%s/" % db_server 
+        db = utils.getDb ( dbname, adress )
         
         if not db :
-            db = utils.createDb ( dbname, serveradress )
+            db = utils.createDb ( dbname, adress )
+            host_server = "%s:%s@%s" % ( host_user, host_password, host_server )
+            createProjectCred ( name, db_server, host_server )
             
         else :
             project = lsProjects ( db, name )

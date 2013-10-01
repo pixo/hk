@@ -14,7 +14,8 @@ def getDesign () :
     return "AssetManager"
 
 def getServer () :
-    return os.getenv ( "HK_DB_SERVER" )
+    db_server = "http://%s/" % os.getenv ( "HK_DB_SERVER" )
+    return db_server
 
 def getDb ( dbname = "" , serveradress = "" ) :
     

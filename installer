@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #set HK_ROOT in bashrc
 if [ -z "$HK_ROOT" ]; then
@@ -12,14 +12,13 @@ then
     echo export PATH=\$HK_ROOT/codes/public/system/sbin:\$PATH >> $HOME/.bashrc
 fi
 
-# homeworks directories
+#homeworks directories
 sudo mkdir -p $HK_ROOT/projects
 sudo mkdir -p $HK_ROOT/codes/public
 sudo mkdir -p $HK_ROOT/codes/private
-sudo chmod 775 $HK_ROOT/codes/public #A modifier, present pour le hk-code-release
 sudo chmod 775 $HK_ROOT/projects
 sudo chown -R $USER $HK_ROOT/projects
-sudo cp -rv python system tools $HK_ROOT/codes/public
+sudo chown -R $USER $HK_ROOT/codes
 
 # user directories
 sudo mkdir -p $HK_ROOT/users/$USER
@@ -27,13 +26,19 @@ sudo chmod 775 $HK_ROOT/users/$USER
 sudo chown -R $USER $HK_ROOT/users/$USER
 mkdir -p $HK_ROOT/users/$USER/projects
 
+#If developer
 if [ $1 == "-d" ] 
 	then
 	# For developers
 	mkdir -p $HK_ROOT/users/$USER/codes/private
 	mkdir -p $HK_ROOT/users/$USER/codes/public
 	sudo chown -R $USER $HK_ROOT/users/$USER/codes
-	cp -rv `pwd`/* .git $HK_ROOT/users/$USER/codes/public
-fi
+	cp -rv `pwd`/* `pwd`/.git $HK_ROOT/users/$USER/codes/public
 
-exit
+#Copy Asset Manager
+sudo cp -rv python system tools $HK_ROOT/codes/public
+
+#Create info file
+sudo touch $HK_ROOT/.hk
+sudo chown $USER $HK_ROOT/.hk
+chmod 600 $HK_ROOT/.hk

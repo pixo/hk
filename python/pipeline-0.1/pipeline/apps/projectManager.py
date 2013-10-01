@@ -5,11 +5,7 @@ Created on Mar 5, 2013
 '''
 import sys
 import pipeline.core as core
-
-try :
-    from PySide import QtCore, QtGui
-except:
-    from PythonQt import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 class UiProjectCreator ( QtGui.QMainWindow ):
             
@@ -32,19 +28,26 @@ class UiProjectCreator ( QtGui.QMainWindow ):
             return
             
         description = self.plainTextEdit.toPlainText()
-        user = self.lineEdit_2.text()
-        passw = self.lineEdit_3.text()
-        adress = self.lineEdit_4.text()
-        database = self.lineEdit_5.text()  
-        server = "http://%s:%s@%s/" % ( user, passw, adress )
-        
-        doc = core.createProject( name = name,
+        db_user = self.lineEdit_2.text()
+        db_password = self.lineEdit_3.text()
+        db_server = self.lineEdit_4.text()
+        db_name = self.lineEdit_5.text()
+        host_user = self.lineEdit_6.text()
+        host_password = self.lineEdit_7.text()
+        host_server = self.lineEdit_8.text()
+                        
+        doc = core.createProject ( name = name,
                                  description = description,
-                                 serveradress = server,
-                                 dbname = database )
-        
+                                 db_user = db_user,
+                                 db_password = db_password,
+                                 db_server = db_server,
+                                 dbname = db_name,
+                                 host_user = host_user,
+                                 host_password = host_password,
+                                 host_server = host_server )
+         
         if doc :
-            msg = "'%s' added to db '%s'" % ( name, database )
+            msg = "'%s' added to db '%s'" % ( name, db_name )
             self.statusbar.showMessage ( msg )
             print msg
             self.close ()
@@ -115,6 +118,7 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         self.lineEdit_4.setObjectName("lineEdit_4")
         self.horizontalLayout_6.addWidget(self.lineEdit_4)
         self.verticalLayout.addLayout(self.horizontalLayout_6)
+        
         self.horizontalLayout_7 = QtGui.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
         self.label_6 = QtGui.QLabel(self.centralwidget)
@@ -125,6 +129,41 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         self.lineEdit_5.setObjectName("lineEdit_5")
         self.horizontalLayout_7.addWidget(self.lineEdit_5)
         self.verticalLayout.addLayout(self.horizontalLayout_7)
+        
+        self.horizontalLayout_8 = QtGui.QHBoxLayout()
+        self.horizontalLayout_8.setObjectName("horizontalLayout_8")
+        self.label_7 = QtGui.QLabel(self.centralwidget)
+        self.label_7.setMinimumSize(QtCore.QSize(60, 0))
+        self.label_7.setObjectName("label_7")
+        self.horizontalLayout_8.addWidget(self.label_7)
+        self.lineEdit_6 = QtGui.QLineEdit(self.centralwidget)
+        self.lineEdit_6.setObjectName("lineEdit_6")
+        self.horizontalLayout_8.addWidget(self.lineEdit_6)
+        self.verticalLayout.addLayout(self.horizontalLayout_8)
+        
+        self.horizontalLayout_9 = QtGui.QHBoxLayout()
+        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
+        self.label_8 = QtGui.QLabel(self.centralwidget)
+        self.label_8.setMinimumSize(QtCore.QSize(60, 0))
+        self.label_8.setObjectName("label_8")
+        self.horizontalLayout_9.addWidget(self.label_8)
+        self.lineEdit_7 = QtGui.QLineEdit(self.centralwidget)
+        self.lineEdit_7.setEchoMode(QtGui.QLineEdit.Password)
+        self.lineEdit_7.setObjectName("lineEdit_7")
+        self.horizontalLayout_9.addWidget(self.lineEdit_7)
+        self.verticalLayout.addLayout(self.horizontalLayout_9)
+        
+        self.horizontalLayout_10 = QtGui.QHBoxLayout()
+        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
+        self.label_9 = QtGui.QLabel(self.centralwidget)
+        self.label_9.setMinimumSize(QtCore.QSize(60, 0))
+        self.label_9.setObjectName("label_9")
+        self.horizontalLayout_10.addWidget(self.label_9)
+        self.lineEdit_8 = QtGui.QLineEdit(self.centralwidget)
+        self.lineEdit_8.setObjectName("lineEdit_8")
+        self.horizontalLayout_10.addWidget(self.lineEdit_8)
+        self.verticalLayout.addLayout(self.horizontalLayout_10)
+        
         self.verticalLayout_4 = QtGui.QVBoxLayout()
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.label = QtGui.QLabel(self.centralwidget)
@@ -151,14 +190,25 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         self.pushButton.setEnabled ( False )
         self.label_2.setText ( "Project" )
         self.lineEdit.setText ( "NewProject" )
-        self.label_3.setText ( "User" )
+        
+        #Database attrs
+        self.label_3.setText ( "DB User" )
         self.lineEdit_2.setText ( "admin" )
-        self.label_4.setText ( "Password" )
+        self.label_4.setText ( "DB Password" )
         self.lineEdit_3.setText ( "admin" )
-        self.label_5.setText ( "Server" )
+        self.label_5.setText ( "DB Server" )
         self.lineEdit_4.setText ( "127.0.0.1:5984" )
-        self.label_6.setText ( "Database" )
+        self.label_6.setText ( "DB Name" )
         self.lineEdit_5.setText ( "projects" )
+        
+        #Host attrs
+        self.label_7.setText ( "Host User" )
+        self.lineEdit_6.setText ( "homeworks" )
+        self.label_8.setText ( "Host Password" )
+        self.lineEdit_7.setText ( "admin" )
+        self.label_9.setText ( "Host Server" )
+        self.lineEdit_8.setText ( "127.0.0.1" )
+        
         self.label.setText( "Description" )
         self.pushButton.setText( "Create" )
         

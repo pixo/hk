@@ -24,6 +24,13 @@ if [ -n "$HK_ROOT" ]
 				export HK_USER_REPO="$HK_HOME/projects"
 				export HK_PROJECT_ENV="$adenv/$project.env"
 				export PYTHONPATH=$HK_CODE_PATH/python/couchdb-python:$PYTHONPATH
+
+				if [ -a $HK_ROOT/.$project ]
+					then
+						source $HK_ROOT/.$project
+					else
+						source $HK_ROOT/.hk
+				fi
 				
 				if [ -a $HK_PROJECT_ENV ]
 				  	then
@@ -32,6 +39,7 @@ if [ -n "$HK_ROOT" ]
 				    else
 				    	echo "hk-project:project '$project' doesn't exists."
 				fi
+
 		else
 				echo "hk-project:You already are in the project '$HK_PROJECT'. Please use the command 'exit' to leave the current project and try again."
 		fi

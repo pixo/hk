@@ -31,12 +31,13 @@ def getRepo () :
     return repo
 
 def getProjectEnv ( project = "" ) :
+    #Return a path for the project env file
     if project == "" :
         project = getProjectName ()
         
     repo = getRepo ()
     if repo : 
-        envfile = os.path.join( repo, project, "config", project + ".env" )
+        envfile = os.path.join ( repo, project, "config", project + ".env" )
         return envfile
     else :
         print "getProjectEnv():can't get network repository"
