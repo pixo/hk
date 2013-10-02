@@ -3,9 +3,10 @@ Created on Jan 6, 2013
 
 @author: pixo
 '''
-import os
+import os, socket
 import couchdb
 import rule
+from chardet.constants import False
 
 class ProjectNoSet ( Exception ) :
     pass
@@ -16,6 +17,15 @@ def getDesign () :
 def getServer () :
     db_server = "http://%s/" % os.getenv ( "HK_DB_SERVER" )
     return db_server
+
+def serverExists ( serveradress = "" ) :
+    server = couchdb.Server ( serveradress )
+    try:
+        stats = server.stats()
+        return True
+    except:
+        return False
+
 
 def getDb ( dbname = "" , serveradress = "" ) :
     
@@ -35,7 +45,6 @@ def getDb ( dbname = "" , serveradress = "" ) :
             return False
         
     server = couchdb.Server ( serveradress )
-    
     if dbname in server :
         return server [ dbname ]
     
@@ -43,7 +52,8 @@ def getDb ( dbname = "" , serveradress = "" ) :
         return False
 
 
-def lsDb( db = None , view = "", startkey = "", endkey = "" ):
+
+def lsDb ( db = None , view = "", startkey = "", endkey = "" ):
     
     if db == None :
         db = getDb ()

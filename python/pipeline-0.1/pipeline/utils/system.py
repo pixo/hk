@@ -7,17 +7,18 @@ import itertools, re, os, glob
 
 def createFile ( file, content ) :
     
-    dir = os.path.dirname ( file )
-    
-    if os.path.exists ( dir ) :
+    if os.path.exists ( file ):
+        print "createFile (): %s already exists." % file 
         return False
     
-    else :
+    dir = os.path.dirname ( file )
+    if not os.path.exists ( dir ) :
         os.makedirs ( dir, 0775 )
     
     file = open ( file, 'w' )
     file.write ( content )
     file.close ()
+    
     return True
 
 def getRootPath () :

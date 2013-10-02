@@ -24,13 +24,6 @@ if [ -n "$HK_ROOT" ]
 				export HK_USER_REPO="$HK_HOME/projects"
 				export HK_PROJECT_ENV="$adenv/$project.env"
 				export PYTHONPATH=$HK_CODE_PATH/python/couchdb-python:$PYTHONPATH
-
-				if [ -a $HK_ROOT/.$project ]
-					then
-						source $HK_ROOT/.$project
-					else
-						source $HK_ROOT/.hk
-				fi
 				
 				if [ -a $HK_PROJECT_ENV ]
 				  	then

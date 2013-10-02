@@ -26,7 +26,7 @@ def createProjectEnv ( name = "", dbname = "", db_user = "", db_password  = "",
         
     env = r"""
 source $HOME/.bashrc
-source $HK_ROOT/users/$USER/.$HK_PROJECT
+source $HK_ROOT/users/$USER/.hk/$HK_PROJECT
 
 #Set environment variables
 export HK_DB=%s
@@ -88,19 +88,32 @@ fi
 def createProjectCred ( name, db_server, host_server ):
     #Create credential file
     cred = """
-            export HK_DB_SERVER='%s'
-            export HK_HOST_SERVER='%s'
-            """ % ( db_server, host_server )
+export HK_DB_SERVER='%s'
+export HK_HOST_SERVER='%s'
+""" % ( db_server, host_server )
             
-    file_cred = os.path.join ( os.getenv ( "$HK_ROOT" ), "users", os.getenv ( "$USER" ) )
-    file_cred = os.path.join ( file_cred , "." + name )
-    path = utils.createFile ( file_cred, cred )
-    os.chmod ( path, 600 )
+    file_cred = os.path.join ( os.getenv ( "HK_ROOT" ), "users", os.getenv ( "USER" ) )
+    file_cred = os.path.join ( file_cred , ".hk", name  )
+    iscreated = utils.createFile ( file_cred, cred )
     
-def createProject ( name = "", description = "Default", db_user = "admin", db_password = "admin", db_server = "",
-                        host_user = "homeworks", host_password = "admin", host_server = "",
-                        dbname = "projects", overdoc = dict () ):
-        
+    if iscreated:
+        os.chmod ( file_cred, 600 )
+        return True
+    else:
+        return False
+    
+def createProject ( name = "", description = "Default", db_server = "", ftp_server = "",
+                      db_name = "projects", overdoc = dict () ):
+
+    #Check if DB server exists
+    adress = "http://%s/" % db_server
+    exists = utils.serverExists ( adress )
+    
+    if not exists :
+        print "createProject(): Wrong DB server adress,user or/and password"
+        return False
+    
+    #Check args
     if name == "" :
         print "CreateProject(): Please provide a project name"
         return False
@@ -108,7 +121,21 @@ def createProject ( name = "", description = "Default", db_user = "admin", db_pa
     if db_server == "" or db_server == None :
         print "CreateProject(): No server adress provided"
         return False
-                
+    
+    #Create DB, project env and cred file                    
+    db = utils.getDb ( db_name, adress )        
+    if db == False :
+        db = utils.createDb ( db_name, adress )
+        createProjectEnv ( name, db_name )
+        createProjectCred ( name, db_server, ftp_server )
+        
+    else :
+        project = lsProjects ( db, name )    
+        if len ( project ) > 0 :
+            print "createProject(): project %s already exist" % name
+            return False
+    
+    #Adding db project documents    
     assets = utils.getAssetTypes ()
     tasks = utils.getAssetTasks ()
     
@@ -124,28 +151,7 @@ def createProject ( name = "", description = "Default", db_user = "admin", db_pa
             }    
     doc.update( overdoc )
     
-    env = createProjectEnv ( name, dbname )
-        
-    if env :
-        db_server = "%s:%s@%s" % ( db_user, db_password, db_server )
-        adress = "http://%s/" % db_server 
-        db = utils.getDb ( dbname, adress )
-        
-        if not db :
-            db = utils.createDb ( dbname, adress )
-            host_server = "%s:%s@%s" % ( host_user, host_password, host_server )
-            createProjectCred ( name, db_server, host_server )
-            
-        else :
-            project = lsProjects ( db, name )
-            
-            if len ( project ) > 0 :
-                print "createProject(): project %s already exist" % name
-                return False
-            
-        _id, _rev = db.save( doc )
-        
-        print "createProject(): Project '%s' created" % ( name )
-        return db
-    else :
-        return False
+    _id, _rev = db.save( doc )
+    print "createProject(): Project '%s' created" % ( name )
+    return db
+
