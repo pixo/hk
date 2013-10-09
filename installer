@@ -35,6 +35,7 @@ if [ $1 == "-d" ]
 	mkdir -p $HK_ROOT/users/$USER/codes/public
 	sudo chown -R $USER $HK_ROOT/users/$USER/codes
 	cp -rv `pwd`/* `pwd`/.git $HK_ROOT/users/$USER/codes/public
+fi
 
 #Copy Asset Manager
 sudo cp -rv python system tools $HK_ROOT/codes/public
