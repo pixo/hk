@@ -26,6 +26,7 @@ sudo chmod 775 $HK_ROOT/users/$USER
 sudo chown -R $USER $HK_ROOT/users/$USER
 mkdir -p $HK_ROOT/users/$USER/projects
 mkdir -p $HK_ROOT/users/$USER/.hk
+chmod 600 $HK_ROOT/users/$USER/.hk
 
 #If developer
 if [ $1 == "-d" ] 
