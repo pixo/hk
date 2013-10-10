@@ -85,13 +85,11 @@ fi
         print "createProjectEnv(): can't get project env %s " % file_env
         return False
     
-def createProjectCred ( name, db_server, host_server ):
-    #Create credential file
-    cred = """
-export HK_DB_SERVER='%s'
-export HK_HOST_SERVER='%s'
-""" % ( db_server, host_server )
+def createProjectCred ( name, db_server ):
+#     Create credential file contains
+    cred = """export HK_DB_SERVER=%s""" % ( db_server )
             
+#     Create credential file
     file_cred = os.path.join ( os.getenv ( "HK_ROOT" ), "users", os.getenv ( "USER" ) )
     file_cred = os.path.join ( file_cred , ".hk", name  )
     iscreated = utils.createFile ( file_cred, cred )
@@ -99,10 +97,11 @@ export HK_HOST_SERVER='%s'
     if iscreated:
         os.chmod ( file_cred, 600 )
         return True
+    
     else:
         return False
     
-def createProject ( name = "", description = "Default", db_server = "", ftp_server = "",
+def createProject ( name = "", description = "Default", db_server = "",
                       db_name = "projects", overdoc = dict () ):
 
     #Check if DB server exists
@@ -127,7 +126,7 @@ def createProject ( name = "", description = "Default", db_server = "", ftp_serv
     if db == False :
         db = utils.createDb ( db_name, adress )
         createProjectEnv ( name, db_name )
-        createProjectCred ( name, db_server, ftp_server )
+        createProjectCred ( name, db_server )
         
     else :
         project = lsProjects ( db, name )    
@@ -148,7 +147,8 @@ def createProject ( name = "", description = "Default", db_server = "", ftp_serv
             "tasks_type": tasks,
             "creator": os.getenv ( "USER" ),
             "created": time.strftime ( "%Y %b %d %H:%M:%S", time.localtime() )
-            }    
+            }
+    
     doc.update( overdoc )
     
     _id, _rev = db.save( doc )
