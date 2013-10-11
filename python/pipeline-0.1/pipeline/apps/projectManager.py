@@ -3,7 +3,7 @@ Created on Mar 5, 2013
 
 @author: pixo
 '''
-import sys
+import sys, re
 import pipeline.core as core
 from PySide import QtCore, QtGui
 
@@ -17,15 +17,14 @@ class UiProjectCreator ( QtGui.QMainWindow ):
             self.statusbar.showMessage (msg % name)
             return
         
-        for char in ( " ", "_", "-", "*", "\\", "/", ".", "," ) :
-            if name.find ( char ) >= 0:
-                msg = "Can't create Project '%s', invalid characters '%s'" %  (name, char )
-                self.statusbar.showMessage( msg )
-                return
-            
+        if re.sub("[a-z]","", name) != "":
+            msg = "Can't create Project '%s', invalid characters" % name
+            self.statusbar.showMessage( msg )
+            return
+                    
         description = self.plainTextEdit.toPlainText()
-        db_server = self.lineEdit_2.text()
-        db_name = self.lineEdit_3.text()
+        db_name = self.lineEdit_2.text()
+        db_server = self.lineEdit_3.text()
                  
         doc = core.createProject ( name = name, description = description,
                                    db_server = db_server, db_name = db_name )
@@ -94,18 +93,7 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         #self.lineEdit_3.setEchoMode(QtGui.QLineEdit.Password)
         self.lineEdit_3.setObjectName("lineEdit_3")
         self.horizontalLayout_5.addWidget(self.lineEdit_3)
-        self.verticalLayout.addLayout(self.horizontalLayout_5)
-        
-#         self.horizontalLayout_6 = QtGui.QHBoxLayout()
-#         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-#         self.label_5 = QtGui.QLabel(self.centralwidget)
-#         self.label_5.setMinimumSize(QtCore.QSize(80, 0))
-#         self.label_5.setObjectName("label_5")
-#         self.horizontalLayout_6.addWidget(self.label_5)
-#         self.lineEdit_4 = QtGui.QLineEdit(self.centralwidget)
-#         self.lineEdit_4.setObjectName("lineEdit_4")
-#         self.horizontalLayout_6.addWidget(self.lineEdit_4)
-#         self.verticalLayout.addLayout(self.horizontalLayout_6)       
+        self.verticalLayout.addLayout(self.horizontalLayout_5)  
         
         self.verticalLayout_4 = QtGui.QVBoxLayout()
         self.verticalLayout_4.setObjectName("verticalLayout_4")
@@ -141,9 +129,6 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         self.lineEdit_2.setText ( "projects" )
         self.label_4.setText ( "DB server" )
         self.lineEdit_3.setText ( "admin:password@127.0.0.1:5984" )
-        #self.label_5.setText ( "DB name" )
-        #self.lineEdit_4.setText ( "projects" )       
-        
         self.label.setText( "Description" )
         self.pushButton.setText( "Create" )
         

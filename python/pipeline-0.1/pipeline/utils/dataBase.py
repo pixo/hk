@@ -6,7 +6,6 @@ Created on Jan 6, 2013
 import os, socket
 import couchdb
 import rule
-from chardet.constants import False
 
 class ProjectNoSet ( Exception ) :
     pass

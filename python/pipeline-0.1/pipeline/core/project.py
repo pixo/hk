@@ -41,6 +41,7 @@ export HK_HOUDINI_VER=12.5
 export HK_MARI_VER=2.0v1
 export HK_MARI_VER_T=2.1v1a1
 export HK_MAYA_VER=2013
+export HK_MAYA_ROOT="/usr/autodesk"
 export HK_MODO_VER=701
 export HK_MUDBOX_VER=2013
 export HK_NUKE_VER=7.0v2
@@ -92,10 +93,11 @@ def createProjectCred ( name, db_server ):
 #     Create credential file
     file_cred = os.path.join ( os.getenv ( "HK_ROOT" ), "users", os.getenv ( "USER" ) )
     file_cred = os.path.join ( file_cred , ".hk", name  )
+    
     iscreated = utils.createFile ( file_cred, cred )
     
     if iscreated:
-        os.chmod ( file_cred, 600 )
+        os.chmod ( file_cred, 0600 )
         return True
     
     else:

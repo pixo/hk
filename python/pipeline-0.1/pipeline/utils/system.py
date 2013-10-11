@@ -3,7 +3,7 @@ Created on Jan 19, 2013
 
 @author: pixo
 '''
-import itertools, re, os, glob
+import itertools, re, os, glob, stat
 
 def createFile ( file, content ) :
     
@@ -12,8 +12,15 @@ def createFile ( file, content ) :
         return False
     
     dir = os.path.dirname ( file )
+#     stats = os.stat('path')
+#     os.chmod('prj', stats.st_mode)
+
     if not os.path.exists ( dir ) :
         os.makedirs ( dir, 0775 )
+    
+    else:
+        os.chmod ( 0775 )
+    
     
     file = open ( file, 'w' )
     file.write ( content )
