@@ -19,7 +19,7 @@ def createFile ( file, content ) :
         os.makedirs ( dir, 0775 )
     
     else:
-        os.chmod ( 0775 )
+        os.chmod ( dir, 0775 )
     
     
     file = open ( file, 'w' )
