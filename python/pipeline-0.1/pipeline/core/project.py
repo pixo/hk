@@ -124,18 +124,20 @@ def createProject ( name = "", description = "Default", db_server = "",
         print "CreateProject(): No server adress provided"
         return False
     
-    #Create DB, project env and cred file                    
+    #If DB doesn't exists Create DB                     
     db = utils.getDb ( db_name, adress )        
     if db == False :
         db = utils.createDb ( db_name, adress )
-        createProjectEnv ( name, db_name )
-        createProjectCred ( name, db_server, host_root )
         
-    else :
-        project = lsProjects ( db, name )    
-        if len ( project ) > 0 :
-            print "createProject(): project %s already exist" % name
-            return False
+    #Check if project exists
+    project = lsProjects ( db, name )    
+    if len ( project ) > 0 :
+        print "createProject(): project %s already exist" % name
+        return False
+
+    #Create project env and cred file
+    createProjectEnv ( name, db_name )
+    createProjectCred ( name, db_server, host_root )    
     
     #Adding db project documents    
     assets = utils.getAssetTypes ()

@@ -2,64 +2,75 @@
 import pipeline.utils as utils
 import argparse, os
 
-def get_sync_tasks ( sync_args ) :
-	args = sync_args.split (",")
+def get_sync_exclude ( sync_args ) :
+    result = list ( (".Trash-1000", "\#recycle") )
+    args = sync_args.split (",")
 
-	if "all" in args :
-		return list ()
-	
-	"""Get tasks code"""
-	at = utils.getAssetTasks ()
-	tasks = list ()
-	for k in at : tasks.append ( at [ k ] )
+    if "all" in args :
+        return result
+    
+    """Get tasks code"""
+    at = utils.getAssetTasks ()
+    tasks = list ()
+    for k in at : tasks.append ( at [ k ] )
 
-	"""Check args and return the task code to sync"""
-	result = tasks
+    """Check args and return the task code to sync"""
+    result = tasks
 
-	for a in args :
-		""" append legal tasks """
-		if a in tasks :
-			result.remove ( a )
+    for a in args :
+        """ append legal tasks """
+        if a in tasks :
+            result.remove ( a )
 
-	return result
+    return result
+
+def hk_rsync ( source = "", destination = "", excludes = list (), dev = None ):
+    """Check if update codes or projects"""
+    if dev and bool ( int ( dev ) ) :
+        category = "codes"
+        source = os.path.join ( source, category )
+        destination = os.path.join ( destination ) 
+
+    else:
+        category = "projects"
+        directory = utils.getProjectName ()
+        source = os.path.join ( source, category, directory ) 
+        destination = os.path.join ( destination, category )
+    
+    cmd = utils.rsync ( source = source, destination = destination, excludes = excludes )
+    return cmd
 
 def cli ( sync, push, pull, dev ):
 
-	local_root = utils.getLocalRoot ()
-	host_root = utils.getHostRoot ()
-	project = utils.getProjectName ()
+    # local_root = os.path.join ( os.getenv ( "HOME" ),  "homeworks" )
+    local_root = utils.getLocalRoot ()
+    host_root = utils.getHostRoot ()
+    
+    if sync :
+        excludes = get_sync_exclude ( sync )
+        """Pushing"""
+        cmd = hk_rsync ( source = local_root, destination = host_root, excludes = excludes, dev = dev )
+        os.system ( cmd )
+        # print cmd
 
-	"""Check if update codes or projects"""
-	if dev and bool( int ( dev ) ) :
-		local_root = os.path.join ( local_root, "codes")  
-		host_root = os.path.join ( host_root, "codes")
-	
-	else :
-		local_root = os.path.join ( local_root, "projects")  
-		host_root = os.path.join ( host_root, "projects")
+        """Pulling"""
+        cmd = hk_rsync ( source = host_root, destination = local_root, excludes = excludes, dev = dev )
+        os.system ( cmd )
+        # print cmd
 
-	"""Check if update codes directory"""
-	if sync :
-		excludes = get_sync_tasks ( sync )
-		"""Pushing"""
-		cmd = utils.rsync ( source = local_root, destination = host_root, excludes = excludes )
-		os.system ( cmd )
+    if push :
+        excludes = get_sync_exclude ( push )
+        """Pushing"""
+        cmd = hk_rsync ( source = local_root, destination = host_root, excludes = excludes, dev = dev )
+        os.system ( cmd )
+        # print cmd
 
-		"""Pulling"""
-		cmd = utils.rsync ( source = host_root, destination = local_root, excludes = excludes )
-		os.system ( cmd )
-	
-	if push :
-		excludes = get_sync_tasks ( push )
-		"""Pushing"""
-		cmd = utils.rsync ( source = local_root, destination = host_root, excludes = excludes )
-		os.system ( cmd )
-
-	if pull :
-		excludes = get_sync_tasks ( pull )
-		"""Pulling"""
-		cmd = utils.rsync ( source = host_root, destination = local_root, excludes = excludes )
-		os.system ( cmd )
+    if pull :
+        excludes = get_sync_exclude ( pull )
+        """Pulling"""
+        cmd = hk_rsync ( source = host_root, destination = local_root, excludes = excludes, dev = dev )
+        os.system ( cmd )
+        # print cmd
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

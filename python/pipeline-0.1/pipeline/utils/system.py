@@ -139,7 +139,7 @@ def rsync ( source = "", destination = "", excludes = list ()  ):
     """rsync in python"""
     
     """Basic update args"""
-    update="--progress -rvuh"
+    update="--progress -rvuh --ignore-existing"
     
     """Excludes args"""    
     exclude = ""
@@ -151,7 +151,5 @@ def rsync ( source = "", destination = "", excludes = list ()  ):
     
     """Creating rsync command"""    
     cmd = "rsync %s %s %s %s" % ( update, exclude, source, destination )
-    return cmd 
+    return cmd
     
-def test():
-    print ("test:test")
