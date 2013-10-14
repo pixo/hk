@@ -86,9 +86,10 @@ fi
         print "createProjectEnv(): can't get project env %s " % file_env
         return False
     
-def createProjectCred ( name, db_server ):
+def createProjectCred ( name, db_server, host_root ):
 #     Create credential file contains
-    cred = """export HK_DB_SERVER=%s""" % ( db_server )
+    cred = "export HK_DB_SERVER=%s\n" % db_server
+    cred += "export HK_HOST_ROOT=%s\n" % host_root
             
 #     Create credential file
     file_cred = os.path.join ( os.getenv ( "HK_ROOT" ), "users", os.getenv ( "USER" ) )
@@ -104,7 +105,7 @@ def createProjectCred ( name, db_server ):
         return False
     
 def createProject ( name = "", description = "Default", db_server = "",
-                      db_name = "projects", overdoc = dict () ):
+                    db_name = "projects", host_root="", overdoc = dict () ):
 
     #Check if DB server exists
     adress = "http://%s/" % db_server
@@ -128,7 +129,7 @@ def createProject ( name = "", description = "Default", db_server = "",
     if db == False :
         db = utils.createDb ( db_name, adress )
         createProjectEnv ( name, db_name )
-        createProjectCred ( name, db_server )
+        createProjectCred ( name, db_server, host_root )
         
     else :
         project = lsProjects ( db, name )    

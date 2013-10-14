@@ -3,7 +3,7 @@ Created on Jan 19, 2013
 
 @author: pixo
 '''
-import itertools, re, os, glob, stat
+import itertools, re, os
 
 def createFile ( file, content ) :
     
@@ -12,8 +12,6 @@ def createFile ( file, content ) :
         return False
     
     dir = os.path.dirname ( file )
-#     stats = os.stat('path')
-#     os.chmod('prj', stats.st_mode)
 
     if not os.path.exists ( dir ) :
         os.makedirs ( dir, 0775 )
@@ -28,13 +26,16 @@ def createFile ( file, content ) :
     
     return True
 
-def getRootPath () :
+def getLocalRoot () :
     return os.getenv ( "HK_ROOT" )
+
+def getHostRoot () :
+    return os.getenv ( "HK_HOST_ROOT" )
 
 def getRepo () :
     repo = os.getenv ( "HK_REPO" )
     if repo == None :
-        root = getRootPath ()
+        root = getLocalRoot ()
         repo = os.path.join ( root, "projects" )
     return repo
 
@@ -57,9 +58,11 @@ def getCCPath () :
 def getProjectName () :
     return os.getenv ( "HK_PROJECT" ) 
 
-def extractNumber(name):
+def extractNumber ( name ):
+    
     try :
         sp = name.split ( "." ) [1]
+    
     except IndexError:
         sp = name
         
@@ -132,5 +135,23 @@ def lsSeq(path, recursive = True):
         
     return resultDict
 
+def rsync ( source = "", destination = "", excludes = list ()  ):
+    """rsync in python"""
+    
+    """Basic update args"""
+    update="--progress -rvuh"
+    
+    """Excludes args"""    
+    exclude = ""
+    for i in excludes:
+        if type ( i ) == str :
+            exclude += "--exclude=%s " % i
+    
+    exclude = exclude.rstrip()
+    
+    """Creating rsync command"""    
+    cmd = "rsync %s %s %s %s" % ( update, exclude, source, destination )
+    return cmd 
+    
 def test():
     print ("test:test")

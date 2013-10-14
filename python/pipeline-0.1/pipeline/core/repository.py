@@ -3,9 +3,9 @@ Created on Jan 8, 2013
 
 @author: pixo
 '''
+
 import os, time, shutil, hashlib, re, glob, commands
 import pipeline.utils as utils
-import pipeline
 
 def hashTime () :
     sha1 = hashlib.sha1 ( str ( time.time () ) )

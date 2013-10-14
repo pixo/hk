@@ -25,9 +25,11 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         description = self.plainTextEdit.toPlainText()
         db_name = self.lineEdit_2.text()
         db_server = self.lineEdit_3.text()
+        host_root = self.lineEdit_4.text()
                  
         doc = core.createProject ( name = name, description = description,
-                                   db_server = db_server, db_name = db_name )
+                                   db_server = db_server, host_root = host_root,
+                                   db_name = db_name )
            
         if doc :
             msg = "'%s' added to db '%s'" % ( name, db_name )
@@ -93,7 +95,18 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         #self.lineEdit_3.setEchoMode(QtGui.QLineEdit.Password)
         self.lineEdit_3.setObjectName("lineEdit_3")
         self.horizontalLayout_5.addWidget(self.lineEdit_3)
-        self.verticalLayout.addLayout(self.horizontalLayout_5)  
+        self.verticalLayout.addLayout(self.horizontalLayout_5)
+        
+        self.horizontalLayout_6 = QtGui.QHBoxLayout()
+        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        self.label_5 = QtGui.QLabel(self.centralwidget)
+        self.label_5.setMinimumSize(QtCore.QSize(80, 0))
+        self.label_5.setObjectName("label_5")
+        self.horizontalLayout_6.addWidget(self.label_5)
+        self.lineEdit_4 = QtGui.QLineEdit(self.centralwidget)
+        self.lineEdit_4.setObjectName("lineEdit_4")
+        self.horizontalLayout_6.addWidget(self.lineEdit_4)
+        self.verticalLayout.addLayout(self.horizontalLayout_6)  
         
         self.verticalLayout_4 = QtGui.QVBoxLayout()
         self.verticalLayout_4.setObjectName("verticalLayout_4")
@@ -127,8 +140,13 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         #Database attrs
         self.label_3.setText ( "DB name" )
         self.lineEdit_2.setText ( "projects" )
+        
         self.label_4.setText ( "DB server" )
         self.lineEdit_3.setText ( "admin:password@127.0.0.1:5984" )
+
+        self.label_5.setText ( "Host root" )
+        self.lineEdit_4.setText ( "homeworks@127.0.0.1:/homeworks" )
+        
         self.label.setText( "Description" )
         self.pushButton.setText( "Create" )
         

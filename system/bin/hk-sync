@@ -1,21 +1,73 @@
-#!/bin/bash
+#!/usr/bin/env python
+import pipeline.utils as utils
+import argparse, os
 
-if [[ $1 == "-d" ]]
-	then
-		HK_ONLINE='/codes'
-		HK_LOCAL=$HK_CODE_PATH
-	else
-		HK_ONLINE='/projects/'$HK_PROJECT
-		HK_LOCAL=$HK_REPO/$HK_PROJECT
-fi
+def get_sync_tasks ( sync_args ) :
+	args = sync_args.split (",")
 
-# lftp ftp://$HK_HOST_SERVER -e "
-# set ftp:ssl-allow no;
-# mirror --only-newer --verbose -x \#recycle -x .Trash-1000 $HK_ONLINE $HK_LOCAL;
-# quit
-# "
-# lftp ftp://$HK_HOST_USER@$HK_HOST -e "
-# set ftp:ssl-allow no;
-# mirror --only-newer --reverse --verbose -x \#recycle -x .Trash-1000 $HK_LOCAL $HK_ONLINE;
-# quit
-# "
+	if "all" in args :
+		return list ()
+	
+	"""Get tasks code"""
+	at = utils.getAssetTasks ()
+	tasks = list ()
+	for k in at : tasks.append ( at [ k ] )
+
+	"""Check args and return the task code to sync"""
+	result = tasks
+
+	for a in args :
+		""" append legal tasks """
+		if a in tasks :
+			result.remove ( a )
+
+	return result
+
+def cli ( sync, push, pull, dev ):
+
+	local_root = utils.getLocalRoot ()
+	host_root = utils.getHostRoot ()
+	project = utils.getProjectName ()
+
+	"""Check if update codes or projects"""
+	if dev and bool( int ( dev ) ) :
+		local_root = os.path.join ( local_root, "codes")  
+		host_root = os.path.join ( host_root, "codes")
+	
+	else :
+		local_root = os.path.join ( local_root, "projects")  
+		host_root = os.path.join ( host_root, "projects")
+
+	"""Check if update codes directory"""
+	if sync :
+		excludes = get_sync_tasks ( sync )
+		"""Pushing"""
+		cmd = utils.rsync ( source = local_root, destination = host_root, excludes = excludes )
+		os.system ( cmd )
+
+		"""Pulling"""
+		cmd = utils.rsync ( source = host_root, destination = local_root, excludes = excludes )
+		os.system ( cmd )
+	
+	if push :
+		excludes = get_sync_tasks ( push )
+		"""Pushing"""
+		cmd = utils.rsync ( source = local_root, destination = host_root, excludes = excludes )
+		os.system ( cmd )
+
+	if pull :
+		excludes = get_sync_tasks ( pull )
+		"""Pulling"""
+		cmd = utils.rsync ( source = host_root, destination = local_root, excludes = excludes )
+		os.system ( cmd )
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument( "-sync", "--sync", help = "push/pull data")
+    parser.add_argument( "-push", "--push", help = "commit data to server")
+    parser.add_argument( "-pull", "--pull", help = "import data from server")
+    parser.add_argument( "-dev", "--dev", help = "set to 1 to sync your 'codes' folder")
+
+    args = parser.parse_args()
+
+    cli ( args.sync, args.push, args.pull, args.dev )
