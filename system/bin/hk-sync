@@ -74,9 +74,9 @@ def cli ( sync, push, pull, dev ):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument( "-sync", "--sync", help = "push/pull data")
-    parser.add_argument( "-push", "--push", help = "commit data to server")
-    parser.add_argument( "-pull", "--pull", help = "import data from server")
+    parser.add_argument( "-sync", "--sync", help = "push/pull data, type hk-sync -sync all to sync all")
+    parser.add_argument( "-push", "--push", help = "commit data to server, type hk-sync -push all to push all")
+    parser.add_argument( "-pull", "--pull", help = "import data from server, type hk-sync -pull all to pull all")
     parser.add_argument( "-dev", "--dev", help = "set to 1 to sync your 'codes' folder")
 
     args = parser.parse_args()
