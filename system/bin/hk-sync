@@ -2,19 +2,23 @@
 import pipeline.utils as utils
 import argparse, os
 
+"""Get patterns for ssh exclude"""
 def get_sync_exclude ( sync_args ) :
+    """ Add basic Syno systems garbages """
     result = list ( (".Trash-1000", "\#recycle") )
+    
+    """ Split string args to get a list """
     args = sync_args.split (",")
 
     if "all" in args :
         return result
     
-    """Get tasks code"""
+    """ Get tasks code """
     at = utils.getAssetTasks ()
     tasks = list ()
     for k in at : tasks.append ( at [ k ] )
 
-    """Check args and return the task code to sync"""
+    """ Check args and return the task code to sync """
     result = tasks
 
     for a in args :
@@ -24,8 +28,9 @@ def get_sync_exclude ( sync_args ) :
 
     return result
 
-def hk_rsync ( source = "", destination = "", excludes = list (), dev = None ):
-    """Check if update codes or projects"""
+"""Synchronizing data via ssh"""
+def hk_rsync_cmd ( source = "", destination = "", excludes = list (), dev = None ):
+    """ Check if sync 'codes' or 'projects' directory """
     if dev and bool ( int ( dev ) ) :
         category = "codes"
         source = os.path.join ( source, category )
@@ -40,7 +45,8 @@ def hk_rsync ( source = "", destination = "", excludes = list (), dev = None ):
     cmd = utils.rsync ( source = source, destination = destination, excludes = excludes )
     return cmd
 
-def cli ( sync, push, pull, dev ):
+"""Drive which data to Synchronizing"""
+def hk_rsync ( sync, push, pull, dev ):
 
     # local_root = os.path.join ( os.getenv ( "HOME" ),  "homeworks" )
     local_root = utils.getLocalRoot ()
@@ -50,26 +56,22 @@ def cli ( sync, push, pull, dev ):
         excludes = get_sync_exclude ( sync )
         """Pushing"""
         cmd = hk_rsync ( source = local_root, destination = host_root, excludes = excludes, dev = dev )
-        os.system ( cmd )
         # print cmd
 
         """Pulling"""
         cmd = hk_rsync ( source = host_root, destination = local_root, excludes = excludes, dev = dev )
-        os.system ( cmd )
         # print cmd
 
     if push :
         excludes = get_sync_exclude ( push )
         """Pushing"""
         cmd = hk_rsync ( source = local_root, destination = host_root, excludes = excludes, dev = dev )
-        os.system ( cmd )
         # print cmd
 
     if pull :
         excludes = get_sync_exclude ( pull )
         """Pulling"""
         cmd = hk_rsync ( source = host_root, destination = local_root, excludes = excludes, dev = dev )
-        os.system ( cmd )
         # print cmd
 
 if __name__ == '__main__':
@@ -81,4 +83,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    cli ( args.sync, args.push, args.pull, args.dev )
+    hk_rsync ( args.sync, args.push, args.pull, args.dev )

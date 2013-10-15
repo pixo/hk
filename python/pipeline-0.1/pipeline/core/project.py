@@ -6,23 +6,34 @@ Created on Jan 11, 2013
 import os,time
 import pipeline.utils as utils
 
-def lsProjects ( db, project = "" ):
+def lsDbProjects ( db, project = "" ):
     endkey = u"%s\u0fff" % ( project )
-    design = utils.getDesign ()
-    view = db.view("_design/%s/_view/%s" % ( design, "project" ),
-                   startkey = project, endkey = endkey )
+    design = "_design/" + utils.getDesign ()
     proj_ls = list ()
     
-    for row in view.rows :
-        proj_ls.append ( row ["value"] ["name"] )
+    if design in db :
+        view = db.view("%s/_view/%s" % ( design, "project" ),
+                       startkey = project, endkey = endkey )
+        
+        for row in view.rows :
+            proj_ls.append ( row ["value"] ["name"] )
         
     return proj_ls
 
-def createProjectEnv ( name = "", dbname = "", db_user = "", db_password  = "",
-                         db_host  = "", repo_user  = "", repo_password = "", repo_host = "" ):
+def lsServerProjects ( serveradress ):
+    server = utils.getServer ( serveradress )
+    proj_ls = list ()
     
-    if dbname == "":
-        dbname = "projects"
+    for db_name in server :
+        db = server [ db_name ]
+        proj_ls.extend ( lsDbProjects ( db ) )
+        
+    return proj_ls
+
+def createProjectEnv ( name = "" ):
+    
+    if name == "":
+        return False
         
     env = r"""
 source $HOME/.bashrc
@@ -70,7 +81,7 @@ if ! ([ -d $logpath ])
       then
         mkdir -p $logpath
 fi
-""" % ( dbname )
+""" % ( name )
 
     # Get the project env file
     file_env = utils.getProjectEnv ( name )
@@ -105,7 +116,7 @@ def createProjectCred ( name, db_server, host_root ):
         return False
     
 def createProject ( name = "", description = "Default", db_server = "",
-                    db_name = "projects", host_root="", overdoc = dict () ):
+                    host_root="", overdoc = dict () ):
 
     #Check if DB server exists
     adress = "http://%s/" % db_server
@@ -124,19 +135,18 @@ def createProject ( name = "", description = "Default", db_server = "",
         print "CreateProject(): No server adress provided"
         return False
     
-    #If DB doesn't exists Create DB                     
-    db = utils.getDb ( db_name, adress )        
-    if db == False :
-        db = utils.createDb ( db_name, adress )
+    #Check if DB and project already exist
+    db = utils.getDb ( name, adress )
         
-    #Check if project exists
-    project = lsProjects ( db, name )    
-    if len ( project ) > 0 :
-        print "createProject(): project %s already exist" % name
+    #If DB and project exists return                 
+    if db != False :
         return False
-
+        
+    #Create DB
+    db = utils.createDb ( name, adress )
+        
     #Create project env and cred file
-    createProjectEnv ( name, db_name )
+    createProjectEnv ( name )
     createProjectCred ( name, db_server, host_root )    
     
     #Adding db project documents    

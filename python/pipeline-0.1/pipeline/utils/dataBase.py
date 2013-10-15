@@ -13,9 +13,17 @@ class ProjectNoSet ( Exception ) :
 def getDesign () :
     return "AssetManager"
 
-def getServer () :
-    db_server = "http://%s/" % os.getenv ( "HK_DB_SERVER" )
-    return db_server
+def getServer ( serveradress = "" ) :
+    
+    if serveradress == "" :
+        serveradress = os.getenv ( "HK_DB_SERVER" )
+        
+    if serveradress.find ( "http://" ) == -1 :
+        serveradress = "http://%s/" %  serveradress
+        
+    db_server = couchdb.Server ( serveradress )
+     
+    return db_server 
 
 def serverExists ( serveradress = "" ) :
     server = couchdb.Server ( serveradress )
@@ -25,25 +33,17 @@ def serverExists ( serveradress = "" ) :
     except:
         return False
 
-
 def getDb ( dbname = "" , serveradress = "" ) :
-    
-    if serveradress == "" or serveradress == None :
-        serveradress = getServer ()
-        
-        if serveradress == "" or serveradress == None :
-            print "getDb(): can't get the server address '%s'" % str(serveradress)
-            return False
     
     if dbname == "" or dbname == None  :
         dbname = os.getenv ( "HK_DB" )
         
         if dbname == "" or dbname == None:
             print "getDb(): wrong dbname '%s'" % str(serveradress)
-            
             return False
         
-    server = couchdb.Server ( serveradress )
+    server = getServer ( serveradress )
+    
     if dbname in server :
         return server [ dbname ]
     

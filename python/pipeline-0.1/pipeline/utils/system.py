@@ -113,6 +113,7 @@ def lsSeq(path, recursive = True):
                     itemDict[base] = list()
                     
                 itemDict[base].append(fullpath)    
+    
     else:
         files = os.listdir(path)
         files.sort()
@@ -136,12 +137,12 @@ def lsSeq(path, recursive = True):
     return resultDict
 
 def rsync ( source = "", destination = "", excludes = list ()  ):
-    """rsync in python"""
+    """ rsync in python """
     
-    """Basic update args"""
+    """ Basic update args """
     update="--progress -rvuh --ignore-existing"
     
-    """Excludes args"""    
+    """ Excludes args """    
     exclude = ""
     for i in excludes:
         if type ( i ) == str :
@@ -149,7 +150,9 @@ def rsync ( source = "", destination = "", excludes = list ()  ):
     
     exclude = exclude.rstrip()
     
-    """Creating rsync command"""    
+    """ Creating rsync command """    
     cmd = "rsync %s %s %s %s" % ( update, exclude, source, destination )
+    os.system ( cmd )
+    
     return cmd
     
