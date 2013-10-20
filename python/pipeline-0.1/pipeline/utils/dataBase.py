@@ -19,17 +19,22 @@ def getServer ( serveradress = "" ) :
         serveradress = os.getenv ( "HK_DB_SERVER" )
         
     if serveradress.find ( "http://" ) == -1 :
-        serveradress = "http://%s/" %  serveradress
+        serveradress = "http://%s" %  serveradress
         
     db_server = couchdb.Server ( serveradress )
      
     return db_server 
 
 def serverExists ( serveradress = "" ) :
+    if serveradress.find ( "http://" ) < 0:
+        serveradress = "http://%s" % serveradress
+    
     server = couchdb.Server ( serveradress )
+    
     try:
         stats = server.stats()
         return True
+    
     except:
         return False
 

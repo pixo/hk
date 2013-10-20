@@ -23,7 +23,6 @@ class UiProjectCreator ( QtGui.QMainWindow ):
             return
                     
         description = self.plainTextEdit.toPlainText()
-#         db_name = self.lineEdit_2.text()
         db_server = self.lineEdit_2.text()
         host_root = self.lineEdit_3.text()
                  
@@ -62,13 +61,13 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.label_2 = QtGui.QLabel(self.centralwidget)
-        self.label_2.setMinimumSize(QtCore.QSize(80, 0))
-        self.label_2.setObjectName("label_2")
-        self.horizontalLayout.addWidget(self.label_2)
-        self.lineEdit = QtGui.QLineEdit(self.centralwidget)
+        self.horizontalLayout = QtGui.QHBoxLayout ()
+        self.horizontalLayout.setObjectName ( "horizontalLayout" )
+        self.label_2 = QtGui.QLabel ( self.centralwidget )
+        self.label_2.setMinimumSize ( QtCore.QSize ( 80, 0 ) )
+        self.label_2.setObjectName ( "label_2" )
+        self.horizontalLayout.addWidget ( self.label_2 )
+        self.lineEdit = QtGui.QLineEdit ( self.centralwidget )
         self.lineEdit.setObjectName("lineEdit")
         self.horizontalLayout.addWidget(self.lineEdit)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -125,17 +124,14 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         self.label_2.setText ( "Project slug" )
         self.lineEdit.setText ( "prj" )
         
+        self.label_3.setText ( "DB adress" )
+        self.lineEdit_2.setText ( "admin:password@127.0.0.1:5984" )
         
-        self.label_3.setText ( "DB server" )
-#         self.lineEdit_2.setText ( "admin:password@127.0.0.1:5984" )
-        self.lineEdit_2.setText ( "admin:admin2063@89.92.153.132:5984" )
-
         self.label_4.setText ( "Host root" )
-#         self.lineEdit_3.setText ( "homeworks@127.0.0.1:/homeworks" )
-        self.lineEdit_3.setText ( "homeworks@89.92.153.132:/volume1" )
-        
-        self.label.setText( "Description" )
-        self.pushButton.setText( "Create" )
+        self.lineEdit_3.setText ( "homeworks@127.0.0.1:/homeworks" )
+
+        self.label.setText ( "Description" )
+        self.pushButton.setText ( "Create" )
         
         self.signalConnect()
         QtCore.QMetaObject.connectSlotsByName(self)

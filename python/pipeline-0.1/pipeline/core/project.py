@@ -22,13 +22,21 @@ def lsDbProjects ( db, project = "" ):
 
 def lsServerProjects ( serveradress ):
     server = utils.getServer ( serveradress )
-    proj_ls = list ()
-    
+    projects = list ()
+    user = os.getenv ( "USER" )
+        
     for db_name in server :
         db = server [ db_name ]
-        proj_ls.extend ( lsDbProjects ( db ) )
+        project_ls = lsDbProjects ( db )
         
-    return proj_ls
+        if len ( project_ls ) > 0 :
+            for proj in project_ls :
+                users = db [ proj ]["users"]
+                
+                if db_name == proj and ( user in users ) :
+                    projects.append ( proj )
+        
+    return projects
 
 def createProjectEnv ( name = "" ):
     
@@ -116,7 +124,7 @@ def createProjectCred ( name, db_server, host_root ):
         return False
     
 def createProject ( name = "", description = "Default", db_server = "",
-                    host_root="", overdoc = dict () ):
+                      host_root = "", overdoc = dict () ):
 
     #Check if DB server exists
     adress = "http://%s/" % db_server
@@ -154,14 +162,17 @@ def createProject ( name = "", description = "Default", db_server = "",
     tasks = utils.getAssetTasks ()
     
     doc = {
-            "_id": "%s" % name,
-            "type": "project",
-            "name": name,
+            "_id" : "%s" % name,
+            "type" : "project",
+            "name" : name,
             "description" : description,
-            "assets_type": assets,
-            "tasks_type": tasks,
-            "creator": os.getenv ( "USER" ),
-            "created": time.strftime ( "%Y %b %d %H:%M:%S", time.localtime() )
+            "assets_type" : assets,
+            "tasks_type" : tasks,
+            "creator" : os.getenv ( "USER" ),
+            "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.localtime() ),
+            "root" : "/homeworks",
+            "users" : list ( [ os.getenv ( "USER" ) ] ),
+            "host" : host_root
             }
     
     doc.update( overdoc )

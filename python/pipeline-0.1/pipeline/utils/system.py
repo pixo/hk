@@ -142,7 +142,7 @@ def rsync ( source = "", destination = "", excludes = list ()  ):
     """ Basic update args """
     update="--progress -rvuh --ignore-existing"
     
-    """ Excludes args """    
+    """ Excludes args """
     exclude = ""
     for i in excludes:
         if type ( i ) == str :

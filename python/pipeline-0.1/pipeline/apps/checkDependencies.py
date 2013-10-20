@@ -12,7 +12,7 @@ try :
     CC_PATH = utils.getCCPath()
 except:
     CC_PATH = "/tmp"
-    print "assetManager module: Can't set CC_PATH \n set CC_PATH > /tmp"
+    print "checkDependencies: Can't set CC_PATH \n set CC_PATH > /tmp"
 
 #TODO make it works in maya and in cli
 

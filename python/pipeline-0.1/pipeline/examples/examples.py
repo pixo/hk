@@ -1,14 +1,4 @@
 import pipeline.utils as utils
-'''
-|-
-|''composite''
-|rcmp
-|-
-'''
 
-assetlist = utils.getAssetTasks()
-
-for i in assetlist :
-    print """|''%s''
-|%s
-|-""" % ( i, assetlist[i] )
+adress = "admin:admin2063@89.92.153.132:5984"
+utils.serverExists ( adress )
