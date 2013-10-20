@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>668</width>
+    <height>715</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_main">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetDefaultConstraint</enum>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QLabel" name="label_proj">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Project&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;/&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;:&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; Project name&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QComboBox" name="comboBox_a">
+              <item>
+               <property name="text">
+                <string>environment</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>character</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>prop</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_b">
+              <item>
+               <property name="text">
+                <string>model</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>search</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineEdit_a"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineEdit_b"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QTreeWidget" name="treeWidget_a">
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+            <column>
+             <property name="text">
+              <string>asset</string>
+             </property>
+            </column>
+            <item>
+             <property name="text">
+              <string>mickey</string>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <italic>false</italic>
+               <bold>true</bold>
+              </font>
+             </property>
+             <item>
+              <property name="text">
+               <string>texture</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>surface</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>v003</string>
+               </property>
+               <property name="font">
+                <font>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>v002</string>
+               </property>
+               <property name="font">
+                <font>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>v001</string>
+               </property>
+               <property name="font">
+                <font>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </item>
+             </item>
+             <item>
+              <property name="text">
+               <string>rig</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>model</string>
+              </property>
+             </item>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QLabel" name="labelImage">
+            <property name="minimumSize">
+             <size>
+              <width>300</width>
+              <height>300</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPlainTextEdit" name="plainTextEdit_comment">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="plainText">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QProgressBar" name="progressBar">
+          <property name="value">
+           <number>24</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

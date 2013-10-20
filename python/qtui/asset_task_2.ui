@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>645</width>
+    <height>511</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Asset manager</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_top">
+      <item>
+       <widget class="QLabel" name="label_asset_type">
+        <property name="text">
+         <string>asset type</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_asset">
+        <property name="text">
+         <string>asset</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_task_type">
+        <property name="text">
+         <string>task type</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_task">
+        <property name="text">
+         <string>task</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_selector">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_assetType">
+        <item>
+         <widget class="QLineEdit" name="lineEdit_asset_type"/>
+        </item>
+        <item>
+         <widget class="QListView" name="listView_asset_type"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_asset">
+        <item>
+         <widget class="QLineEdit" name="lineEdit_asset"/>
+        </item>
+        <item>
+         <widget class="QListWidget" name="listWidget_asset">
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_taskType">
+        <item>
+         <widget class="QLineEdit" name="lineEdit_task_type"/>
+        </item>
+        <item>
+         <widget class="QListView" name="listView_task_type"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_task">
+        <item>
+         <widget class="QLineEdit" name="lineEdit_task"/>
+        </item>
+        <item>
+         <widget class="QListView" name="listView_task"/>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_bottom">
+      <item>
+       <widget class="QLabel" name="label_doc_id">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pullButton">
+        <property name="text">
+         <string>Pull</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Push</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
