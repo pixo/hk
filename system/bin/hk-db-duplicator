@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+import pipeline.core as core
+import pipeline.utils as utils
+import argparse
+
+"""Duplicate db"""
+def db_duplicator ( source, target ):
+     
+    if not ( source [ -1 ] == "/" ) :
+        source += "/"
+        
+    sourceadress = source
+    if source.find ( "http://" ) == -1 :
+        sourceadress = "http://%s" %  source
+    
+    if not ( target [ -1 ] == "/" ) :
+        target += "/"    
+
+    targetadress = target
+    if target.find ( "http://" ) == -1 :
+        targetadress = "http://%s" %  target
+        
+    projects = core.lsServerProjects ( source )
+    server = utils.getServer ( target )
+    
+    for project in projects :
+        
+        if not ( project in server ) :
+            server.create ( project )
+            
+        src = sourceadress + project
+        tar = targetadress + project
+        server.replicate ( src, tar, continuous=True )
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser ()
+    parser.add_argument ( "-s", "--source", help = "target server adress" )
+    parser.add_argument ( "-d", "--destination", help = "destination server adress" )
+    args = parser.parse_args ()
+
+    db_duplicator ( args.source, args.destination )

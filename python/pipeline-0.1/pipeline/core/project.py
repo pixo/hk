@@ -40,15 +40,14 @@ def lsServerProjects ( serveradress ):
 
 def createProjectEnv ( name = "" ):
     
-    if name == "":
+    if name == "" :
         return False
         
-    env = r"""
-source $HOME/.bashrc
+    env = r"""source $HOME/.bashrc
 source $HK_ROOT/users/$USER/.hk/$HK_PROJECT
 
 #Set environment variables
-export HK_DB=%s
+export HK_DB=$HK_PROJECT
 
 export HK_COAT_VER=4-0-03
 export HK_COAT_VER_T=4-0-03
@@ -89,7 +88,7 @@ if ! ([ -d $logpath ])
       then
         mkdir -p $logpath
 fi
-""" % ( name )
+"""
 
     # Get the project env file
     file_env = utils.getProjectEnv ( name )
@@ -114,7 +113,7 @@ def createProjectCred ( name, db_server, host_root ):
     file_cred = os.path.join ( os.getenv ( "HK_ROOT" ), "users", os.getenv ( "USER" ) )
     file_cred = os.path.join ( file_cred , ".hk", name  )
     
-    iscreated = utils.createFile ( file_cred, cred )
+    iscreated = utils.createFile ( file_cred, cred, True )
     
     if iscreated:
         os.chmod ( file_cred, 0600 )

@@ -5,9 +5,9 @@ Created on Jan 19, 2013
 '''
 import itertools, re, os
 
-def createFile ( file, content ) :
+def createFile ( file ="", content = "", overwrite = False) :
     
-    if os.path.exists ( file ):
+    if os.path.exists ( file ) and (not overwrite):
         print "createFile (): %s already exists." % file 
         return False
     

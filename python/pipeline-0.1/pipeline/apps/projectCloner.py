@@ -18,6 +18,7 @@ class UiProjectCloner ( QtGui.QWidget ):
         
         if self.server and self.projects and len ( self.projects ) > 0 :
             self.pushButton.setEnabled ( True )
+            
         else:
             self.pushButton.setEnabled ( False )
         
@@ -27,18 +28,23 @@ class UiProjectCloner ( QtGui.QWidget ):
             return
         
         current = self.comboBox.currentText ()
-        description = self.server[current][current]["description"]
-        hkroot = self.server[current][current]["root"]
+        root = "/homeworks"
         
-        if hkroot == "" :
-            hkroot = "/homeworks"  
+        """"Project Descriptions"""
+        description = ""
         
-        self.lineEdit_2.setText ( hkroot )
+        """"Check description for initialiation or none available project"""
+        if not ( current in [ "", "No project available" ] ) :
+            description = self.server[current][current]["description"]
+            root = self.server[current][current]["root"]
+                
+        self.lineEdit_2.setText ( root )
         self.plainTextEdit.setPlainText ( description )
         
     def synchonizeClicked (self):
         ""
         project = self.comboBox.currentText ()
+        db_adress = self.lineEdit.text ()
         db = self.server [ project ][ project ]
         host = db [ "host" ]
         local = db [ "root" ]
@@ -46,6 +52,9 @@ class UiProjectCloner ( QtGui.QWidget ):
         source = os.path.join ( host, "projects", project )
         destination = os.path.join ( local, "projects" )
         utils.rsync ( source, destination )
+#         utils.rsync ( source, destination, ["sct","tex"] )
+        core.createProjectCred ( project, db_adress, host )
+        
         self.close ()
         
     def refreshAdress ( self, serveradress ):                
@@ -63,13 +72,16 @@ class UiProjectCloner ( QtGui.QWidget ):
         """Clear current combobox list"""
         self.comboBox.clear ()
         icon = os.path.join ( utils.getCCPath (), "cross.png" )
-        self.projects = False
+        self.projects = ["No project available"]
         
         if utils.serverExists ( serveradress ) :
-            self.projects = core.lsServerProjects ( serveradress )
-            self.comboBox.addItems ( self.projects )
-            icon = os.path.join ( utils.getCCPath (), "ok.png" )
+            projects = core.lsServerProjects ( serveradress )
             
+            if len ( projects ) > 0 :
+                self.projects = projects
+                icon = os.path.join ( utils.getCCPath (), "ok.png" )
+            
+        self.comboBox.addItems ( self.projects )
         self.labelpixmap_2.setPixmap ( icon )
                 
     def __init__(self, parent=None):

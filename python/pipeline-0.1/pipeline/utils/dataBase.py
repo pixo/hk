@@ -23,7 +23,7 @@ def getServer ( serveradress = "" ) :
         
     db_server = couchdb.Server ( serveradress )
      
-    return db_server 
+    return db_server
 
 def serverExists ( serveradress = "" ) :
     if serveradress.find ( "http://" ) < 0:
@@ -46,6 +46,9 @@ def getDb ( dbname = "" , serveradress = "" ) :
         if dbname == "" or dbname == None:
             print "getDb(): wrong dbname '%s'" % str(serveradress)
             return False
+        
+    if serveradress == "" :
+        serveradress = os.getenv ( "HK_DB_SERVER" )
         
     server = getServer ( serveradress )
     
