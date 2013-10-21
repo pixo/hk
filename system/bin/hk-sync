@@ -55,31 +55,32 @@ def hk_rsync ( sync, push, pull, dev ):
     if sync :
         excludes = get_sync_exclude ( sync )
         """Pushing"""
-        cmd = hk_rsync ( source = local_root, destination = host_root, excludes = excludes, dev = dev )
+        cmd = hk_rsync_cmd ( source = local_root, destination = host_root, excludes = excludes, dev = dev )
         # print cmd
 
         """Pulling"""
-        cmd = hk_rsync ( source = host_root, destination = local_root, excludes = excludes, dev = dev )
+        cmd = hk_rsync_cmd ( source = host_root, destination = local_root, excludes = excludes, dev = dev )
         # print cmd
 
     if push :
         excludes = get_sync_exclude ( push )
         """Pushing"""
-        cmd = hk_rsync ( source = local_root, destination = host_root, excludes = excludes, dev = dev )
+        cmd = hk_rsync_cmd ( source = local_root, destination = host_root, excludes = excludes, dev = dev )
         # print cmd
 
     if pull :
         excludes = get_sync_exclude ( pull )
         """Pulling"""
-        cmd = hk_rsync ( source = host_root, destination = local_root, excludes = excludes, dev = dev )
+        cmd = hk_rsync_cmd ( source = host_root, destination = local_root, excludes = excludes, dev = dev )
         # print cmd
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument( "-sync", "--sync", help = "push/pull data, type hk-sync -sync all to sync all")
     parser.add_argument( "-push", "--push", help = "commit data to server, type hk-sync -push all to push all")
     parser.add_argument( "-pull", "--pull", help = "import data from server, type hk-sync -pull all to pull all")
-    parser.add_argument( "-dev", "--dev", help = "set to 1 to sync your 'codes' folder")
+    parser.add_argument( "-dev", "--dev", help = "set to 1 to sync your 'codes' folder, should be use with others flag")
 
     args = parser.parse_args()
 
