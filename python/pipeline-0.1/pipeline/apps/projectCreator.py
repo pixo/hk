@@ -61,6 +61,7 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         
+        #Project slug
         self.horizontalLayout = QtGui.QHBoxLayout ()
         self.horizontalLayout.setObjectName ( "horizontalLayout" )
         self.label_2 = QtGui.QLabel ( self.centralwidget )
@@ -72,6 +73,7 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         self.horizontalLayout.addWidget(self.lineEdit)
         self.verticalLayout.addLayout(self.horizontalLayout)
         
+        #DB adress
         self.horizontalLayout_3 = QtGui.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.label_3 = QtGui.QLabel(self.centralwidget)
@@ -83,6 +85,7 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         self.horizontalLayout_3.addWidget(self.lineEdit_2)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         
+        #Host root
         self.horizontalLayout_5 = QtGui.QHBoxLayout()
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
         self.label_4 = QtGui.QLabel(self.centralwidget)
@@ -94,7 +97,10 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         self.lineEdit_3.setObjectName("lineEdit_3")
         self.horizontalLayout_5.addWidget(self.lineEdit_3)
         self.verticalLayout.addLayout(self.horizontalLayout_5)
+        self.label_4.setText ( "Host root" )
+        self.lineEdit_3.setText ( "homeworks@127.0.0.1:/homeworks" )
                 
+        #Description
         self.verticalLayout_4 = QtGui.QVBoxLayout()
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.label = QtGui.QLabel(self.centralwidget)
@@ -104,7 +110,9 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         self.plainTextEdit.setObjectName("plainTextEdit")
         self.verticalLayout_4.addWidget(self.plainTextEdit)
         self.verticalLayout.addLayout(self.verticalLayout_4)
+        self.label.setText ( "Description" )
         
+        #Push button
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -114,6 +122,7 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         self.horizontalLayout_4.addWidget(self.pushButton)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
         self.verticalLayout_2.addLayout(self.verticalLayout)
+        self.pushButton.setText ( "Create" )
         
         self.setCentralWidget(self.centralwidget)
         self.statusbar = QtGui.QStatusBar(self)
@@ -127,11 +136,7 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         self.label_3.setText ( "DB adress" )
         self.lineEdit_2.setText ( "admin:password@127.0.0.1:5984" )
         
-        self.label_4.setText ( "Host root" )
-        self.lineEdit_3.setText ( "homeworks@127.0.0.1:/homeworks" )
 
-        self.label.setText ( "Description" )
-        self.pushButton.setText ( "Create" )
         
         self.signalConnect()
         QtCore.QMetaObject.connectSlotsByName(self)

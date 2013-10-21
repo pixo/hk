@@ -10,7 +10,7 @@ from PySide import QtCore, QtGui
 
 class UiProjectCloner ( QtGui.QWidget ):
     
-    def adressChanged (self):
+    def refreshClicked (self):
         serveradress = self.lineEdit.text ()
         """Refresh projects, icons"""
         self.refreshAdress ( serveradress )
@@ -66,7 +66,8 @@ class UiProjectCloner ( QtGui.QWidget ):
             icon = os.path.join ( utils.getCCPath (), "ok.png" )
             self.server = utils.getServer ( serveradress )
             
-        self.labelpixmap.setPixmap ( icon )
+#         self.labelpixmap.setPixmap ( icon )
+        self.refresh.setIcon ( QtGui.QIcon ( icon ) )
 
     def refreshProject ( self, serveradress ):
         """Clear current combobox list"""
@@ -102,9 +103,12 @@ class UiProjectCloner ( QtGui.QWidget ):
         self.label.setObjectName ( "label" )
         self.label.setMinimumSize(QtCore.QSize(80, 0))
         self.horizontalLayout.addWidget ( self.label )
-        self.labelpixmap = QtGui.QLabel ( self )
-        self.labelpixmap.setObjectName ( "labelpixmap" )
-        self.horizontalLayout.addWidget ( self.labelpixmap )
+        self.refresh = QtGui.QPushButton(self)
+        self.refresh.setObjectName("refresh")
+        self.horizontalLayout.addWidget ( self.refresh )        
+#         self.labelpixmap = QtGui.QLabel ( self )
+#         self.labelpixmap.setObjectName ( "labelpixmap" )
+#         self.horizontalLayout.addWidget ( self.labelpixmap )
         self.lineEdit = QtGui.QLineEdit ( self )
         self.lineEdit.setObjectName ( "lineEdit" )
         self.horizontalLayout.addWidget ( self.lineEdit )
@@ -118,6 +122,7 @@ class UiProjectCloner ( QtGui.QWidget ):
         self.horizontalLayout_2.addWidget ( self.label_2 )
         self.labelpixmap_2 = QtGui.QLabel ( self )
         self.labelpixmap_2.setObjectName ( "labelpixmap_2" )
+        self.labelpixmap_2.setMinimumSize ( QtCore.QSize(30, 0) )
         self.horizontalLayout_2.addWidget ( self.labelpixmap_2 )
         self.comboBox = QtGui.QComboBox ( self )
         self.comboBox.setEnabled(True)
@@ -139,7 +144,7 @@ class UiProjectCloner ( QtGui.QWidget ):
         self.horizontalLayout_3.setObjectName ( "horizontalLayout_3" )
         self.label_3 = QtGui.QLabel ( self )
         self.label_3.setObjectName ( "label_3" )
-        self.label_3.setMinimumSize(QtCore.QSize(90, 0))
+        self.label_3.setMinimumSize(QtCore.QSize(105, 0))
         self.horizontalLayout_3.addWidget ( self.label_3 )
         self.labelpixmap_3 = QtGui.QLabel ( self )
         self.labelpixmap_3.setObjectName ( "labelpixmap_3" )
@@ -176,8 +181,9 @@ class UiProjectCloner ( QtGui.QWidget ):
         self.verticalLayout_2.addLayout(self.verticalLayout)
         
         self.setUi ()
-        self.lineEdit.textChanged.connect ( self.adressChanged )
+#         self.lineEdit.textChanged.connect ( self.adressChanged )
         self.comboBox.currentIndexChanged.connect ( self.projectChanged )
+        self.refresh.clicked.connect ( self.refreshClicked )
         self.pushButton.clicked.connect ( self.synchonizeClicked )
 
         QtCore.QMetaObject.connectSlotsByName ( self )
@@ -205,7 +211,7 @@ class UiProjectCloner ( QtGui.QWidget ):
         self.pushButton.setText ( "Synchronize" )
         self.pushButton.setIcon ( QtGui.QIcon ( os.path.join ( ccpath, "pull.png" ) ) )
         
-        self.adressChanged ()
+        self.refreshClicked ()
         self.projectChanged()
         
         
