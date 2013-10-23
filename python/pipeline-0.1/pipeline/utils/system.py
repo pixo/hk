@@ -19,7 +19,6 @@ def createFile ( file ="", content = "", overwrite = False) :
     else:
         os.chmod ( dir, 0775 )
     
-    
     file = open ( file, 'w' )
     file.write ( content )
     file.close ()

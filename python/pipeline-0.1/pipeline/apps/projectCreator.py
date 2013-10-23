@@ -135,9 +135,7 @@ class UiProjectCreator ( QtGui.QMainWindow ):
         
         self.label_3.setText ( "DB adress" )
         self.lineEdit_2.setText ( "admin:password@127.0.0.1:5984" )
-        
-
-        
+                
         self.signalConnect()
         QtCore.QMetaObject.connectSlotsByName(self)
     
