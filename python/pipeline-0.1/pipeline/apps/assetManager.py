@@ -94,6 +94,7 @@ class UiPush ( QtGui.QWidget ) :
             
             self.progressBar.setHidden ( True )
             self.labelStatus.setText ( "Done" )
+            self.close()
         
     def descriptionChanged( self ):        
         description = self.plainTextEdit_description.toPlainText ()
@@ -266,6 +267,7 @@ class UiPushLs ( UiPush ) :
                 
         self.progressBar.setHidden ( True )
         self.labelStatus.setText ( "Done" )
+        self.close ()
         
 class UiPush3dPack ( QtGui.QWidget ) :
     
@@ -397,6 +399,7 @@ class UiCreateOnDb ( QtGui.QWidget ) :
     
     def pushButtonClicked(self):
         print "push button clicked"
+        self.close ()
         
     def plainTextEditChanged( self ):        
         descriptions = self.plainTextEdit.toPlainText()
@@ -897,7 +900,7 @@ class UiAssetManager(UiMainManager):
         else:
             self.pushVersionWin = UiPush ( db = self.db, item = item )
 
-        self.pushVersionWin.show()
+        self.pushVersionWin.show ()
     
     def pullVersion ( self ) :
         self.progressBar.setHidden ( False )
