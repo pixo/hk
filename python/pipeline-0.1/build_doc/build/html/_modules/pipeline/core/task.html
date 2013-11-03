@@ -1,0 +1,206 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pipeline.core.task &mdash; HDK 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="HDK 0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">HDK 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pipeline.core.task</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Created on Jan 10, 2013</span>
+
+<span class="sd">ASSET type list:</span>
+<span class="sd">    character        : chr</span>
+<span class="sd">    vehicle          : vcl</span>
+<span class="sd">    prop             : prp</span>
+<span class="sd">    environment      : env</span>
+<span class="sd">    freetype         : ***</span>
+
+<span class="sd">ASSET tasks:</span>
+<span class="sd">    sculpting       :scp</span>
+<span class="sd">    modeling        : mod    </span>
+<span class="sd">    texturing       : tex</span>
+<span class="sd">    rigging         : rig</span>
+<span class="sd">    surfacing       : srf</span>
+
+<span class="sd">SHOT tasks:</span>
+<span class="sd">    layouting        : lay</span>
+<span class="sd">    lighting         : lit</span>
+<span class="sd">    compositing      : cmp</span>
+<span class="sd">    matte-painting   : dmp</span>
+<span class="sd">    cam              : cam</span>
+
+<span class="sd">Filename and id rules:</span>
+<span class="sd">    project_asset-type_asset_task_fork</span>
+<span class="sd">    </span>
+<span class="sd">    project</span>
+<span class="sd">    asset_id = project_asset-type_asset</span>
+<span class="sd">    name = asset-type_asset_task_fork</span>
+
+<span class="sd">ID example:</span>
+<span class="sd">    character:</span>
+<span class="sd">    testing_chr_mickey_tex_main</span>
+
+<span class="sd">    shot:</span>
+<span class="sd">    testing_seq01_sht001_lgt_main</span>
+
+<span class="sd">Filesystem example:</span>
+<span class="sd">    chr/chr_mickey/chr_mickey_tex/chr_mickey_tex_ma</span>
+<span class="sd">    seq100/seq100_sht100/seq100_sht100_lighting/seq100_sht100_lighting_main</span>
+
+<span class="sd">asset: length is 3</span>
+<span class="sd">    testing_chr_mickey</span>
+<span class="sd">    testing_seq100_sht100</span>
+
+<span class="sd">task: length is 5</span>
+<span class="sd">    testing_chr_mickey_tex_main</span>
+<span class="sd">    testing_seq100_sht100_lighting_main</span>
+
+<span class="sd">@author: pixo</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">pipeline.utils</span> <span class="kn">as</span> <span class="nn">utils</span>
+
+<div class="viewcode-block" id="createTask"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.task.createTask">[docs]</a><span class="k">def</span> <span class="nf">createTask</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">overdoc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a task.</span>
+<span class="sd">    db, type couch.db.Server</span>
+<span class="sd">    doc_id, type string</span>
+<span class="sd">    description, type string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="n">db</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getDb</span><span class="p">()</span>
+        
+    <span class="sd">&quot;&quot;&quot; Get datas from doc_id &quot;&quot;&quot;</span>
+    <span class="n">project</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">asset</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">fork</span> <span class="o">=</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span> <span class="p">(</span> <span class="s">&quot;_&quot;</span> <span class="p">)</span>
+    <span class="n">asset_id</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">project</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">asset</span> <span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">typ</span><span class="p">,</span> <span class="n">asset</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">fork</span> <span class="p">)</span>
+        
+    <span class="sd">&quot;&quot;&quot; Check if the asset exist &quot;&quot;&quot;</span>
+    <span class="n">asset_ls</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">lsDb</span> <span class="p">(</span> <span class="n">db</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">asset_id</span> <span class="p">)</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">typ</span><span class="p">,</span> <span class="n">asset</span> <span class="p">))</span> <span class="ow">in</span> <span class="n">asset_ls</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;createTask: </span><span class="si">%s</span><span class="s"> doesn&#39;t exist&quot;</span> <span class="o">%</span> <span class="n">asset_id</span> 
+        <span class="k">return</span> <span class="bp">False</span>
+    
+    <span class="sd">&quot;&quot;&quot; Check the task doesn&#39;t exist &quot;&quot;&quot;</span>
+    <span class="n">task_ls</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">lsDb</span> <span class="p">(</span> <span class="n">db</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">doc_id</span> <span class="p">)</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">task_ls</span> <span class="p">)</span> <span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Create the task structure &quot;&quot;&quot;</span>
+        
+        <span class="n">doc</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&quot;type&quot;</span> <span class="p">:</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">typ</span><span class="p">,</span><span class="n">task</span><span class="p">),</span>
+            <span class="s">&quot;task&quot;</span> <span class="p">:</span> <span class="n">task</span><span class="p">,</span>
+            <span class="s">&quot;_id&quot;</span> <span class="p">:</span> <span class="n">doc_id</span><span class="p">,</span>
+            <span class="s">&quot;project_id&quot;</span> <span class="p">:</span> <span class="n">project</span><span class="p">,</span>
+            <span class="s">&quot;asset_id&quot;</span> <span class="p">:</span> <span class="n">asset_id</span><span class="p">,</span>
+            <span class="s">&quot;fork&quot;</span> <span class="p">:</span> <span class="n">fork</span><span class="p">,</span>
+            <span class="s">&quot;name&quot;</span> <span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s">&quot;description&quot;</span> <span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+            <span class="s">&quot;versions&quot;</span> <span class="p">:</span> <span class="nb">dict</span><span class="p">(),</span>
+            <span class="s">&quot;creator&quot;</span> <span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;USER&quot;</span> <span class="p">),</span>
+            <span class="s">&quot;created&quot;</span> <span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span> <span class="p">(</span> <span class="s">&quot;%Y %b </span><span class="si">%d</span><span class="s"> %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">()</span> <span class="p">),</span>
+            <span class="s">&quot;state&quot;</span> <span class="p">:</span> <span class="s">&quot;na&quot;</span>
+            <span class="p">}</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">overdoc</span><span class="p">)</span>
+        
+        <span class="sd">&quot;&quot;&quot;Save data structure into the database &quot;&quot;&quot;</span>
+        <span class="n">_id</span><span class="p">,</span> <span class="n">_rev</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">save</span> <span class="p">(</span><span class="n">doc</span> <span class="p">)</span>
+        
+        <span class="k">print</span> <span class="s">&quot;createTask: Added </span><span class="si">%r</span><span class="s"> to project </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">name</span> <span class="p">,</span> <span class="n">project</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="n">db</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span>
+    
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;createAssetTask: </span><span class="si">%s</span><span class="s"> already exist&quot;</span> <span class="o">%</span> <span class="n">name</span>
+        <span class="k">return</span> <span class="bp">False</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/hk_title_medium.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">HDK 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, r.chikh.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

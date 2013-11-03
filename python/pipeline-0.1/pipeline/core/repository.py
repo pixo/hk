@@ -7,56 +7,191 @@ Created on Jan 8, 2013
 import os, time, shutil, hashlib, re, glob, commands
 import pipeline.utils as utils
 
+class RepositoryError ( Exception ):
+    """
+    Error raised by the repository module.
+    
+    """
+    def __init__ ( self, value ):
+        self.value = value
+    def __str__ ( self ):
+        return repr ( self.value )
+
 def hashTime () :
+    """
+    This function return a hash based on sha1 current time.
+    Useful to get a random value. 
+    
+    :returns:  str -- Return the current time 'sha1' hash.
+    
+    >>> random_value = hashTime ()
+    >>> 'a8f2aa40f66a763dde036f83e854d1762436e97d'
+    
+    """
+    
+    # Get the hash from current time
     sha1 = hashlib.sha1 ( str ( time.time () ) )
     return str ( sha1.hexdigest () )
      
-def hashFile ( filepath ) :
+def hashFile ( path = "" ) :
+    """
+    This function compare the two files contains, based on sha1.
+    It is very useful if you need to know if the two file are the same.
+
+    :param path: The file path
+    :type path: str
+    :returns:  str -- sha1 hash file
+    :raises: RepositoryError if the path doesn't exists.
+
+    **Example:**
+    
+    >>> hashFile ( path = "/home/user/filea" )
+    >>> 'a8f2aa40f66a763dde036f83e854d1762436e97d'
+    
+    """
+    
+    #Check if the file exists
+    if os.path.exists ( path ):
+        raise RepositoryError ( "Can't compare '%s', file doesn't exists." % path )
+    
+    # Get the sha1lib
     sha1 = hashlib.sha1 ()
-    f = open ( filepath, 'rb' )
+    
+    # Get the file for read
+    f = open ( path, 'rb' )
      
+    # Try to get the hash
     try:
-        sha1.update ( f.read () )
+        sha1.update ( f.read () )    
     finally:
         f.close ()
-         
+    
+    # return the hash
     return sha1.hexdigest ()
- 
-def compareHashFile( firstfile, secondfile ):
-    if not ( os.path.exists ( firstfile ) and os.path.exists ( secondfile ) ) :
-        return False
-         
-    if hashFile ( firstfile ) == hashFile ( secondfile ):
-        return True
      
+def compareFile ( file_a = "", file_b = "" ):
+    """
+    This function compare two files contains based on sha1.
+    It is very useful if you need to know if two files are the same.
+
+    :param file_a: The first file path
+    :type file_a: str
+    :param file_b: The second file path
+    :type file_b: str
+    :returns:  bool -- True if file are the same.
+    :raises: RepositoryError if one of the file doesn't exists.
+
+    **Example:**
+    
+    >>> compareFile ( file_a = "/home/user/filea", file_b = "/home/user/fileb" )
+    >>> True
+    
+    """
+    
+    #Check if the file_a exists
+    if os.path.exists ( file_a ):
+        raise RepositoryError ( "Can't compare '%s', file doesn't exists." % file_a )
+    
+    #Check if the file_b exists
+    if not os.path.exists ( file_b ):
+        raise RepositoryError ( "Can't compare '%s', file doesn't exists." % file_b )
+         
+    #Compare the sha1 hash of the files
+    if hashFile ( file_a ) == hashFile ( file_b ):
+        # if the file are the same return True
+        return True
     else :
+        # if they are not the same return False
         return False
  
 def getIdFromPath ( path = "" ):
-    """Get doc_id from path , firstly to push in cli """
-    path = os.path.expandvars(path)
+    """
+    This function compare the two files contains, based on sha1.
+    It is very useful if you need to know if the two file are the same.
+
+    :param path: The file path
+    :type path: str
+    :returns:  str -- Return the task code aka 'doc_id' from the user repository path
+    :raises: RepositoryError if the path doesn't exists.
+
+    **Example:**
+    
+    >>> getIdFromPath ( path = "/homeworks/user/jdoe/prod/ch/mickey/mod/a/anyfile.ext" )
+    >>> 'prod_ch_mickey_mod_a'
+    
+    """
+    
+    # Check if the path exists
+    if os.path.exists ( path ):
+        raise RepositoryError ( "Can't get 'doc_id' from '%s', path doesn't exists." % path )
+    
+    # Expand contained variables
+    path = os.path.expandvars ( path )
+    
+    # Get user repository
     user_repo = os.getenv ( "HK_USER_REPO" ) + os.sep
+    
+    # Get the doc_id
     path = path.replace ( user_repo , "" )
     part = path.split ( os.sep )
     doc_id = "%s_%s_%s_%s_%s" % ( part[0],part[1], part[2], part[3], part[4] )
+    
     return doc_id
      
-def getRootAssetPath ( doc_id = "", local = False):
-    """Return root path of an asset from the doc_id"""
+def getAssetPathFromId ( doc_id = "", local = False ):
+    """
+    This function return a path based from a provided 'doc_id'.
+
+    :param doc_id: The asset code.
+    :type doc_id: str
+    :param local: If true return the user local repository path 
+    :type local: bool
+    :returns:  str -- The asset or task path.
+
+    **Example:**
+    
+    >>> #Repository
+    >>> getAssetPathFromId ( doc_id = "prod_chr_mickey_mod_a", local = False )
+    >>> '/homeworks/projects/prod/chr/mickey/mod/a'
+    >>>
+    >>> #Local
+    >>> getAssetPathFromId ( doc_id = "prod_chr_mickey_mod_a", local = True )
+    >>> '/homeworks/users/jdoe/projects/prod/chr/mickey/mod/a'    
+    
+    """
+    
+    # Get the last part of the path
     path = doc_id.replace ( "_", os.sep )
+    
+    # Get the first part of the path
     if local :
+        # If true return the local project root
         root = os.getenv ( "HK_USER_REPO" )
     else:
+        # If false return the repository project root
         root = os.getenv ( "HK_REPO" )
         
+    # Full path
     path = os.path.join ( root, path )
+    
     return path
     
 def getAssetVersions ( doc_id = "" ):
-    path = getRootAssetPath ( doc_id )
+    
+    path = getAssetPathFromId ( doc_id )
     versions = glob.glob ( path + os.sep +"[0-9][0-9][0-9]" )
     versions.sort ()
+    
     return versions
+
+def getAssetPath ( doc_id = "", version = "last" ):
+    if version == "last" :
+        version = getAssetVersions ( doc_id = doc_id )
+        version = version[-1]
+         
+    path = getAssetPathFromId ( doc_id = doc_id, local = False )
+    path = os.path.join ( path, "%03d" % float ( version ) )
+    return path
 
 def getAssetTypeFromId ( doc_id ):
     return doc_id.split("_")[1]
@@ -69,18 +204,9 @@ def getIdFromPushedFile ( fname ):
     doc_id = os.path.splitext ( basename )[0]
     return doc_id
 
-def getAssetPath ( doc_id = "", version = "last" ):
-    if version == "last" :
-        version = getAssetVersions ( doc_id = doc_id )
-        version = version[-1]
-         
-    path = getRootAssetPath ( doc_id = doc_id, local = False )
-    path = os.path.join ( path, "%03d" % float ( version ) )
-    return path
-
 def getAssetLocalPath ( doc_id = "", version = 1 ):
     count = 1
-    fdir = getRootAssetPath ( doc_id, True )
+    fdir = getAssetPathFromId ( doc_id, True )
     name = "%s.v%03d.base" % ( doc_id, version )
     dst = os.path.join ( fdir, name ) 
     
@@ -92,7 +218,7 @@ def getAssetLocalPath ( doc_id = "", version = 1 ):
 
 def getWorkspaceFromId ( doc_id = "" ):
     """Get user asset workspace from doc_id"""
-    path = getRootAssetPath ( doc_id, True )
+    path = getAssetPathFromId ( doc_id, True )
     return path
  
 def createWorkspace( doc_id = ""):
@@ -223,7 +349,7 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
             print "Warning: %s doesn't exist" % src
               
     """ Get root destination directory to push files """
-    dst_dir = getRootAssetPath ( doc_id )
+    dst_dir = getAssetPathFromId ( doc_id )
      
     """ Get temporary destination directory to push files """
     tmp_dir = os.path.join ( dst_dir, hashTime () )
@@ -331,7 +457,7 @@ def pushDir ( db = "", doc_id = "", path = list(), description = "" ):
         return False
     
     """ Get root destination directory to push files """
-    dst_dir = getRootAssetPath ( doc_id )
+    dst_dir = getAssetPathFromId ( doc_id )
      
     """ Get temporary destination directory to push files """
     tmp_dir = os.path.join ( dst_dir, hashTime () )

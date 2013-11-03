@@ -1,0 +1,575 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>core Package &mdash; HDK 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="HDK 0.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">HDK 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="core-package">
+<h1>core Package<a class="headerlink" href="#core-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">core</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-pipeline.core"></span></div>
+<div class="section" id="module-pipeline.core.asset">
+<span id="asset-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">asset</span></tt> Module<a class="headerlink" href="#module-pipeline.core.asset" title="Permalink to this headline">¶</a></h2>
+<p>Created on Jan 10, 2013    
+&#64;author: pixo</p>
+<dl class="function">
+<dt id="pipeline.core.asset.createAsset">
+<tt class="descclassname">pipeline.core.asset.</tt><tt class="descname">createAsset</tt><big>(</big><em>db=None</em>, <em>doc_id=''</em>, <em>description=''</em>, <em>overdoc={}</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/asset.html#createAsset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.asset.createAsset" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function create an asset into the provided database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> (<em>couch.db.Server</em>) &#8211; The database.</li>
+<li><strong>doc_id</strong> (<em>str</em>) &#8211; The asset code.</li>
+<li><strong>description</strong> (<em>str</em>) &#8211; The asset description.</li>
+<li><strong>overdoc</strong> (<em>dict</em>) &#8211; A dictionnary that contains extra document attributes.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">document &#8211; The database document.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">AttributeError, KeyError</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">getDb</span> <span class="p">(</span> <span class="n">dbname</span> <span class="o">=</span> <span class="s">&quot;prod&quot;</span> <span class="p">,</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1:5984&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">createAsset</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;prod_ch_mickey&quot;</span><span class="p">,</span> <span class="s">&quot;This is the mickey characters&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.asset.createShot">
+<tt class="descclassname">pipeline.core.asset.</tt><tt class="descname">createShot</tt><big>(</big><em>db=None</em>, <em>doc_id=''</em>, <em>description='No description'</em>, <em>cut_in=1</em>, <em>cut_out=100</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/asset.html#createShot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.asset.createShot" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function create an asset of type Shot into the provided database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> (<em>couch.db.Server</em>) &#8211; The database.</li>
+<li><strong>doc_id</strong> (<em>str</em>) &#8211; The asset code.</li>
+<li><strong>description</strong> (<em>str</em>) &#8211; The asset description.</li>
+<li><strong>cut_in</strong> (<em>float</em>) &#8211; The first frame of the shot.</li>
+<li><strong>cut_out</strong> (<em>float</em>) &#8211; The last frame of the shot.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">document &#8211; The database document.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">AttributeError, KeyError</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">getDb</span> <span class="p">(</span> <span class="n">dbname</span> <span class="o">=</span> <span class="s">&quot;prod&quot;</span> <span class="p">,</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1:5984&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">createShot</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;prod_shot_op001&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;This is the shot openning 001&quot;</span><span class="p">,</span> <span class="n">cut_in</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cut_out</span> <span class="o">=</span> <span class="mi">100</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.asset.lsAsset">
+<tt class="descclassname">pipeline.core.asset.</tt><tt class="descname">lsAsset</tt><big>(</big><em>db=None</em>, <em>doc_id=''</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/asset.html#lsAsset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.asset.lsAsset" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function return an asset list from a provided database and doc_id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> (<em>couch.db.Server</em>) &#8211; The database.</li>
+<li><strong>doc_id</strong> (<em>str</em>) &#8211; The asset code to list.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list() &#8211; The asset list.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">AttributeError, KeyError</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">getDb</span> <span class="p">(</span> <span class="n">dbname</span> <span class="o">=</span> <span class="s">&quot;prod&quot;</span> <span class="p">,</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1:5984&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lsAsset</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;prod_ch_mickey&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipeline.core.project">
+<span id="project-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">project</span></tt> Module<a class="headerlink" href="#module-pipeline.core.project" title="Permalink to this headline">¶</a></h2>
+<p>Created on Jan 11, 2013</p>
+<p>&#64;author: pixo</p>
+<dl class="function">
+<dt id="pipeline.core.project.createProject">
+<tt class="descclassname">pipeline.core.project.</tt><tt class="descname">createProject</tt><big>(</big><em>name=''</em>, <em>description='Default'</em>, <em>db_server=''</em>, <em>host_root=''</em>, <em>overdoc={}</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/project.html#createProject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.project.createProject" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function create a project.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; The project name</li>
+<li><strong>description</strong> (<em>str</em>) &#8211; The project description</li>
+<li><strong>db_server</strong> (<em>str</em>) &#8211; The data base adress</li>
+<li><strong>host_root</strong> (<em>str</em>) &#8211; The host data server root adress</li>
+<li><strong>overdoc</strong> (<em>dict</em>) &#8211; A dictionnary that contains extra document attributes.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">db document &#8211; db document.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">AttributeError, KeyError</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">createProject</span> <span class="p">(</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;prod&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;this is the project prod&quot;</span><span class="p">,</span>
+<span class="go">                    db_server = &quot;admin:pass@127.0.0.1:5984&quot;, host_root = &quot;admin@127.0.0.1:/homeworks&quot; )</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.project.createProjectCred">
+<tt class="descclassname">pipeline.core.project.</tt><tt class="descname">createProjectCred</tt><big>(</big><em>name</em>, <em>db_server</em>, <em>host_root</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/project.html#createProjectCred"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.project.createProjectCred" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.project.createProjectEnv">
+<tt class="descclassname">pipeline.core.project.</tt><tt class="descname">createProjectEnv</tt><big>(</big><em>name=''</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/project.html#createProjectEnv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.project.createProjectEnv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.project.lsProjectDb">
+<tt class="descclassname">pipeline.core.project.</tt><tt class="descname">lsProjectDb</tt><big>(</big><em>db</em>, <em>project=''</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/project.html#lsProjectDb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.project.lsProjectDb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.project.lsProjectServer">
+<tt class="descclassname">pipeline.core.project.</tt><tt class="descname">lsProjectServer</tt><big>(</big><em>serveradress</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/project.html#lsProjectServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.project.lsProjectServer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pipeline.core.repository">
+<span id="repository-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">repository</span></tt> Module<a class="headerlink" href="#module-pipeline.core.repository" title="Permalink to this headline">¶</a></h2>
+<p>Created on Jan 8, 2013</p>
+<p>&#64;author: pixo</p>
+<dl class="exception">
+<dt id="pipeline.core.repository.RepositoryError">
+<em class="property">exception </em><tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">RepositoryError</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#RepositoryError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.RepositoryError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>Error raised by the repository module.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.compareFile">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">compareFile</tt><big>(</big><em>file_a=''</em>, <em>file_b=''</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#compareFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.compareFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function compare two files contains based on sha1.
+It is very useful if you need to know if two files are the same.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file_a</strong> (<em>str</em>) &#8211; The first file path</li>
+<li><strong>file_b</strong> (<em>str</em>) &#8211; The second file path</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bool &#8211; True if file are the same.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">RepositoryError if one of the file doesn&#8217;t exists.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">compareFile</span> <span class="p">(</span> <span class="n">file_a</span> <span class="o">=</span> <span class="s">&quot;/home/user/filea&quot;</span><span class="p">,</span> <span class="n">file_b</span> <span class="o">=</span> <span class="s">&quot;/home/user/fileb&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="bp">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.createWorkspace">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">createWorkspace</tt><big>(</big><em>doc_id=''</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#createWorkspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.createWorkspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the entity directory in the user repository</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.getAssetLocalPath">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">getAssetLocalPath</tt><big>(</big><em>doc_id=''</em>, <em>version=1</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#getAssetLocalPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.getAssetLocalPath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.getAssetPath">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">getAssetPath</tt><big>(</big><em>doc_id=''</em>, <em>version='last'</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#getAssetPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.getAssetPath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.getAssetPathFromId">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">getAssetPathFromId</tt><big>(</big><em>doc_id=''</em>, <em>local=False</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#getAssetPathFromId"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.getAssetPathFromId" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function return a path based from a provided &#8216;doc_id&#8217;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>doc_id</strong> (<em>str</em>) &#8211; The asset code.</li>
+<li><strong>local</strong> (<em>bool</em>) &#8211; If true return the user local repository path</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">str &#8211; The asset or task path.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c">#Repository</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">getAssetPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;prod_chr_mickey_mod_a&quot;</span><span class="p">,</span> <span class="n">local</span> <span class="o">=</span> <span class="bp">False</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;/homeworks/projects/prod/chr/mickey/mod/a&#39;</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">#Local</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">getAssetPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;prod_chr_mickey_mod_a&quot;</span><span class="p">,</span> <span class="n">local</span> <span class="o">=</span> <span class="bp">True</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;/homeworks/users/jdoe/projects/prod/chr/mickey/mod/a&#39;</span>    
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.getAssetTaskFromId">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">getAssetTaskFromId</tt><big>(</big><em>doc_id</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#getAssetTaskFromId"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.getAssetTaskFromId" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.getAssetTypeFromId">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">getAssetTypeFromId</tt><big>(</big><em>doc_id</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#getAssetTypeFromId"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.getAssetTypeFromId" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.getAssetVersions">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">getAssetVersions</tt><big>(</big><em>doc_id=''</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#getAssetVersions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.getAssetVersions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.getIdFromPath">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">getIdFromPath</tt><big>(</big><em>path=''</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#getIdFromPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.getIdFromPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function compare the two files contains, based on sha1.
+It is very useful if you need to know if the two file are the same.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) &#8211; The file path</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">str &#8211; Return the task code aka &#8216;doc_id&#8217; from the user repository path</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body">RepositoryError if the path doesn&#8217;t exists.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">getIdFromPath</span> <span class="p">(</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;/homeworks/user/jdoe/prod/ch/mickey/mod/a/anyfile.ext&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;prod_ch_mickey_mod_a&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.getIdFromPushedFile">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">getIdFromPushedFile</tt><big>(</big><em>fname</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#getIdFromPushedFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.getIdFromPushedFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.getTextureAttr">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">getTextureAttr</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#getTextureAttr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.getTextureAttr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.getWorkspaceFromId">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">getWorkspaceFromId</tt><big>(</big><em>doc_id=''</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#getWorkspaceFromId"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.getWorkspaceFromId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get user asset workspace from doc_id</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.hashFile">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">hashFile</tt><big>(</big><em>path=''</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#hashFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.hashFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function compare the two files contains, based on sha1.
+It is very useful if you need to know if the two file are the same.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) &#8211; The file path</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">str &#8211; sha1 hash file</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body">RepositoryError if the path doesn&#8217;t exists.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">hashFile</span> <span class="p">(</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;/home/user/filea&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;a8f2aa40f66a763dde036f83e854d1762436e97d&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.hashTime">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">hashTime</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#hashTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.hashTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function return a hash based on sha1 current time.
+Useful to get a random value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str &#8211; Random value based on sha1 current time hash.</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">random_value</span> <span class="o">=</span> <span class="n">hashTime</span> <span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;a8f2aa40f66a763dde036f83e854d1762436e97d&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.pull">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">pull</tt><big>(</big><em>doc_id=''</em>, <em>ver='latest'</em>, <em>extension=''</em>, <em>progressbar=False</em>, <em>msgbar=False</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#pull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.pull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the files from the repository</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.push">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">push</tt><big>(</big><em>db=''</em>, <em>doc_id=''</em>, <em>src_ls=</em><span class="optional">[</span><span class="optional">]</span>, <em>description=''</em>, <em>progressbar=False</em>, <em>msgbar=False</em>, <em>rename=True</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.push" title="Permalink to this definition">¶</a></dt>
+<dd><p>push() Put the datas into the repository 
+db, type couch.db.Server
+doc_id, type string
+src_ls, type list of string
+description, type string</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.pushDir">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">pushDir</tt><big>(</big><em>db=''</em>, <em>doc_id=''</em>, <em>path=</em><span class="optional">[</span><span class="optional">]</span>, <em>description=''</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#pushDir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.pushDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>push() Put the datas into the repository 
+db, type couch.db.Server
+doc_id, type string
+path, directory
+description, type string</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.pushFile">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">pushFile</tt><big>(</big><em>db=''</em>, <em>doc_id=False</em>, <em>path=</em><span class="optional">[</span><span class="optional">]</span>, <em>description=''</em>, <em>rename=True</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#pushFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.pushFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.textureBuild">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">textureBuild</tt><big>(</big><em>path=''</em>, <em>mode='ww'</em>, <em>texfilter=None</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#textureBuild"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.textureBuild" title="Permalink to this definition">¶</a></dt>
+<dd><p>Guerilla texture build</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.textureCheck">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">textureCheck</tt><big>(</big><em>doc_id=''</em>, <em>files=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#textureCheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.textureCheck" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.textureExport">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">textureExport</tt><big>(</big><em>path=''</em>, <em>progressbar=False</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#textureExport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.textureExport" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.textureOptimise">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">textureOptimise</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#textureOptimise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.textureOptimise" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.texturePush">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">texturePush</tt><big>(</big><em>db=None</em>, <em>doc_id=''</em>, <em>path=''</em>, <em>description=''</em>, <em>progressbar=False</em>, <em>msgbar=False</em>, <em>rename=False</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#texturePush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.texturePush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pipeline.core.repository.transfer">
+<tt class="descclassname">pipeline.core.repository.</tt><tt class="descname">transfer</tt><big>(</big><em>sources=</em><span class="optional">[</span><span class="optional">]</span>, <em>destination=''</em>, <em>doc_id=''</em>, <em>rename=True</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/repository.html#transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.repository.transfer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the src_ls type is a list</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipeline.core.task">
+<span id="task-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">task</span></tt> Module<a class="headerlink" href="#module-pipeline.core.task" title="Permalink to this headline">¶</a></h2>
+<p>Created on Jan 10, 2013</p>
+<dl class="docutils">
+<dt>ASSET type list:</dt>
+<dd>character        : chr
+vehicle          : vcl
+prop             : prp
+environment      : env
+freetype         : <a href="#id2"><span class="problematic" id="id3">**</span></a><a href="#id4"><span class="problematic" id="id5">*</span></a></dd>
+<dt>ASSET tasks:</dt>
+<dd>sculpting       :scp
+modeling        : mod    
+texturing       : tex
+rigging         : rig
+surfacing       : srf</dd>
+<dt>SHOT tasks:</dt>
+<dd>layouting        : lay
+lighting         : lit
+compositing      : cmp
+matte-painting   : dmp
+cam              : cam</dd>
+<dt>Filename and id rules:</dt>
+<dd><p class="first">project_asset-type_asset_task_fork</p>
+<p class="last">project
+asset_id = project_asset-type_asset
+name = asset-type_asset_task_fork</p>
+</dd>
+<dt>ID example:</dt>
+<dd><p class="first">character:
+testing_chr_mickey_tex_main</p>
+<p class="last">shot:
+testing_seq01_sht001_lgt_main</p>
+</dd>
+<dt>Filesystem example:</dt>
+<dd>chr/chr_mickey/chr_mickey_tex/chr_mickey_tex_ma
+seq100/seq100_sht100/seq100_sht100_lighting/seq100_sht100_lighting_main</dd>
+<dt>asset: length is 3</dt>
+<dd>testing_chr_mickey
+testing_seq100_sht100</dd>
+<dt>task: length is 5</dt>
+<dd>testing_chr_mickey_tex_main
+testing_seq100_sht100_lighting_main</dd>
+</dl>
+<p>&#64;author: pixo</p>
+<dl class="function">
+<dt id="pipeline.core.task.createTask">
+<tt class="descclassname">pipeline.core.task.</tt><tt class="descname">createTask</tt><big>(</big><em>db=None</em>, <em>doc_id=''</em>, <em>description=''</em>, <em>overdoc={}</em><big>)</big><a class="reference internal" href="_modules/pipeline/core/task.html#createTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.task.createTask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a task.
+db, type couch.db.Server
+doc_id, type string
+description, type string</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/hk_title_medium.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">core Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">core</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-pipeline.core.asset"><tt class="docutils literal"><span class="pre">asset</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pipeline.core.project"><tt class="docutils literal"><span class="pre">project</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pipeline.core.repository"><tt class="docutils literal"><span class="pre">repository</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pipeline.core.task"><tt class="docutils literal"><span class="pre">task</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pipeline.core.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">HDK 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, r.chikh.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

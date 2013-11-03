@@ -80,7 +80,7 @@ class UiProjectCloner ( QtGui.QWidget ):
         self.projects = ["No project available"]
         
         if utils.serverExists ( serveradress ) :
-            projects = core.lsServerProjects ( serveradress )
+            projects = core.lsProjectServer ( serveradress )
             
             if len ( projects ) > 0 :
                 self.projects = projects

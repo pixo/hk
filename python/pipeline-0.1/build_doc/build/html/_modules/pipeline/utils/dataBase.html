@@ -1,0 +1,207 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pipeline.utils.dataBase &mdash; HDK 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="HDK 0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">HDK 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pipeline.utils.dataBase</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Created on Jan 6, 2013</span>
+
+<span class="sd">@author: pixo</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">couchdb</span>
+<span class="kn">import</span> <span class="nn">rule</span>
+
+<div class="viewcode-block" id="ProjectNoSet"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.ProjectNoSet">[docs]</a><span class="k">class</span> <span class="nc">ProjectNoSet</span> <span class="p">(</span> <span class="ne">Exception</span> <span class="p">)</span> <span class="p">:</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="getDesign"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.getDesign">[docs]</a><span class="k">def</span> <span class="nf">getDesign</span> <span class="p">()</span> <span class="p">:</span>
+    <span class="k">return</span> <span class="s">&quot;AssetManager&quot;</span>
+</div>
+<div class="viewcode-block" id="getServer"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.getServer">[docs]</a><span class="k">def</span> <span class="nf">getServer</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">:</span>
+    
+    <span class="k">if</span> <span class="n">serveradress</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="p">:</span>
+        <span class="n">serveradress</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;HK_DB_SERVER&quot;</span> <span class="p">)</span>
+        
+    <span class="k">if</span> <span class="n">serveradress</span><span class="o">.</span><span class="n">find</span> <span class="p">(</span> <span class="s">&quot;http://&quot;</span> <span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="p">:</span>
+        <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;http://</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span>  <span class="n">serveradress</span>
+        
+    <span class="n">db_server</span> <span class="o">=</span> <span class="n">couchdb</span><span class="o">.</span><span class="n">Server</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">)</span>
+     
+    <span class="k">return</span> <span class="n">db_server</span>
+</div>
+<div class="viewcode-block" id="serverExists"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.serverExists">[docs]</a><span class="k">def</span> <span class="nf">serverExists</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">:</span>
+    <span class="k">if</span> <span class="n">serveradress</span><span class="o">.</span><span class="n">find</span> <span class="p">(</span> <span class="s">&quot;http://&quot;</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;http://</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">serveradress</span>
+    
+    <span class="n">server</span> <span class="o">=</span> <span class="n">couchdb</span><span class="o">.</span><span class="n">Server</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">)</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">stats</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="getDb"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.getDb">[docs]</a><span class="k">def</span> <span class="nf">getDb</span> <span class="p">(</span> <span class="n">dbname</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">,</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">:</span>
+    
+    <span class="k">if</span> <span class="n">dbname</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="ow">or</span> <span class="n">dbname</span> <span class="o">==</span> <span class="bp">None</span>  <span class="p">:</span>
+        <span class="n">dbname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;HK_DB&quot;</span> <span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">dbname</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="ow">or</span> <span class="n">dbname</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;getDb(): wrong dbname &#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">serveradress</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        
+    <span class="k">if</span> <span class="n">serveradress</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="p">:</span>
+        <span class="n">serveradress</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;HK_DB_SERVER&quot;</span> <span class="p">)</span>
+        
+    <span class="n">server</span> <span class="o">=</span> <span class="n">getServer</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">dbname</span> <span class="ow">in</span> <span class="n">server</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="n">server</span> <span class="p">[</span> <span class="n">dbname</span> <span class="p">]</span>
+    
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+
+</div>
+<div class="viewcode-block" id="lsDb"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.lsDb">[docs]</a><span class="k">def</span> <span class="nf">lsDb</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">,</span> <span class="n">view</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">startkey</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">endkey</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
+    
+    <span class="k">if</span> <span class="n">db</span> <span class="o">==</span> <span class="bp">None</span> <span class="p">:</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">getDb</span> <span class="p">()</span>
+        
+    <span class="k">if</span> <span class="n">endkey</span> <span class="o">==</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">endkey</span> <span class="o">=</span> <span class="n">startkey</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\u0fff</span><span class="s">&quot;</span>
+    
+    <span class="n">design</span> <span class="o">=</span> <span class="n">getDesign</span> <span class="p">()</span>
+    <span class="n">viewname</span> <span class="o">=</span> <span class="s">&quot;_design/</span><span class="si">%s</span><span class="s">/_view/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">design</span><span class="p">,</span> <span class="n">view</span> <span class="p">)</span>
+    <span class="n">view</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">view</span> <span class="p">(</span> <span class="n">viewname</span><span class="p">,</span> <span class="n">startkey</span> <span class="o">=</span> <span class="n">startkey</span><span class="p">,</span> <span class="n">endkey</span> <span class="o">=</span> <span class="n">endkey</span> <span class="p">)</span>
+    
+    <span class="n">doc_ls</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+        <span class="n">doc_ls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&quot;value&quot;</span><span class="p">][</span><span class="s">&quot;name&quot;</span><span class="p">])</span>
+        
+    <span class="k">return</span> <span class="n">doc_ls</span>
+</div>
+<div class="viewcode-block" id="createDbViews"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.createDbViews">[docs]</a><span class="k">def</span> <span class="nf">createDbViews</span> <span class="p">(</span><span class="n">db</span><span class="p">):</span>
+    <span class="n">asset</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">getAssetTypes</span> <span class="p">()</span>
+    <span class="n">task</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">getAssetTasks</span><span class="p">()</span>
+    
+    <span class="n">views</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">views</span><span class="p">[</span><span class="s">&#39;project&#39;</span><span class="p">]</span><span class="o">=</span> <span class="p">{</span><span class="s">&#39;map&#39;</span><span class="p">:</span> <span class="s">&#39;function(doc) {</span><span class="se">\n</span><span class="s">  if(doc.type == &quot;project&quot;) {</span><span class="se">\n</span><span class="s">    emit(doc.name, doc);</span><span class="se">\n</span><span class="s">}</span><span class="se">\n</span><span class="s">}&#39;</span><span class="p">}</span>
+    <span class="n">views</span><span class="p">[</span><span class="s">&#39;asset&#39;</span><span class="p">]</span><span class="o">=</span> <span class="p">{</span><span class="s">&#39;map&#39;</span><span class="p">:</span> <span class="s">&quot;function(doc) {</span><span class="se">\n</span><span class="s">  if(doc.type != </span><span class="se">\&quot;</span><span class="s">project</span><span class="se">\&quot;</span><span class="s"> &amp;&amp; !doc.task  ) {</span><span class="se">\n</span><span class="s">    emit(doc._id, doc);</span><span class="se">\n</span><span class="s">}</span><span class="se">\n</span><span class="s">}&quot;</span><span class="p">}</span>
+    <span class="n">views</span><span class="p">[</span><span class="s">&#39;task&#39;</span><span class="p">]</span><span class="o">=</span> <span class="p">{</span><span class="s">&quot;map&quot;</span><span class="p">:</span> <span class="s">&quot;function(doc) {</span><span class="se">\n</span><span class="s">  if(doc.task) {</span><span class="se">\n</span><span class="s">    emit(doc._id, doc);</span><span class="se">\n</span><span class="s">}</span><span class="se">\n</span><span class="s">}&quot;</span><span class="p">}</span>
+        
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">asset</span><span class="p">:</span>
+        <span class="n">views</span><span class="p">[</span><span class="n">asset</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;map&#39;</span><span class="p">:</span> <span class="s">&#39;function(doc) {</span><span class="se">\n</span><span class="s">  if(doc.type == &quot;</span><span class="si">%s</span><span class="s">&quot;) {</span><span class="se">\n</span><span class="s">    emit(doc._id, doc);</span><span class="se">\n</span><span class="s">}</span><span class="se">\n</span><span class="s">}&#39;</span> <span class="o">%</span> <span class="n">asset</span><span class="p">[</span><span class="n">key</span><span class="p">]}</span>
+    
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">task</span><span class="p">:</span>
+        <span class="n">views</span><span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;map&#39;</span><span class="p">:</span> <span class="s">&#39;function(doc) {</span><span class="se">\n</span><span class="s">  if(doc.task == &quot;</span><span class="si">%s</span><span class="s">&quot;) {</span><span class="se">\n</span><span class="s">    emit(doc._id, doc);</span><span class="se">\n</span><span class="s">}</span><span class="se">\n</span><span class="s">}&#39;</span> <span class="o">%</span> <span class="n">task</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">}</span>
+                
+    <span class="n">doc</span> <span class="o">=</span> <span class="p">{</span>
+           <span class="s">&quot;_id&quot;</span> <span class="p">:</span> <span class="s">&quot;_design/AssetManager&quot;</span><span class="p">,</span>
+           <span class="s">&quot;language&quot;</span> <span class="p">:</span> <span class="s">&quot;javascript&quot;</span><span class="p">,</span>
+           <span class="s">&quot;views&quot;</span> <span class="p">:</span> <span class="n">views</span>
+           <span class="p">}</span>
+    
+    <span class="n">_id</span><span class="p">,</span> <span class="n">_rev</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">save</span> <span class="p">(</span><span class="n">doc</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">_rev</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="createDb"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.createDb">[docs]</a><span class="k">def</span> <span class="nf">createDb</span> <span class="p">(</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;default&quot;</span><span class="p">,</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">couchdb</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Server</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">)</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">create</span> <span class="p">(</span> <span class="n">name</span> <span class="p">)</span>
+    <span class="n">createDbViews</span> <span class="p">(</span> <span class="n">db</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="n">db</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/hk_title_medium.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">HDK 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, r.chikh.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

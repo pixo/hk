@@ -1,0 +1,398 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pipeline.apps.projectCloner &mdash; HDK 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="HDK 0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">HDK 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pipeline.apps.projectCloner</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Created on Oct 19, 2013</span>
+
+<span class="sd">@author: pixo</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pipeline.core</span> <span class="kn">as</span> <span class="nn">core</span>
+<span class="kn">import</span> <span class="nn">pipeline.utils</span> <span class="kn">as</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">PySide</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<div class="viewcode-block" id="UiProjectCloner"><a class="viewcode-back" href="../../../pipeline.apps.html#pipeline.apps.projectCloner.UiProjectCloner">[docs]</a><span class="k">class</span> <span class="nc">UiProjectCloner</span> <span class="p">(</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span> <span class="p">):</span>
+    
+<div class="viewcode-block" id="UiProjectCloner.refreshClicked"><a class="viewcode-back" href="../../../pipeline.apps.html#pipeline.apps.projectCloner.UiProjectCloner.refreshClicked">[docs]</a>    <span class="k">def</span> <span class="nf">refreshClicked</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Collect data&quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_username</span><span class="o">.</span><span class="n">text</span> <span class="p">()</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_password</span><span class="o">.</span><span class="n">text</span> <span class="p">()</span>
+        <span class="n">adress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_adress</span><span class="o">.</span><span class="n">text</span> <span class="p">()</span>
+        <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">@</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">adress</span> <span class="p">)</span>
+        
+        <span class="sd">&quot;&quot;&quot;Refresh projects, icons&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refreshProject</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">)</span>
+                </div>
+<div class="viewcode-block" id="UiProjectCloner.projectChanged"><a class="viewcode-back" href="../../../pipeline.apps.html#pipeline.apps.projectCloner.UiProjectCloner.projectChanged">[docs]</a>    <span class="k">def</span> <span class="nf">projectChanged</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plainTextEdit</span><span class="o">.</span><span class="n">setPlainText</span> <span class="p">(</span> <span class="s">&quot;&quot;</span> <span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">currentText</span> <span class="p">()</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="s">&quot;/homeworks&quot;</span>
+        
+        <span class="sd">&quot;&quot;&quot;&quot;Project Descriptions&quot;&quot;&quot;</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        
+        <span class="sd">&quot;&quot;&quot;&quot;Check description for initialiation or none available project&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">current</span> <span class="ow">in</span> <span class="p">[</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;No project available&quot;</span> <span class="p">]</span> <span class="p">)</span> <span class="p">:</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">[</span><span class="n">current</span><span class="p">][</span><span class="n">current</span><span class="p">][</span><span class="s">&quot;description&quot;</span><span class="p">]</span>
+            <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">[</span><span class="n">current</span><span class="p">][</span><span class="n">current</span><span class="p">][</span><span class="s">&quot;root&quot;</span><span class="p">]</span>
+                            
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_root</span><span class="o">.</span><span class="n">setText</span> <span class="p">(</span> <span class="n">root</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plainTextEdit</span><span class="o">.</span><span class="n">setPlainText</span> <span class="p">(</span> <span class="n">description</span> <span class="p">)</span>
+        
+        <span class="sd">&quot;&quot;&quot;Check if current project exist on the local drive&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">current</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_stat</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pushButton</span><span class="o">.</span><span class="n">setEnabled</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_stat</span> <span class="p">[</span> <span class="n">current</span> <span class="p">]</span> <span class="p">)</span>
+        
+                </div>
+<div class="viewcode-block" id="UiProjectCloner.synchonizeClicked"><a class="viewcode-back" href="../../../pipeline.apps.html#pipeline.apps.projectCloner.UiProjectCloner.synchonizeClicked">[docs]</a>    <span class="k">def</span> <span class="nf">synchonizeClicked</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">&quot;&quot;</span>
+        <span class="n">project</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">currentText</span> <span class="p">()</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_username</span><span class="o">.</span><span class="n">text</span> <span class="p">()</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_password</span><span class="o">.</span><span class="n">text</span> <span class="p">()</span>
+        <span class="n">adress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_adress</span><span class="o">.</span><span class="n">text</span> <span class="p">()</span>
+        <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">@</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">adress</span> <span class="p">)</span>
+        
+        
+        <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="p">[</span> <span class="n">project</span> <span class="p">][</span> <span class="n">project</span> <span class="p">]</span>
+        <span class="n">host</span> <span class="o">=</span> <span class="n">db</span> <span class="p">[</span> <span class="s">&quot;host&quot;</span> <span class="p">]</span>
+        <span class="n">local</span> <span class="o">=</span> <span class="n">db</span> <span class="p">[</span> <span class="s">&quot;root&quot;</span> <span class="p">]</span>
+        
+        <span class="n">source</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">host</span><span class="p">,</span> <span class="s">&quot;projects&quot;</span><span class="p">,</span> <span class="n">project</span> <span class="p">)</span>
+        <span class="n">destination</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">local</span><span class="p">,</span> <span class="s">&quot;projects&quot;</span> <span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">rsync</span> <span class="p">(</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span> <span class="p">)</span>
+<span class="c">#         utils.rsync ( source, destination, [&quot;sct&quot;,&quot;tex&quot;] )</span>
+        <span class="n">core</span><span class="o">.</span><span class="n">createProjectCred</span> <span class="p">(</span> <span class="n">project</span><span class="p">,</span> <span class="n">serveradress</span><span class="p">,</span> <span class="n">host</span> <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span> <span class="p">()</span>
+            </div>
+<div class="viewcode-block" id="UiProjectCloner.refreshProject"><a class="viewcode-back" href="../../../pipeline.apps.html#pipeline.apps.projectCloner.UiProjectCloner.refreshProject">[docs]</a>    <span class="k">def</span> <span class="nf">refreshProject</span> <span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">serveradress</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;If server exist set &#39;ok&#39; icon &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="bp">False</span>
+                
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">serverExists</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">)</span> <span class="p">:</span>
+            <span class="n">icon</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">utils</span><span class="o">.</span><span class="n">getCCPath</span> <span class="p">(),</span> <span class="s">&quot;ok.png&quot;</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getServer</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">)</span>
+            
+        <span class="sd">&quot;&quot;&quot;Clear current comboBox_project list&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">clear</span> <span class="p">()</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">utils</span><span class="o">.</span><span class="n">getCCPath</span> <span class="p">(),</span> <span class="s">&quot;cross.png&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projects</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;No project available&quot;</span><span class="p">]</span>
+        
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">serverExists</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">)</span> <span class="p">:</span>
+            <span class="n">projects</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">lsProjectServer</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">)</span>
+            
+            <span class="k">if</span> <span class="nb">len</span> <span class="p">(</span> <span class="n">projects</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">projects</span> <span class="o">=</span> <span class="n">projects</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">addItems</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">projects</span> <span class="p">)</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_root</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">root</span><span class="p">,</span> <span class="s">&quot;projects&quot;</span> <span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">count</span> <span class="p">()</span> <span class="p">):</span>
+            <span class="n">proj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">itemText</span> <span class="p">(</span> <span class="n">i</span> <span class="p">)</span>
+            <span class="n">curroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">root</span><span class="p">,</span> <span class="n">proj</span> <span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">proj</span> <span class="o">==</span> <span class="s">&quot;No project available&quot;</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">curroot</span> <span class="p">)</span> <span class="p">:</span>
+                <span class="n">icon</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">utils</span><span class="o">.</span><span class="n">getCCPath</span> <span class="p">(),</span> <span class="s">&quot;cross.png&quot;</span> <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">project_stat</span> <span class="p">[</span> <span class="n">proj</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">icon</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">utils</span><span class="o">.</span><span class="n">getCCPath</span> <span class="p">(),</span> <span class="s">&quot;ok.png&quot;</span> <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">project_stat</span> <span class="p">[</span> <span class="n">proj</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                
+            <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">setItemIcon</span> <span class="p">(</span> <span class="n">i</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span> <span class="p">(</span> <span class="n">icon</span> <span class="p">)</span> <span class="p">)</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">pushButton</span><span class="o">.</span><span class="n">setEnabled</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_stat</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">currentText</span> <span class="p">()</span> <span class="p">]</span> <span class="p">)</span>
+            
+
+                </div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span> <span class="p">(</span> <span class="n">UiProjectCloner</span><span class="p">,</span> <span class="bp">self</span> <span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span> <span class="n">parent</span> <span class="p">)</span>
+                
+        <span class="bp">self</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;MainWindow&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span> <span class="p">(</span> <span class="s">&quot;Project Cloner&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize</span> <span class="p">(</span> <span class="mi">570</span><span class="p">,</span> <span class="mi">470</span> <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_2</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QVBoxLayout</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_2</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;verticalLayout_2&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QVBoxLayout</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;verticalLayout&quot;</span> <span class="p">)</span>
+        
+        <span class="c">#username</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_username</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHBoxLayout</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_username</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;horizontalLayout_username&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_username</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_username</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;label_username&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_username</span><span class="o">.</span><span class="n">setMinimumSize</span> <span class="p">(</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span> <span class="p">(</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_username</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_username</span> <span class="p">)</span>     
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_username</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_username</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;labelpixmap_username&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_username</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_username</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_username</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLineEdit</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_username</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;lineEdit_password&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_username</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_username</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addLayout</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_username</span> <span class="p">)</span>
+               
+        <span class="c">#password</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_password</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHBoxLayout</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_password</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;horizontalLayout_password&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_password</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_password</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;label_password&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_password</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_password</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_password</span> <span class="p">)</span>     
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_password</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_password</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;labelpixmap_password&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_password</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_password</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_password</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLineEdit</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_password</span><span class="o">.</span><span class="n">setEchoMode</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QLineEdit</span><span class="o">.</span><span class="n">Password</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_password</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;lineEdit_password&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_password</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_password</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addLayout</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_password</span> <span class="p">)</span>
+        
+        
+        <span class="c">#DB Adress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_adress</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHBoxLayout</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_adress</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;horizontalLayout_adress&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_adress</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_adress</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;label_adress&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_adress</span><span class="o">.</span><span class="n">setMinimumSize</span> <span class="p">(</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span> <span class="p">(</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_adress</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_adress</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_adress</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_adress</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;labelpixmap_adress&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_adress</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_adress</span> <span class="p">)</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_adress</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLineEdit</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_adress</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;lineEdit_adress&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_adress</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_adress</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addLayout</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_adress</span> <span class="p">)</span>
+        
+        <span class="c">#DB project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_project</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_project</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;horizontalLayout_project&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_project</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_project</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;label_project&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_project</span><span class="o">.</span><span class="n">setMinimumSize</span> <span class="p">(</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span> <span class="p">(</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_project</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_project</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPushButton</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;refresh&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="o">.</span><span class="n">setMaximumSize</span> <span class="p">(</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span> <span class="p">(</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_project</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QComboBox</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">sizePolicy</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Preferred</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Fixed</span><span class="p">)</span>
+        <span class="n">sizePolicy</span><span class="o">.</span><span class="n">setHorizontalStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sizePolicy</span><span class="o">.</span><span class="n">setVerticalStretch</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">sizePolicy</span><span class="o">.</span><span class="n">setHeightForWidth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">sizePolicy</span><span class="p">()</span><span class="o">.</span><span class="n">hasHeightForWidth</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">sizePolicy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">setCursor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ArrowCursor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">setAcceptDrops</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">setAccessibleName</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">setLayoutDirection</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftToRight</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">setAutoFillBackground</span> <span class="p">(</span> <span class="bp">False</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;comboBox_project&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_project</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_project</span><span class="p">)</span>
+        
+        <span class="c">#Homeworks root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_root</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHBoxLayout</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_root</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;horizontalLayout_root&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_root</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_root</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;label_root&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_root</span><span class="o">.</span><span class="n">setMinimumSize</span> <span class="p">(</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span> <span class="p">(</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_root</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_root</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_root</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_root</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;labelpixmap_root&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_root</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_root</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_root</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLineEdit</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_root</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;lineEdit_root&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_root</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_root</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addLayout</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_root</span> <span class="p">)</span>
+        
+        <span class="c">#Description </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_4</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHBoxLayout</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_4</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;horizontalLayout_4&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_4</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_4</span><span class="o">.</span><span class="n">setObjectName</span> <span class="p">(</span> <span class="s">&quot;label_4&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_4</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_4</span><span class="o">.</span><span class="n">addWidget</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_4</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addLayout</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_4</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_5</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_5</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;horizontalLayout_5&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plainTextEdit</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPlainTextEdit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plainTextEdit</span><span class="o">.</span><span class="n">setReadOnly</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plainTextEdit</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;plainTextEdit&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_5</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plainTextEdit</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_5</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_6</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_6</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;horizontalLayout_6&quot;</span><span class="p">)</span>
+        <span class="n">spacerItem</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QSpacerItem</span> <span class="p">(</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Minimum</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_6</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">spacerItem</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pushButton</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pushButton</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;pushButton&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_6</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pushButton</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout_6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_2</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">setUi</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comboBox_project</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">projectChanged</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">refreshClicked</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pushButton</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">synchonizeClicked</span> <span class="p">)</span>
+
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QMetaObject</span><span class="o">.</span><span class="n">connectSlotsByName</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+
+
+<div class="viewcode-block" id="UiProjectCloner.setUi"><a class="viewcode-back" href="../../../pipeline.apps.html#pipeline.apps.projectCloner.UiProjectCloner.setUi">[docs]</a>    <span class="k">def</span> <span class="nf">setUi</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="n">ccpath</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getCCPath</span><span class="p">()</span>
+   
+        <span class="sd">&quot;&quot;&quot;Username&quot;&quot;&quot;</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="s">&quot;admin&quot;</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">utils</span><span class="o">.</span><span class="n">getCCPath</span> <span class="p">(),</span> <span class="s">&quot;admin.png&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_username</span><span class="o">.</span><span class="n">setText</span> <span class="p">(</span> <span class="s">&quot;DB user&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_username</span><span class="o">.</span><span class="n">setPixmap</span> <span class="p">(</span> <span class="n">icon</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_username</span><span class="o">.</span><span class="n">setText</span> <span class="p">(</span> <span class="n">username</span> <span class="p">)</span>
+             
+        <span class="sd">&quot;&quot;&quot;Password&quot;&quot;&quot;</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="s">&quot;admin&quot;</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">utils</span><span class="o">.</span><span class="n">getCCPath</span> <span class="p">(),</span> <span class="s">&quot;password.png&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_password</span><span class="o">.</span><span class="n">setText</span> <span class="p">(</span> <span class="s">&quot;DB password&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_password</span><span class="o">.</span><span class="n">setPixmap</span> <span class="p">(</span> <span class="n">icon</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_password</span><span class="o">.</span><span class="n">setText</span> <span class="p">(</span> <span class="n">password</span> <span class="p">)</span>
+        
+        <span class="sd">&quot;&quot;&quot;DB adress&quot;&quot;&quot;</span>
+        <span class="n">adress</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1:5984&quot;</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">utils</span><span class="o">.</span><span class="n">getCCPath</span> <span class="p">(),</span> <span class="s">&quot;adress.png&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_adress</span><span class="o">.</span><span class="n">setText</span> <span class="p">(</span> <span class="s">&quot;DB adress&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_adress</span><span class="o">.</span><span class="n">setPixmap</span> <span class="p">(</span> <span class="n">icon</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_adress</span><span class="o">.</span><span class="n">setText</span> <span class="p">(</span> <span class="n">adress</span> <span class="p">)</span>
+        
+        <span class="sd">&quot;&quot;&quot;DB project&quot;&quot;&quot;</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">utils</span><span class="o">.</span><span class="n">getCCPath</span> <span class="p">(),</span> <span class="s">&quot;refresh.png&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_project</span><span class="o">.</span><span class="n">setText</span> <span class="p">(</span> <span class="s">&quot;DB project&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="o">.</span><span class="n">setIcon</span> <span class="p">(</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span> <span class="p">(</span> <span class="n">icon</span> <span class="p">)</span> <span class="p">)</span>
+        
+
+        <span class="sd">&quot;&quot;&quot;Homework root&quot;&quot;&quot;</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="s">&quot;/homeworks&quot;</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">utils</span><span class="o">.</span><span class="n">getCCPath</span> <span class="p">(),</span> <span class="s">&quot;hierarchy.png&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_root</span><span class="o">.</span><span class="n">setText</span> <span class="p">(</span> <span class="s">&quot;Project root&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_root</span><span class="o">.</span><span class="n">setText</span> <span class="p">(</span> <span class="n">root</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit_root</span><span class="o">.</span><span class="n">setReadOnly</span> <span class="p">(</span> <span class="bp">True</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelpixmap_root</span><span class="o">.</span><span class="n">setPixmap</span> <span class="p">(</span> <span class="n">icon</span> <span class="p">)</span>
+        
+        <span class="sd">&quot;&quot;&quot;Description&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_4</span><span class="o">.</span><span class="n">setText</span> <span class="p">(</span> <span class="s">&quot;Description&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plainTextEdit</span><span class="o">.</span><span class="n">setPlainText</span> <span class="p">(</span> <span class="s">&quot;This is the project&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pushButton</span><span class="o">.</span><span class="n">setText</span> <span class="p">(</span> <span class="s">&quot;Synchronize&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pushButton</span><span class="o">.</span><span class="n">setIcon</span> <span class="p">(</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span> <span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">ccpath</span><span class="p">,</span> <span class="s">&quot;pull.png&quot;</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_stat</span> <span class="o">=</span> <span class="nb">dict</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_stat</span> <span class="p">[</span> <span class="s">&quot;No project available&quot;</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_stat</span> <span class="p">[</span> <span class="s">&quot;&quot;</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">refreshClicked</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projectChanged</span><span class="p">()</span>
+        
+        </div></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span> <span class="p">(</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span> <span class="p">)</span>    
+    <span class="n">main</span> <span class="o">=</span> <span class="n">UiProjectCloner</span> <span class="p">()</span>
+    <span class="n">main</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/hk_title_medium.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">HDK 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, r.chikh.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

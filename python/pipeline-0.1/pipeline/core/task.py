@@ -56,7 +56,7 @@ import pipeline.utils as utils
 def createTask ( db = None, doc_id = "", description = "", overdoc = dict() ):
     """
     Create a task.
-    db, type couch.db.Server
+    db, type couchdb.client.Database
     doc_id, type string
     description, type string
     """

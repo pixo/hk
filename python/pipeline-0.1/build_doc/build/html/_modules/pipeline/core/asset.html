@@ -1,0 +1,222 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pipeline.core.asset &mdash; HDK 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="HDK 0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">HDK 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pipeline.core.asset</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Created on Jan 10, 2013    </span>
+<span class="sd">@author: pixo</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">pipeline.utils</span> <span class="kn">as</span> <span class="nn">utils</span>
+
+<div class="viewcode-block" id="lsAsset"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.asset.lsAsset">[docs]</a><span class="k">def</span> <span class="nf">lsAsset</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function return an asset list from a provided database and doc_id.</span>
+
+<span class="sd">    :param db: The database.</span>
+<span class="sd">    :type db: couch.db.Server</span>
+<span class="sd">    :param doc_id: The asset code to list.</span>
+<span class="sd">    :type doc_id: str</span>
+<span class="sd">    :returns:  list() -- The asset list.</span>
+<span class="sd">    :raises: AttributeError, KeyError</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; db = pipeline.utils.getDb ( dbname = &quot;prod&quot; , serveradress = &quot;127.0.0.1:5984&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; lsAsset ( db = db, doc_id = &quot;prod_ch_mickey&quot; )</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)</span>
+    <span class="n">typ</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">lsDb</span> <span class="p">(</span> <span class="n">db</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">doc_id</span> <span class="p">)</span>
+</div>
+<div class="viewcode-block" id="createAsset"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.asset.createAsset">[docs]</a><span class="k">def</span> <span class="nf">createAsset</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">overdoc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function create an asset into the provided database.</span>
+
+<span class="sd">    :param db: The database.</span>
+<span class="sd">    :type db: couch.db.Server</span>
+<span class="sd">    :param doc_id: The asset code.</span>
+<span class="sd">    :type doc_id: str</span>
+<span class="sd">    :param description: The asset description.</span>
+<span class="sd">    :type description: str</span>
+<span class="sd">    :param overdoc: A dictionnary that contains extra document attributes.</span>
+<span class="sd">    :type overdoc: dict</span>
+<span class="sd">    :returns:  document -- The database document.</span>
+<span class="sd">    :raises: AttributeError, KeyError</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; db = pipeline.utils.getDb ( dbname = &quot;prod&quot; , serveradress = &quot;127.0.0.1:5984&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; createAsset ( db = db, doc_id = &quot;prod_ch_mickey&quot;, &quot;This is the mickey characters&quot; )</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="sd">&quot;&quot;&quot;Check if db exist if not, get the current project db&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">db</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getDb</span> <span class="p">()</span>
+        
+    <span class="sd">&quot;&quot;&quot; Get data from doc_id &quot;&quot;&quot;</span>
+    <span class="n">project</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">asset</span> <span class="o">=</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span> <span class="p">(</span> <span class="s">&quot;_&quot;</span> <span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">typ</span><span class="p">,</span> <span class="n">asset</span> <span class="p">)</span>
+    
+    <span class="sd">&quot;&quot;&quot; Check the asset doesn&#39;t exist &quot;&quot;&quot;</span>
+    <span class="n">asset_ls</span> <span class="o">=</span> <span class="n">lsAsset</span> <span class="p">(</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="p">)</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">asset_ls</span> <span class="p">)</span> <span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; If asset doesn&#39;t exist create the asset&quot;&quot;&quot;</span>
+        
+        <span class="sd">&quot;&quot;&quot; Create the asset structure &quot;&quot;&quot;</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&quot;type&quot;</span> <span class="p">:</span> <span class="n">typ</span><span class="p">,</span>
+            <span class="s">&quot;_id&quot;</span> <span class="p">:</span> <span class="n">doc_id</span><span class="p">,</span>
+            <span class="s">&quot;project_id&quot;</span> <span class="p">:</span> <span class="n">project</span><span class="p">,</span>
+            <span class="s">&quot;name&quot;</span> <span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s">&quot;description&quot;</span> <span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+            <span class="s">&quot;creator&quot;</span> <span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;USER&quot;</span> <span class="p">),</span>
+            <span class="s">&quot;created&quot;</span> <span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span> <span class="p">(</span> <span class="s">&quot;%Y %b </span><span class="si">%d</span><span class="s"> %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">()</span> <span class="p">),</span>
+            <span class="s">&quot;state&quot;</span> <span class="p">:</span> <span class="s">&quot;na&quot;</span>
+            <span class="p">}</span>
+        
+        <span class="n">doc</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span> <span class="n">overdoc</span> <span class="p">)</span>
+        
+        <span class="sd">&quot;&quot;&quot;Save data structure into the database &quot;&quot;&quot;</span>
+        <span class="n">_id</span><span class="p">,</span> <span class="n">_rev</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">save</span> <span class="p">(</span><span class="n">doc</span> <span class="p">)</span>
+        
+        <span class="k">print</span> <span class="s">&quot;createAsset: Added </span><span class="si">%r</span><span class="s"> to project </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">name</span> <span class="p">,</span> <span class="n">project</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="n">db</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span>
+    
+    <span class="k">else</span><span class="p">:</span>        
+        <span class="k">print</span> <span class="s">&quot;createAsset: </span><span class="si">%s</span><span class="s"> already exist&quot;</span> <span class="o">%</span> <span class="n">name</span>
+        <span class="k">return</span> <span class="bp">False</span>
+        </div>
+<div class="viewcode-block" id="createShot"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.asset.createShot">[docs]</a><span class="k">def</span> <span class="nf">createShot</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;No description&quot;</span><span class="p">,</span>
+                    <span class="n">cut_in</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cut_out</span> <span class="o">=</span> <span class="mi">100</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function create an asset of type Shot into the provided database.</span>
+
+<span class="sd">    :param db: The database.</span>
+<span class="sd">    :type db: couch.db.Server</span>
+<span class="sd">    :param doc_id: The asset code.</span>
+<span class="sd">    :type doc_id: str</span>
+<span class="sd">    :param description: The asset description.</span>
+<span class="sd">    :type description: str</span>
+<span class="sd">    :param cut_in: The first frame of the shot.</span>
+<span class="sd">    :type cut_in: float</span>
+<span class="sd">    :param cut_out: The last frame of the shot.</span>
+<span class="sd">    :type cut_out: float</span>
+<span class="sd">    :returns:  document -- The database document.</span>
+<span class="sd">    :raises: AttributeError, KeyError</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; db = pipeline.utils.getDb ( dbname = &quot;prod&quot; , serveradress = &quot;127.0.0.1:5984&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; createShot ( db = db, doc_id = &quot;prod_shot_op001&quot;, description = &quot;This is the shot openning 001&quot;, cut_in = 1, cut_out = 100 )</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="sd">&quot;&quot;&quot;Extra shot attributes&quot;&quot;&quot;</span>
+    <span class="n">overdoc</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;seq&quot;</span> <span class="p">:</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+               <span class="s">&quot;cut_in&quot;</span><span class="p">:</span> <span class="n">cut_in</span><span class="p">,</span>
+               <span class="s">&quot;cut_out&quot;</span><span class="p">:</span> <span class="n">cut_out</span> <span class="p">}</span>
+     
+    <span class="sd">&quot;&quot;&quot;Create asset shot with shot extra attributes&quot;&quot;&quot;</span>
+    <span class="n">shot</span> <span class="o">=</span> <span class="n">createAsset</span> <span class="p">(</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">overdoc</span> <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">shot</span>
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/hk_title_medium.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">HDK 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, r.chikh.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
