@@ -56,35 +56,13 @@
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">pipeline.utils</span> <span class="kn">as</span> <span class="nn">utils</span>
 
-<div class="viewcode-block" id="lsAsset"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.asset.lsAsset">[docs]</a><span class="k">def</span> <span class="nf">lsAsset</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function return an asset list from a provided database and doc_id.</span>
 
-<span class="sd">    :param db: The database.</span>
-<span class="sd">    :type db: couch.db.Server</span>
-<span class="sd">    :param doc_id: The asset code to list.</span>
-<span class="sd">    :type doc_id: str</span>
-<span class="sd">    :returns:  list() -- The asset list.</span>
-<span class="sd">    :raises: AttributeError, KeyError</span>
-
-<span class="sd">    **Example:**</span>
-<span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; db = pipeline.utils.getDb ( dbname = &quot;prod&quot; , serveradress = &quot;127.0.0.1:5984&quot; )</span>
-<span class="sd">    &gt;&gt;&gt; lsAsset ( db = db, doc_id = &quot;prod_ch_mickey&quot; )</span>
-<span class="sd">    </span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    
-    <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)</span>
-    <span class="n">typ</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">lsDb</span> <span class="p">(</span> <span class="n">db</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">doc_id</span> <span class="p">)</span>
-</div>
 <div class="viewcode-block" id="createAsset"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.asset.createAsset">[docs]</a><span class="k">def</span> <span class="nf">createAsset</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">overdoc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="p">):</span> 
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function create an asset into the provided database.</span>
+<span class="sd">    This function create an **asset** into the provided database.</span>
 
 <span class="sd">    :param db: The database.</span>
-<span class="sd">    :type db: couch.db.Server</span>
+<span class="sd">    :type db: couchdb.client.Database</span>
 <span class="sd">    :param doc_id: The asset code.</span>
 <span class="sd">    :type doc_id: str</span>
 <span class="sd">    :param description: The asset description.</span>
@@ -101,21 +79,23 @@
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="sd">&quot;&quot;&quot;Check if db exist if not, get the current project db&quot;&quot;&quot;</span>
+    <span class="c"># Check if db exist if not, get the current project db</span>
     <span class="k">if</span> <span class="n">db</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getDb</span> <span class="p">()</span>
         
-    <span class="sd">&quot;&quot;&quot; Get data from doc_id &quot;&quot;&quot;</span>
+    <span class="c"># Get data from doc_id</span>
     <span class="n">project</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">asset</span> <span class="o">=</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span> <span class="p">(</span> <span class="s">&quot;_&quot;</span> <span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">typ</span><span class="p">,</span> <span class="n">asset</span> <span class="p">)</span>
     
-    <span class="sd">&quot;&quot;&quot; Check the asset doesn&#39;t exist &quot;&quot;&quot;</span>
-    <span class="n">asset_ls</span> <span class="o">=</span> <span class="n">lsAsset</span> <span class="p">(</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="p">)</span>
+    <span class="c">#Check if project name is right</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">db</span> <span class="p">)</span> <span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;createAsset: </span><span class="si">%s</span><span class="s"> project doesn&#39;t exist&quot;</span> <span class="o">%</span> <span class="n">project</span>
+        <span class="k">return</span> <span class="bp">False</span>
     
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">asset_ls</span> <span class="p">)</span> <span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; If asset doesn&#39;t exist create the asset&quot;&quot;&quot;</span>
+    <span class="c"># If asset doesn&#39;t exist create the asset</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="ow">in</span> <span class="n">db</span> <span class="p">)</span> <span class="p">:</span>
         
-        <span class="sd">&quot;&quot;&quot; Create the asset structure &quot;&quot;&quot;</span>
+        <span class="c">#Create the asset structure</span>
         <span class="n">doc</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s">&quot;type&quot;</span> <span class="p">:</span> <span class="n">typ</span><span class="p">,</span>
             <span class="s">&quot;_id&quot;</span> <span class="p">:</span> <span class="n">doc_id</span><span class="p">,</span>
@@ -127,9 +107,10 @@
             <span class="s">&quot;state&quot;</span> <span class="p">:</span> <span class="s">&quot;na&quot;</span>
             <span class="p">}</span>
         
+        <span class="c">#Add extra data if needed</span>
         <span class="n">doc</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span> <span class="n">overdoc</span> <span class="p">)</span>
         
-        <span class="sd">&quot;&quot;&quot;Save data structure into the database &quot;&quot;&quot;</span>
+        <span class="c"># Save data structure into the database</span>
         <span class="n">_id</span><span class="p">,</span> <span class="n">_rev</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">save</span> <span class="p">(</span><span class="n">doc</span> <span class="p">)</span>
         
         <span class="k">print</span> <span class="s">&quot;createAsset: Added </span><span class="si">%r</span><span class="s"> to project </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">name</span> <span class="p">,</span> <span class="n">project</span> <span class="p">)</span>
@@ -138,14 +119,89 @@
     <span class="k">else</span><span class="p">:</span>        
         <span class="k">print</span> <span class="s">&quot;createAsset: </span><span class="si">%s</span><span class="s"> already exist&quot;</span> <span class="o">%</span> <span class="n">name</span>
         <span class="k">return</span> <span class="bp">False</span>
-        </div>
+
+</div>
+<div class="viewcode-block" id="createTask"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.asset.createTask">[docs]</a><span class="k">def</span> <span class="nf">createTask</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">overdoc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function create a **task** into the provided database.</span>
+
+<span class="sd">    :param db: The database.</span>
+<span class="sd">    :type db: couchdb.client.Database</span>
+<span class="sd">    :param doc_id: The asset code.</span>
+<span class="sd">    :type doc_id: str</span>
+<span class="sd">    :param description: The asset description.</span>
+<span class="sd">    :type description: str</span>
+<span class="sd">    :param overdoc: A dictionnary that contains extra document attributes.</span>
+<span class="sd">    :type overdoc: dict</span>
+<span class="sd">    :returns:  document -- The database document.</span>
+<span class="sd">    :raises: AttributeError, KeyError</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; db = pipeline.utils.getDb ( dbname = &quot;prod&quot; , serveradress = &quot;127.0.0.1:5984&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; createTask ( db = db, doc_id = &quot;prod_ch_mickey_mod_a&quot;, &quot;This is the mickey modeling task &#39;a&#39;&quot; )</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c"># If db isn&#39;t provided, get the current project database</span>
+    <span class="k">if</span> <span class="n">db</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getDb</span><span class="p">()</span>
+        
+    <span class="c">#Get datas from doc_id</span>
+    <span class="n">project</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">asset</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">fork</span> <span class="o">=</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span> <span class="p">(</span> <span class="s">&quot;_&quot;</span> <span class="p">)</span>
+    <span class="n">asset_id</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">project</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">asset</span> <span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">typ</span><span class="p">,</span> <span class="n">asset</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">fork</span> <span class="p">)</span>
+        
+    <span class="c">#Check if project name is right</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">db</span> <span class="p">)</span> <span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;createTask: </span><span class="si">%s</span><span class="s"> project doesn&#39;t exist&quot;</span> <span class="o">%</span> <span class="n">project</span>
+        <span class="k">return</span> <span class="bp">False</span>
+    
+    <span class="c"># Check if the asset exist</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">asset_id</span> <span class="ow">in</span> <span class="n">db</span> <span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;createTask: Asset &#39;</span><span class="si">%s</span><span class="s">&#39; doesn&#39;t exist&quot;</span> <span class="o">%</span> <span class="n">asset_id</span> 
+        <span class="k">return</span> <span class="bp">False</span>
+    
+    <span class="c"># If task doesn&#39;t exist create it</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="ow">in</span> <span class="n">db</span> <span class="p">)</span> <span class="p">:</span> <span class="c">#not ( name in task_ls ) :</span>
+        
+        <span class="c"># Create the task structure</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&quot;type&quot;</span> <span class="p">:</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">typ</span><span class="p">,</span><span class="n">task</span><span class="p">),</span>
+            <span class="s">&quot;task&quot;</span> <span class="p">:</span> <span class="n">task</span><span class="p">,</span>
+            <span class="s">&quot;_id&quot;</span> <span class="p">:</span> <span class="n">doc_id</span><span class="p">,</span>
+            <span class="s">&quot;project_id&quot;</span> <span class="p">:</span> <span class="n">project</span><span class="p">,</span>
+            <span class="s">&quot;asset_id&quot;</span> <span class="p">:</span> <span class="n">asset_id</span><span class="p">,</span>
+            <span class="s">&quot;fork&quot;</span> <span class="p">:</span> <span class="n">fork</span><span class="p">,</span>
+            <span class="s">&quot;name&quot;</span> <span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s">&quot;description&quot;</span> <span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+            <span class="s">&quot;versions&quot;</span> <span class="p">:</span> <span class="nb">dict</span><span class="p">(),</span>
+            <span class="s">&quot;creator&quot;</span> <span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;USER&quot;</span> <span class="p">),</span>
+            <span class="s">&quot;created&quot;</span> <span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span> <span class="p">(</span> <span class="s">&quot;%Y %b </span><span class="si">%d</span><span class="s"> %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">()</span> <span class="p">),</span>
+            <span class="s">&quot;state&quot;</span> <span class="p">:</span> <span class="s">&quot;na&quot;</span>
+            <span class="p">}</span>
+        
+        <span class="c">#Add extra data if needed</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">overdoc</span><span class="p">)</span>
+        
+        <span class="c">#Save data structure into the database</span>
+        <span class="n">_id</span><span class="p">,</span> <span class="n">_rev</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">save</span> <span class="p">(</span><span class="n">doc</span> <span class="p">)</span>
+        
+        <span class="k">print</span> <span class="s">&quot;createTask: Added </span><span class="si">%r</span><span class="s"> to project </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">name</span> <span class="p">,</span> <span class="n">project</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="n">db</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span>
+    
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;createTask: </span><span class="si">%s</span><span class="s"> already exist&quot;</span> <span class="o">%</span> <span class="n">name</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+ </div>
 <div class="viewcode-block" id="createShot"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.asset.createShot">[docs]</a><span class="k">def</span> <span class="nf">createShot</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;No description&quot;</span><span class="p">,</span>
                     <span class="n">cut_in</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cut_out</span> <span class="o">=</span> <span class="mi">100</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function create an asset of type Shot into the provided database.</span>
+<span class="sd">    This function create an asset of type **Shot** into the provided database.</span>
 
 <span class="sd">    :param db: The database.</span>
-<span class="sd">    :type db: couch.db.Server</span>
+<span class="sd">    :type db: couchdb.client.Database</span>
 <span class="sd">    :param doc_id: The asset code.</span>
 <span class="sd">    :type doc_id: str</span>
 <span class="sd">    :param description: The asset description.</span>
@@ -164,12 +220,12 @@
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="sd">&quot;&quot;&quot;Extra shot attributes&quot;&quot;&quot;</span>
+    <span class="c"># Extra shot attributes</span>
     <span class="n">overdoc</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;seq&quot;</span> <span class="p">:</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
                <span class="s">&quot;cut_in&quot;</span><span class="p">:</span> <span class="n">cut_in</span><span class="p">,</span>
                <span class="s">&quot;cut_out&quot;</span><span class="p">:</span> <span class="n">cut_out</span> <span class="p">}</span>
      
-    <span class="sd">&quot;&quot;&quot;Create asset shot with shot extra attributes&quot;&quot;&quot;</span>
+    <span class="c"># Create asset shot with shot extra attributes</span>
     <span class="n">shot</span> <span class="o">=</span> <span class="n">createAsset</span> <span class="p">(</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">overdoc</span> <span class="p">)</span>
     
     <span class="k">return</span> <span class="n">shot</span>

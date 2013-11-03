@@ -176,21 +176,49 @@ def getAssetPathFromId ( doc_id = "", local = False ):
     
     return path
     
-def getAssetVersions ( doc_id = "" ):
+def getVersions ( db = None, doc_id = "" ):
+    """
+    This function the a path of an asset version.
+
+    :param db: the database
+    :type db: Database
+    :param doc_id: The asset code.
+    :type doc_id: str
+    :returns:  dict -- a dictionary with all versions of the asset
+
+    **Example:**
     
-    path = getAssetPathFromId ( doc_id )
-    versions = glob.glob ( path + os.sep +"[0-9][0-9][0-9]" )
-    versions.sort ()
+    >>> db = utils.getDb()
+    >>> getVersions ( db = db, doc_id = "prod_chr_mickey_mod_a" )
     
+    """
+    # If db is not provided get the current project DB
+    if db == None :  
+        db = utils.getDb()
+            
+    # Get Versions from document
+    versions = db [ doc_id ]["versions"]
+        
     return versions
 
-def getAssetPath ( doc_id = "", version = "last" ):
+def getAssetPath ( db = None, doc_id = "", version = "last" ):
+    
+    # Get asset versions
+    versions = getVersions ( db = db, doc_id = doc_id )
+    num = None
+    
+    # If queried version is the lastest
     if version == "last" :
-        version = getAssetVersions ( doc_id = doc_id )
-        version = version[-1]
-         
-    path = getAssetPathFromId ( doc_id = doc_id, local = False )
-    path = os.path.join ( path, "%03d" % float ( version ) )
+        num = int ( len ( versions ) ) 
+    else:
+        num =  int ( version )
+        
+    # Get version num attr
+    version = versions [ str ( num ) ]
+    
+    # Get the version path
+    path = version ["path"]
+    
     return path
 
 def getAssetTypeFromId ( doc_id ):
@@ -257,18 +285,23 @@ def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) 
         shutil.copy ( fil, files [ fil ] )
     os.system( "chmod -R 555  %s" % destination )
         
-def pull ( doc_id = "", ver = "latest", extension = "", progressbar = False,
-           msgbar = False ):
-     
+def pull ( db = None, doc_id = "", ver = "latest", extension = "",
+           progressbar = False, msgbar = False ):
+    
     """Get the files from the repository """
-    """Check id"""
+    
+    # If db is not provided get the current project DB
+    if db == None :  
+        db = utils.getDb()
+        
+    # Check id is respecting the homeworks naming convention 
     docsplit = doc_id.split("_")
     if len ( docsplit ) < 5:
         print "pull(): Wrong asset id"
         return False
     
-    """ Get asset local, network path """
-    src = getAssetPath ( doc_id = doc_id, version = ver )
+    # Get asset repository and local asset path
+    src = getAssetPath ( db = db, doc_id = doc_id, version = ver )
     dst = getAssetLocalPath ( doc_id = doc_id, version = ver)
          
     if not os.path.exists ( dst ):

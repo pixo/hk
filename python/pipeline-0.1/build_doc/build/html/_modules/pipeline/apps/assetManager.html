@@ -913,7 +913,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">signalConnect</span> <span class="p">()</span>
 
 </div></div>
-<div class="viewcode-block" id="UiAssetManager"><a class="viewcode-back" href="../../../pipeline.apps.html#pipeline.apps.assetManager.UiAssetManager">[docs]</a><span class="k">class</span> <span class="nc">UiAssetManager</span><span class="p">(</span><span class="n">UiMainManager</span><span class="p">):</span>
+<div class="viewcode-block" id="UiAssetManager"><a class="viewcode-back" href="../../../pipeline.apps.html#pipeline.apps.assetManager.UiAssetManager">[docs]</a><span class="k">class</span> <span class="nc">UiAssetManager</span> <span class="p">(</span> <span class="n">UiMainManager</span> <span class="p">):</span>
     
     <span class="n">fileFilters</span> <span class="o">=</span> <span class="s">&quot;Maya (*.ma *.mb);;Wavefront (*.obj *.Obj *.OBJ)&quot;</span>
     <span class="n">defaultsuffix</span> <span class="o">=</span> <span class="s">&quot;obj&quot;</span>
@@ -963,8 +963,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span><span class="o">.</span><span class="n">showMessage</span> <span class="p">(</span> <span class="s">&quot;Pulling </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">doc_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ver</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
         
         <span class="sd">&quot;&quot;&quot;Pull asset&quot;&quot;&quot;</span>
-        <span class="n">pull</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">pull</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">ver</span> <span class="o">=</span> <span class="n">ver</span><span class="p">,</span> <span class="n">progressbar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">progressBar</span><span class="p">,</span>
-                           <span class="n">msgbar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span><span class="o">.</span><span class="n">showMessage</span><span class="p">)</span>
+        <span class="n">pull</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">pull</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">ver</span> <span class="o">=</span> <span class="n">ver</span><span class="p">,</span>
+                           <span class="n">progressbar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">progressBar</span><span class="p">,</span> <span class="n">msgbar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span><span class="o">.</span><span class="n">showMessage</span> <span class="p">)</span>
+        
         <span class="k">if</span> <span class="n">pull</span> <span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> pulled&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">doc_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ver</span><span class="p">)</span> <span class="p">))</span>
         

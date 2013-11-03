@@ -1,20 +1,13 @@
+import pipeline.core as core
 import pipeline.utils as utils
 
-db = utils.getDb ()
-dbname = db.name
+# versions = core.getAssetVersions ( docid )
 
-if not ( db.name in db ) :
-    print False
+# If db is not provided get the current project DB
 
-dbproj = db [ db.name ]
-
-print dbproj
-if not ( "type" in dbproj ) :
-    print False
-
-doctype = dbproj [ "type" ]
-
-# if doctype == "project":
-#     return True
-
-print dbproj["users"]
+docid = "bls_chr_belanus_mod_main"
+db = utils.getDb()    
+versions = db [ docid ]["versions"]
+last = str ( len ( versions ) )
+path = versions [ last ][ "path" ] 
+print versions [ last ]

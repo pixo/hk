@@ -56,15 +56,39 @@
 <p>Created on Jan 6, 2013</p>
 <p>&#64;author: pixo</p>
 <dl class="exception">
-<dt id="pipeline.utils.dataBase.ProjectNoSet">
-<em class="property">exception </em><tt class="descclassname">pipeline.utils.dataBase.</tt><tt class="descname">ProjectNoSet</tt><a class="reference internal" href="_modules/pipeline/utils/dataBase.html#ProjectNoSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.utils.dataBase.ProjectNoSet" title="Permalink to this definition">¶</a></dt>
+<dt id="pipeline.utils.dataBase.DatabaseError">
+<em class="property">exception </em><tt class="descclassname">pipeline.utils.dataBase.</tt><tt class="descname">DatabaseError</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="_modules/pipeline/utils/dataBase.html#DatabaseError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.utils.dataBase.DatabaseError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>Error raised by the project module.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pipeline.utils.dataBase.createDb">
-<tt class="descclassname">pipeline.utils.dataBase.</tt><tt class="descname">createDb</tt><big>(</big><em>name='default'</em>, <em>serveradress=None</em><big>)</big><a class="reference internal" href="_modules/pipeline/utils/dataBase.html#createDb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.utils.dataBase.createDb" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<tt class="descclassname">pipeline.utils.dataBase.</tt><tt class="descname">createDb</tt><big>(</big><em>name=None</em>, <em>serveradress=None</em><big>)</big><a class="reference internal" href="_modules/pipeline/utils/dataBase.html#createDb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.utils.dataBase.createDb" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function create a <strong>DataBase</strong> into the provided server.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; The database name.</li>
+<li><strong>serveradress</strong> (<em>str</em>) &#8211; The asset code.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Database &#8211; return the database</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">DatabaseError if database already exist</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">createDb</span> <span class="p">(</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;prod&quot;</span><span class="p">,</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;admin:pass@192.168.0.100&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="pipeline.utils.dataBase.createDbViews">

@@ -33,11 +33,3 @@ core Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`task` Module
-------------------
-
-.. automodule:: pipeline.core.task
-    :members:
-    :undoc-members:
-    :show-inheritance:
-

@@ -6,6 +6,7 @@ Created on Jan 11, 2013
 import os,time
 import pipeline.utils as utils
 
+
 class ProjectError ( Exception ):
     """
     Error raised by the project module.
@@ -13,9 +14,11 @@ class ProjectError ( Exception ):
     """
     def __init__ ( self, value ):
         self.value = value
+        
     def __str__ ( self ):
         return repr ( self.value )
-    
+
+
 def isProject ( db = None):
     """
     This function check if the current Db is contains a homeworks project.
@@ -49,7 +52,8 @@ def isProject ( db = None):
         return True
     else :
         return False
-    
+
+   
 def getProject ( db = None ):
     """
     This function return the project Document from DB.
@@ -70,8 +74,10 @@ def getProject ( db = None ):
     if not ( isProject ( db ) ): 
         raise ProjectError ( "getProject(): Db %s doesn't  contains a project" % db.name )
     
+    # Return the Project Document from db
     return db [ db.name ]
-    
+
+
 def getProjectUsers ( db = None ):    
     """
     This function return the list of authorised project users.
@@ -101,42 +107,67 @@ def getProjectUsers ( db = None ):
     # Return the Users list
     return dbproject ["users"]
 
+
 def lsProjectServer ( serveradress ):
     """
-    This function return a list of all homeworks projects on the DbServer.
+    This function return a list of all DbServer homeworks projects.
 
-    :param serveradress: The database.
-    :type serveradress: couchdb.client.Database
+    :param serveradress: The database adress.
+    :type serveradress: str
     :returns:  list -- Return the list of authorised project users.
 
     **Example:**
 
-    >>> getProjectUsers ( serveradress = "admin:pass@127.0.0.1:5984" )
-    >>> [ 'hkprod1', 'hkprod2', 'hkprod3' ]
+    >>> lsProjectServer ( serveradress = "admin:pass@127.0.0.1:5984" )
+    >>> [ 'prod1', 'prod2', 'prod3' ]
     
     """
     
+    # Get db server from adress
     server = utils.getServer ( serveradress )
     projects = list ()
     user = os.getenv ( "USER" )
-        
+    
+    # Iterate over all databases contained in the DB server     
     for db_name in server :
         db = server [ db_name ]
-                
+        
+        # Check if the current db is a HK project
         if isProject ( db ) :
+            
+            # Get project authorized users
             users = getProjectUsers ( db )
             
+            # If current user is in the user list append project in the project list
             if user in users:
                 projects.append ( db_name )
-        
+    
+    # Return a list of projects name (str)
     return projects
 
 
 def createProjectEnv ( name = "" ):
-    if name == "" :
+    """
+    This function create a project environment file.
+    It contains project environment variables related to the project.
+    This file is sourced each times a user log to a project via the hk-project command.
+
+    :param name: The project name.
+    :type name: str
+    :returns:  str/bool -- If environment file created return the file path else False
+
+    **Example:**
+
+    >>> createProjectEnv ( name = "prod" )
+    >>> '/homeworks/projects/prod/config/prod.env'
+    
+    """
+    
+    # Check the project name is
+    if ( name != None ) and ( name == "" ):
         return False
 
-# TODO:Create this document with a ui
+    # TODO:Create this document with a ui
     env_data = r"""source $HOME/.bashrc
 source $HK_ROOT/users/$USER/.hk/$HK_PROJECT
 
@@ -188,6 +219,8 @@ fi
     env_file = utils.getProjectEnv ( name )
         
     if env_file :
+        
+        # Create Environment file
         if utils.createFile ( env_file, env_data ):
             print "createProjectEnv(): %s created " % env_file
             return env_file
@@ -197,23 +230,51 @@ fi
     else:
         print "createProjectEnv(): can't get project env %s " % env_file
         return False
-    
+
+
 def createProjectCred ( name, db_server, host_root ):
-#     Create credential file contains
+    """
+    This function create a project credential file.
+    It contains the project **database server adress** and
+    the **host root adress**.
+
+    :param name: The project name.
+    :type name: str
+    :param db_server: The data base server adress.
+    :type db_server: str
+    :param host_root: The host server adress root path.
+    :type host_root: str
+    
+    :returns:  str/bool -- If credential file created return the file path else False
+
+    **Example:**
+
+    >>> createProjectCred ( name = 'prod', db_server = 'admin:pass@192.168.0.100:5984', host_root = 'admin@192.168.0.9:/homeworks' )
+    >>> '/homeworks/users/jdoe/.hk/prod'
+    
+    """
+    
+    # Create credential file contains
     cred = "export HK_DB_SERVER=%s\n" % db_server
     cred += "export HK_HOST_ROOT=%s\n" % host_root
             
-#     Create credential file
+    # Create credential file
     file_cred = os.path.join ( os.getenv ( "HK_ROOT" ), "users", os.getenv ( "USER" ) )
     file_cred = os.path.join ( file_cred , ".hk", name  )
     
+    # Create the file with the collected credential data
     iscreated = utils.createFile ( file_cred, cred, True )
     
-    if iscreated:
+    # Check if the file is created
+    if iscreated :
+        
+        # Change the permission
         os.chmod ( file_cred, 0600 )
-        return True
+        
+        # Return the create file credential path (str) 
+        return file_cred
     
-    else:
+    else :
         return False
     
 def createProject ( name = "", description = "Default", db_server = "",
@@ -231,7 +292,7 @@ def createProject ( name = "", description = "Default", db_server = "",
     :type host_root: str
     :param overdoc: A dictionnary that contains extra document attributes.
     :type overdoc: dict
-    :returns:  db document -- db document.
+    :returns:  couchdb.client.Database -- return the db.
     :raises: AttributeError, KeyError
 
     **Example:**
@@ -294,4 +355,5 @@ def createProject ( name = "", description = "Default", db_server = "",
     
     _id, _rev = db.save( doc )
     print "createProject(): Project '%s' created" % ( name )
+    
     return db

@@ -862,7 +862,7 @@ class UiMainManager(QtGui.QMainWindow):
         self.signalConnect ()
 
 
-class UiAssetManager(UiMainManager):
+class UiAssetManager ( UiMainManager ):
     
     fileFilters = "Maya (*.ma *.mb);;Wavefront (*.obj *.Obj *.OBJ)"
     defaultsuffix = "obj"
@@ -912,8 +912,9 @@ class UiAssetManager(UiMainManager):
         self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str(ver) ) )
         
         """Pull asset"""
-        pull = core.pull ( doc_id = doc_id, ver = ver, progressbar = self.progressBar,
-                           msgbar = self.statusbar.showMessage)
+        pull = core.pull ( db = self.db, doc_id = doc_id, ver = ver,
+                           progressbar = self.progressBar, msgbar = self.statusbar.showMessage )
+        
         if pull :
             self.statusbar.showMessage("%s %s pulled" % ( doc_id, str(ver) ))
         

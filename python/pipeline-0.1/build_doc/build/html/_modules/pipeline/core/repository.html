@@ -73,7 +73,7 @@
 <span class="sd">    This function return a hash based on sha1 current time.</span>
 <span class="sd">    Useful to get a random value. </span>
 <span class="sd">    </span>
-<span class="sd">    :returns:  str -- Random value based on sha1 current time hash.</span>
+<span class="sd">    :returns:  str -- Return the current time &#39;sha1&#39; hash.</span>
 <span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; random_value = hashTime ()</span>
 <span class="sd">    &gt;&gt;&gt; &#39;a8f2aa40f66a763dde036f83e854d1762436e97d&#39;</span>
@@ -227,19 +227,49 @@
     
     <span class="k">return</span> <span class="n">path</span>
     </div>
-<div class="viewcode-block" id="getAssetVersions"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getAssetVersions">[docs]</a><span class="k">def</span> <span class="nf">getAssetVersions</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">getAssetPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">)</span>
-    <span class="n">versions</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span> <span class="p">(</span> <span class="n">path</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span><span class="s">&quot;[0-9][0-9][0-9]&quot;</span> <span class="p">)</span>
-    <span class="n">versions</span><span class="o">.</span><span class="n">sort</span> <span class="p">()</span>
+<div class="viewcode-block" id="getVersions"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getVersions">[docs]</a><span class="k">def</span> <span class="nf">getVersions</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function the a path of an asset version.</span>
+
+<span class="sd">    :param db: the database</span>
+<span class="sd">    :type db: Database</span>
+<span class="sd">    :param doc_id: The asset code.</span>
+<span class="sd">    :type doc_id: str</span>
+<span class="sd">    :returns:  dict -- a dictionary with all versions of the asset</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; db = utils.getDb()</span>
+<span class="sd">    &gt;&gt;&gt; getVersions ( db = db, doc_id = &quot;prod_chr_mickey_mod_a&quot; )</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># If db is not provided get the current project DB</span>
+    <span class="k">if</span> <span class="n">db</span> <span class="o">==</span> <span class="bp">None</span> <span class="p">:</span>  
+        <span class="n">db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getDb</span><span class="p">()</span>
+            
+    <span class="c"># Get Versions from document</span>
+    <span class="n">versions</span> <span class="o">=</span> <span class="n">db</span> <span class="p">[</span> <span class="n">doc_id</span> <span class="p">][</span><span class="s">&quot;versions&quot;</span><span class="p">]</span>
+        
     <span class="k">return</span> <span class="n">versions</span>
 </div>
-<div class="viewcode-block" id="getAssetPath"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getAssetPath">[docs]</a><span class="k">def</span> <span class="nf">getAssetPath</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="s">&quot;last&quot;</span> <span class="p">):</span>
+<div class="viewcode-block" id="getAssetPath"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getAssetPath">[docs]</a><span class="k">def</span> <span class="nf">getAssetPath</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="s">&quot;last&quot;</span> <span class="p">):</span>
+    
+    <span class="c"># Get asset versions</span>
+    <span class="n">versions</span> <span class="o">=</span> <span class="n">getVersions</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span> <span class="p">)</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="c"># If queried version is the lastest</span>
     <span class="k">if</span> <span class="n">version</span> <span class="o">==</span> <span class="s">&quot;last&quot;</span> <span class="p">:</span>
-        <span class="n">version</span> <span class="o">=</span> <span class="n">getAssetVersions</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span> <span class="p">)</span>
-        <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-         
-    <span class="n">path</span> <span class="o">=</span> <span class="n">getAssetPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">local</span> <span class="o">=</span> <span class="bp">False</span> <span class="p">)</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">path</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%03d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">float</span> <span class="p">(</span> <span class="n">version</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span> <span class="p">(</span> <span class="nb">len</span> <span class="p">(</span> <span class="n">versions</span> <span class="p">)</span> <span class="p">)</span> 
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">num</span> <span class="o">=</span>  <span class="nb">int</span> <span class="p">(</span> <span class="n">version</span> <span class="p">)</span>
+        
+    <span class="c"># Get version num attr</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">versions</span> <span class="p">[</span> <span class="nb">str</span> <span class="p">(</span> <span class="n">num</span> <span class="p">)</span> <span class="p">]</span>
+    
+    <span class="c"># Get the version path</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">version</span> <span class="p">[</span><span class="s">&quot;path&quot;</span><span class="p">]</span>
+    
     <span class="k">return</span> <span class="n">path</span>
 </div>
 <div class="viewcode-block" id="getAssetTypeFromId"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getAssetTypeFromId">[docs]</a><span class="k">def</span> <span class="nf">getAssetTypeFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">):</span>
@@ -306,18 +336,23 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span> <span class="p">(</span> <span class="n">fil</span><span class="p">,</span> <span class="n">files</span> <span class="p">[</span> <span class="n">fil</span> <span class="p">]</span> <span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s">&quot;chmod -R 555  </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">destination</span> <span class="p">)</span>
         </div>
-<div class="viewcode-block" id="pull"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.pull">[docs]</a><span class="k">def</span> <span class="nf">pull</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">ver</span> <span class="o">=</span> <span class="s">&quot;latest&quot;</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">progressbar</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
-           <span class="n">msgbar</span> <span class="o">=</span> <span class="bp">False</span> <span class="p">):</span>
-     
+<div class="viewcode-block" id="pull"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.pull">[docs]</a><span class="k">def</span> <span class="nf">pull</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">ver</span> <span class="o">=</span> <span class="s">&quot;latest&quot;</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+           <span class="n">progressbar</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">msgbar</span> <span class="o">=</span> <span class="bp">False</span> <span class="p">):</span>
+    
     <span class="sd">&quot;&quot;&quot;Get the files from the repository &quot;&quot;&quot;</span>
-    <span class="sd">&quot;&quot;&quot;Check id&quot;&quot;&quot;</span>
+    
+    <span class="c"># If db is not provided get the current project DB</span>
+    <span class="k">if</span> <span class="n">db</span> <span class="o">==</span> <span class="bp">None</span> <span class="p">:</span>  
+        <span class="n">db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getDb</span><span class="p">()</span>
+        
+    <span class="c"># Check id is respecting the homeworks naming convention </span>
     <span class="n">docsplit</span> <span class="o">=</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span> <span class="p">(</span> <span class="n">docsplit</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
         <span class="k">print</span> <span class="s">&quot;pull(): Wrong asset id&quot;</span>
         <span class="k">return</span> <span class="bp">False</span>
     
-    <span class="sd">&quot;&quot;&quot; Get asset local, network path &quot;&quot;&quot;</span>
-    <span class="n">src</span> <span class="o">=</span> <span class="n">getAssetPath</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="n">ver</span> <span class="p">)</span>
+    <span class="c"># Get asset repository and local asset path</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="n">getAssetPath</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="n">ver</span> <span class="p">)</span>
     <span class="n">dst</span> <span class="o">=</span> <span class="n">getAssetLocalPath</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="n">ver</span><span class="p">)</span>
          
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">dst</span> <span class="p">):</span>

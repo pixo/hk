@@ -57,44 +57,168 @@
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span><span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">pipeline.utils</span> <span class="kn">as</span> <span class="nn">utils</span>
 
-<div class="viewcode-block" id="lsProjectDb"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.lsProjectDb">[docs]</a><span class="k">def</span> <span class="nf">lsProjectDb</span> <span class="p">(</span> <span class="n">db</span><span class="p">,</span> <span class="n">project</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
-    <span class="n">endkey</span> <span class="o">=</span> <span class="s">u&quot;</span><span class="si">%s</span><span class="se">\u0fff</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">project</span> <span class="p">)</span>
-    <span class="n">design</span> <span class="o">=</span> <span class="s">&quot;_design/&quot;</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">getDesign</span> <span class="p">()</span>
-    <span class="n">proj_ls</span> <span class="o">=</span> <span class="nb">list</span> <span class="p">()</span>
+
+<div class="viewcode-block" id="ProjectError"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.ProjectError">[docs]</a><span class="k">class</span> <span class="nc">ProjectError</span> <span class="p">(</span> <span class="ne">Exception</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Error raised by the project module.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span> <span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">value</span> <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        
+    <span class="k">def</span> <span class="nf">__str__</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="isProject"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.isProject">[docs]</a><span class="k">def</span> <span class="nf">isProject</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function check if the current Db is contains a homeworks project.</span>
+
+<span class="sd">    :param db: The database.</span>
+<span class="sd">    :type db: couchdb.client.Database</span>
+<span class="sd">    :returns:  bool -- True if db contains a homeworks project.</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; db = pipeline.utils.getDb ( dbname = &quot;prod&quot; , serveradress = &quot;127.0.0.1:5984&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; isProject ( db )</span>
+<span class="sd">    &gt;&gt;&gt; True</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="k">if</span> <span class="n">design</span> <span class="ow">in</span> <span class="n">db</span> <span class="p">:</span>
-        <span class="n">view</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">/_view/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">design</span><span class="p">,</span> <span class="s">&quot;project&quot;</span> <span class="p">),</span>
-                       <span class="n">startkey</span> <span class="o">=</span> <span class="n">project</span><span class="p">,</span> <span class="n">endkey</span> <span class="o">=</span> <span class="n">endkey</span> <span class="p">)</span>
-        
-        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">rows</span> <span class="p">:</span>
-            <span class="n">proj_ls</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span> <span class="n">row</span> <span class="p">[</span><span class="s">&quot;value&quot;</span><span class="p">]</span> <span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="p">)</span>
-        
-    <span class="k">return</span> <span class="n">proj_ls</span>
+    <span class="c"># Check if Db contains a Document with the same name</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">db</span> <span class="p">)</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+    
+    <span class="n">dbproj</span> <span class="o">=</span> <span class="n">db</span> <span class="p">[</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span> <span class="p">]</span>
+    
+    <span class="c"># Check if the Document have a type attr</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="s">&quot;type&quot;</span> <span class="ow">in</span> <span class="n">dbproj</span> <span class="p">)</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+    
+    <span class="n">doctype</span> <span class="o">=</span> <span class="n">dbproj</span> <span class="p">[</span> <span class="s">&quot;type&quot;</span> <span class="p">]</span>
+    
+    <span class="c"># Check if the Document is a project type Document</span>
+    <span class="k">if</span> <span class="n">doctype</span> <span class="o">==</span> <span class="s">&quot;project&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+   </div>
+<div class="viewcode-block" id="getProject"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.getProject">[docs]</a><span class="k">def</span> <span class="nf">getProject</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function return the project Document from DB.</span>
+
+<span class="sd">    :param db: The database.</span>
+<span class="sd">    :type db: couchdb.client.Database</span>
+<span class="sd">    :returns:  couchdb.client.Document -- Return the project Document.</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; db = pipeline.utils.getDb ( dbname = &quot;prod&quot; , serveradress = &quot;127.0.0.1:5984&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; getProject ( db )</span>
+<span class="sd">    &gt;&gt;&gt; &lt;Document &#39;bls&#39;@&#39;5-97ef4c34350f1c4f5141f05048150bdb&#39; ... &gt;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c"># Check if the db contains project </span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">isProject</span> <span class="p">(</span> <span class="n">db</span> <span class="p">)</span> <span class="p">):</span> 
+        <span class="k">raise</span> <span class="n">ProjectError</span> <span class="p">(</span> <span class="s">&quot;getProject(): Db </span><span class="si">%s</span><span class="s"> doesn&#39;t  contains a project&quot;</span> <span class="o">%</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span> <span class="p">)</span>
+    
+    <span class="c"># Return the Project Document from db</span>
+    <span class="k">return</span> <span class="n">db</span> <span class="p">[</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span> <span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="getProjectUsers"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.getProjectUsers">[docs]</a><span class="k">def</span> <span class="nf">getProjectUsers</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>    
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function return the list of authorised project users.</span>
+
+<span class="sd">    :param db: The database.</span>
+<span class="sd">    :type db: couchdb.client.Database</span>
+<span class="sd">    :returns:  list -- Return the list of authorised project users.</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; db = pipeline.utils.getDb ( dbname = &quot;prod&quot; , serveradress = &quot;127.0.0.1:5984&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; getProjectUsers ( db )</span>
+<span class="sd">    &gt;&gt;&gt; [ &#39;jdoe&#39;, &#39;mickey&#39;, &#39;pixo&#39; ]</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c"># Check if the db contains project </span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">isProject</span> <span class="p">(</span> <span class="n">db</span> <span class="p">)</span> <span class="p">):</span> 
+        <span class="k">raise</span> <span class="n">ProjectError</span> <span class="p">(</span> <span class="s">&quot;getProjectUsers(): Db </span><span class="si">%s</span><span class="s"> isn&#39;t a project&quot;</span> <span class="o">%</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span> <span class="p">)</span>
+    
+    <span class="n">dbproject</span> <span class="o">=</span> <span class="n">db</span> <span class="p">[</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span> <span class="p">]</span>
+    
+    <span class="c"># Check if the project contains Users </span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="s">&quot;users&quot;</span> <span class="ow">in</span> <span class="n">dbproject</span> <span class="p">):</span> 
+        <span class="k">raise</span> <span class="n">ProjectError</span> <span class="p">(</span> <span class="s">&quot;getProjectUsers(): Project </span><span class="si">%s</span><span class="s"> doesn&#39;t contains Users&quot;</span> <span class="o">%</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span> <span class="p">)</span>
+    
+    <span class="c"># Return the Users list</span>
+    <span class="k">return</span> <span class="n">dbproject</span> <span class="p">[</span><span class="s">&quot;users&quot;</span><span class="p">]</span>
+
 </div>
 <div class="viewcode-block" id="lsProjectServer"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.lsProjectServer">[docs]</a><span class="k">def</span> <span class="nf">lsProjectServer</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function return a list of all DbServer homeworks projects.</span>
+
+<span class="sd">    :param serveradress: The database adress.</span>
+<span class="sd">    :type serveradress: str</span>
+<span class="sd">    :returns:  list -- Return the list of authorised project users.</span>
+
+<span class="sd">    **Example:**</span>
+
+<span class="sd">    &gt;&gt;&gt; lsProjectServer ( serveradress = &quot;admin:pass@127.0.0.1:5984&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; [ &#39;prod1&#39;, &#39;prod2&#39;, &#39;prod3&#39; ]</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c"># Get db server from adress</span>
     <span class="n">server</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getServer</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">)</span>
     <span class="n">projects</span> <span class="o">=</span> <span class="nb">list</span> <span class="p">()</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;USER&quot;</span> <span class="p">)</span>
-        
+    
+    <span class="c"># Iterate over all databases contained in the DB server     </span>
     <span class="k">for</span> <span class="n">db_name</span> <span class="ow">in</span> <span class="n">server</span> <span class="p">:</span>
         <span class="n">db</span> <span class="o">=</span> <span class="n">server</span> <span class="p">[</span> <span class="n">db_name</span> <span class="p">]</span>
-        <span class="n">project_ls</span> <span class="o">=</span> <span class="n">lsProjectDb</span> <span class="p">(</span> <span class="n">db</span> <span class="p">)</span>
         
-        <span class="k">if</span> <span class="nb">len</span> <span class="p">(</span> <span class="n">project_ls</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">:</span>
-            <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">project_ls</span> <span class="p">:</span>
-                <span class="n">users</span> <span class="o">=</span> <span class="n">db</span> <span class="p">[</span> <span class="n">proj</span> <span class="p">][</span><span class="s">&quot;users&quot;</span><span class="p">]</span>
-                
-                <span class="k">if</span> <span class="n">db_name</span> <span class="o">==</span> <span class="n">proj</span> <span class="ow">and</span> <span class="p">(</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users</span> <span class="p">)</span> <span class="p">:</span>
-                    <span class="n">projects</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span> <span class="n">proj</span> <span class="p">)</span>
-        
+        <span class="c"># Check if the current db is a HK project</span>
+        <span class="k">if</span> <span class="n">isProject</span> <span class="p">(</span> <span class="n">db</span> <span class="p">)</span> <span class="p">:</span>
+            
+            <span class="c"># Get project authorized users</span>
+            <span class="n">users</span> <span class="o">=</span> <span class="n">getProjectUsers</span> <span class="p">(</span> <span class="n">db</span> <span class="p">)</span>
+            
+            <span class="c"># If current user is in the user list append project in the project list</span>
+            <span class="k">if</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users</span><span class="p">:</span>
+                <span class="n">projects</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span> <span class="n">db_name</span> <span class="p">)</span>
+    
+    <span class="c"># Return a list of projects name (str)</span>
     <span class="k">return</span> <span class="n">projects</span>
 
 </div>
 <div class="viewcode-block" id="createProjectEnv"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.createProjectEnv">[docs]</a><span class="k">def</span> <span class="nf">createProjectEnv</span> <span class="p">(</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
-    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function create a project environment file.</span>
+<span class="sd">    It contains project environment variables related to the project.</span>
+<span class="sd">    This file is sourced each times a user log to a project via the hk-project command.</span>
+
+<span class="sd">    :param name: The project name.</span>
+<span class="sd">    :type name: str</span>
+<span class="sd">    :returns:  str/bool -- If environment file created return the file path else False</span>
+
+<span class="sd">    **Example:**</span>
+
+<span class="sd">    &gt;&gt;&gt; createProjectEnv ( name = &quot;prod&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; &#39;/homeworks/projects/prod/config/prod.env&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c"># Check the project name is</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="n">name</span> <span class="o">!=</span> <span class="bp">None</span> <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
         <span class="k">return</span> <span class="bp">False</span>
 
-<span class="c"># TODO:Create a document with used software and version in the database</span>
+    <span class="c"># TODO:Create this document with a ui</span>
     <span class="n">env_data</span> <span class="o">=</span> <span class="s">r&quot;&quot;&quot;source $HOME/.bashrc</span>
 <span class="s">source $HK_ROOT/users/$USER/.hk/$HK_PROJECT</span>
 
@@ -146,6 +270,8 @@
     <span class="n">env_file</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getProjectEnv</span> <span class="p">(</span> <span class="n">name</span> <span class="p">)</span>
         
     <span class="k">if</span> <span class="n">env_file</span> <span class="p">:</span>
+        
+        <span class="c"># Create Environment file</span>
         <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">createFile</span> <span class="p">(</span> <span class="n">env_file</span><span class="p">,</span> <span class="n">env_data</span> <span class="p">):</span>
             <span class="k">print</span> <span class="s">&quot;createProjectEnv(): </span><span class="si">%s</span><span class="s"> created &quot;</span> <span class="o">%</span> <span class="n">env_file</span>
             <span class="k">return</span> <span class="n">env_file</span>
@@ -155,23 +281,51 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">print</span> <span class="s">&quot;createProjectEnv(): can&#39;t get project env </span><span class="si">%s</span><span class="s"> &quot;</span> <span class="o">%</span> <span class="n">env_file</span>
         <span class="k">return</span> <span class="bp">False</span>
-    </div>
+
+</div>
 <div class="viewcode-block" id="createProjectCred"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.createProjectCred">[docs]</a><span class="k">def</span> <span class="nf">createProjectCred</span> <span class="p">(</span> <span class="n">name</span><span class="p">,</span> <span class="n">db_server</span><span class="p">,</span> <span class="n">host_root</span> <span class="p">):</span>
-<span class="c">#     Create credential file contains</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function create a project credential file.</span>
+<span class="sd">    It contains the project **database server adress** and</span>
+<span class="sd">    the **host root adress**.</span>
+
+<span class="sd">    :param name: The project name.</span>
+<span class="sd">    :type name: str</span>
+<span class="sd">    :param db_server: The data base server adress.</span>
+<span class="sd">    :type db_server: str</span>
+<span class="sd">    :param host_root: The host server adress root path.</span>
+<span class="sd">    :type host_root: str</span>
+<span class="sd">    </span>
+<span class="sd">    :returns:  str/bool -- If credential file created return the file path else False</span>
+
+<span class="sd">    **Example:**</span>
+
+<span class="sd">    &gt;&gt;&gt; createProjectCred ( name = &#39;prod&#39;, db_server = &#39;admin:pass@192.168.0.100:5984&#39;, host_root = &#39;admin@192.168.0.9:/homeworks&#39; )</span>
+<span class="sd">    &gt;&gt;&gt; &#39;/homeworks/users/jdoe/.hk/prod&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c"># Create credential file contains</span>
     <span class="n">cred</span> <span class="o">=</span> <span class="s">&quot;export HK_DB_SERVER=</span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">db_server</span>
     <span class="n">cred</span> <span class="o">+=</span> <span class="s">&quot;export HK_HOST_ROOT=</span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">host_root</span>
             
-<span class="c">#     Create credential file</span>
+    <span class="c"># Create credential file</span>
     <span class="n">file_cred</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;HK_ROOT&quot;</span> <span class="p">),</span> <span class="s">&quot;users&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;USER&quot;</span> <span class="p">)</span> <span class="p">)</span>
     <span class="n">file_cred</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">file_cred</span> <span class="p">,</span> <span class="s">&quot;.hk&quot;</span><span class="p">,</span> <span class="n">name</span>  <span class="p">)</span>
     
+    <span class="c"># Create the file with the collected credential data</span>
     <span class="n">iscreated</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">createFile</span> <span class="p">(</span> <span class="n">file_cred</span><span class="p">,</span> <span class="n">cred</span><span class="p">,</span> <span class="bp">True</span> <span class="p">)</span>
     
-    <span class="k">if</span> <span class="n">iscreated</span><span class="p">:</span>
+    <span class="c"># Check if the file is created</span>
+    <span class="k">if</span> <span class="n">iscreated</span> <span class="p">:</span>
+        
+        <span class="c"># Change the permission</span>
         <span class="n">os</span><span class="o">.</span><span class="n">chmod</span> <span class="p">(</span> <span class="n">file_cred</span><span class="p">,</span> <span class="mo">0600</span> <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">True</span>
+        
+        <span class="c"># Return the create file credential path (str) </span>
+        <span class="k">return</span> <span class="n">file_cred</span>
     
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">else</span> <span class="p">:</span>
         <span class="k">return</span> <span class="bp">False</span>
     </div>
 <div class="viewcode-block" id="createProject"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.createProject">[docs]</a><span class="k">def</span> <span class="nf">createProject</span> <span class="p">(</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Default&quot;</span><span class="p">,</span> <span class="n">db_server</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
@@ -189,7 +343,7 @@
 <span class="sd">    :type host_root: str</span>
 <span class="sd">    :param overdoc: A dictionnary that contains extra document attributes.</span>
 <span class="sd">    :type overdoc: dict</span>
-<span class="sd">    :returns:  db document -- db document.</span>
+<span class="sd">    :returns:  couchdb.client.Database -- return the db.</span>
 <span class="sd">    :raises: AttributeError, KeyError</span>
 
 <span class="sd">    **Example:**</span>
@@ -252,8 +406,9 @@
     
     <span class="n">_id</span><span class="p">,</span> <span class="n">_rev</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">save</span><span class="p">(</span> <span class="n">doc</span> <span class="p">)</span>
     <span class="k">print</span> <span class="s">&quot;createProject(): Project &#39;</span><span class="si">%s</span><span class="s">&#39; created&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">name</span> <span class="p">)</span>
-    <span class="k">return</span> <span class="n">db</span>
-</pre></div></div>
+    
+    <span class="k">return</span> <span class="n">db</span></div>
+</pre></div>
 
           </div>
         </div>

@@ -7,11 +7,20 @@ import os, socket
 import couchdb
 import rule
 
-class ProjectNoSet ( Exception ) :
-    pass
+class DatabaseError ( Exception ):
+    """
+    Error raised by the project module.
+    
+    """
+    def __init__ ( self, value ):
+        self.value = value
+    def __str__ ( self ):
+        return repr ( self.value )
+
 
 def getDesign () :
     return "AssetManager"
+
 
 def getServer ( serveradress = "" ) :
     
@@ -24,6 +33,7 @@ def getServer ( serveradress = "" ) :
     db_server = couchdb.Server ( serveradress )
      
     return db_server
+
 
 def serverExists ( serveradress = "" ) :
     if serveradress.find ( "http://" ) < 0:
@@ -103,8 +113,38 @@ def createDbViews (db):
     _id, _rev = db.save (doc )
     return (_id, _rev)
 
-def createDb ( name = "default", serveradress = None ):
+def createDb ( name = None, serveradress = None ):
+    """
+    This function create a **DataBase** into the provided server.
+
+    :param name: The database name.
+    :type name: str
+    :param serveradress: The asset code.
+    :type serveradress: str
+    
+    :returns: Database -- return the database
+    :raises: DatabaseError if database already exist
+
+    **Example:**
+    
+    >>> createDb ( name = "prod", serveradress = "admin:pass@192.168.0.100" )
+    
+    """
+    
+    if not ( serveradress ) or ( serveradress == "" ) :
+        raise DatabaseError ( "CreateDb (): Serveradress doesn't exists" % name )
+    
+    # Get Db Server
     server = couchdb.client.Server ( serveradress )
+    
+    # Check if db name already exist
+    if name in server :
+        raise DatabaseError ( "CreateDb (): Database '%s' already exist" % name )
+    
+    # Create DataBate 
     db = server.create ( name )
+    
+    # Create predefined Database Views
     createDbViews ( db )
+    
     return db

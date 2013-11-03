@@ -58,11 +58,20 @@
 <span class="kn">import</span> <span class="nn">couchdb</span>
 <span class="kn">import</span> <span class="nn">rule</span>
 
-<div class="viewcode-block" id="ProjectNoSet"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.ProjectNoSet">[docs]</a><span class="k">class</span> <span class="nc">ProjectNoSet</span> <span class="p">(</span> <span class="ne">Exception</span> <span class="p">)</span> <span class="p">:</span>
-    <span class="k">pass</span>
+<div class="viewcode-block" id="DatabaseError"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.DatabaseError">[docs]</a><span class="k">class</span> <span class="nc">DatabaseError</span> <span class="p">(</span> <span class="ne">Exception</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Error raised by the project module.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span> <span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">value</span> <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">def</span> <span class="nf">__str__</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="p">)</span>
+
 </div>
 <div class="viewcode-block" id="getDesign"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.getDesign">[docs]</a><span class="k">def</span> <span class="nf">getDesign</span> <span class="p">()</span> <span class="p">:</span>
     <span class="k">return</span> <span class="s">&quot;AssetManager&quot;</span>
+
 </div>
 <div class="viewcode-block" id="getServer"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.getServer">[docs]</a><span class="k">def</span> <span class="nf">getServer</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">:</span>
     
@@ -75,6 +84,7 @@
     <span class="n">db_server</span> <span class="o">=</span> <span class="n">couchdb</span><span class="o">.</span><span class="n">Server</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">)</span>
      
     <span class="k">return</span> <span class="n">db_server</span>
+
 </div>
 <div class="viewcode-block" id="serverExists"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.serverExists">[docs]</a><span class="k">def</span> <span class="nf">serverExists</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">:</span>
     <span class="k">if</span> <span class="n">serveradress</span><span class="o">.</span><span class="n">find</span> <span class="p">(</span> <span class="s">&quot;http://&quot;</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -154,10 +164,40 @@
     <span class="n">_id</span><span class="p">,</span> <span class="n">_rev</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">save</span> <span class="p">(</span><span class="n">doc</span> <span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">_rev</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="createDb"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.createDb">[docs]</a><span class="k">def</span> <span class="nf">createDb</span> <span class="p">(</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;default&quot;</span><span class="p">,</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
+<div class="viewcode-block" id="createDb"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.createDb">[docs]</a><span class="k">def</span> <span class="nf">createDb</span> <span class="p">(</span> <span class="n">name</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function create a **DataBase** into the provided server.</span>
+
+<span class="sd">    :param name: The database name.</span>
+<span class="sd">    :type name: str</span>
+<span class="sd">    :param serveradress: The asset code.</span>
+<span class="sd">    :type serveradress: str</span>
+<span class="sd">    </span>
+<span class="sd">    :returns: Database -- return the database</span>
+<span class="sd">    :raises: DatabaseError if database already exist</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; createDb ( name = &quot;prod&quot;, serveradress = &quot;admin:pass@192.168.0.100&quot; )</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DatabaseError</span> <span class="p">(</span> <span class="s">&quot;CreateDb (): Serveradress doesn&#39;t exists&quot;</span> <span class="o">%</span> <span class="n">name</span> <span class="p">)</span>
+    
+    <span class="c"># Get Db Server</span>
     <span class="n">server</span> <span class="o">=</span> <span class="n">couchdb</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Server</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">)</span>
+    
+    <span class="c"># Check if db name already exist</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">server</span> <span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DatabaseError</span> <span class="p">(</span> <span class="s">&quot;CreateDb (): Database &#39;</span><span class="si">%s</span><span class="s">&#39; already exist&quot;</span> <span class="o">%</span> <span class="n">name</span> <span class="p">)</span>
+    
+    <span class="c"># Create DataBate </span>
     <span class="n">db</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">create</span> <span class="p">(</span> <span class="n">name</span> <span class="p">)</span>
+    
+    <span class="c"># Create predefined Database Views</span>
     <span class="n">createDbViews</span> <span class="p">(</span> <span class="n">db</span> <span class="p">)</span>
+    
     <span class="k">return</span> <span class="n">db</span></div>
 </pre></div>
 
