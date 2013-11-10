@@ -58,7 +58,7 @@
 <span class="kn">import</span> <span class="nn">pipeline.utils</span> <span class="kn">as</span> <span class="nn">utils</span>
 
 
-<div class="viewcode-block" id="ProjectError"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.ProjectError">[docs]</a><span class="k">class</span> <span class="nc">ProjectError</span> <span class="p">(</span> <span class="ne">Exception</span> <span class="p">):</span>
+<div class="viewcode-block" id="ProjectError"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.project/pipeline.core.project.ProjectError.html#pipeline.core.project.ProjectError">[docs]</a><span class="k">class</span> <span class="nc">ProjectError</span> <span class="p">(</span> <span class="ne">Exception</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Error raised by the project module.</span>
 <span class="sd">    </span>
@@ -70,7 +70,7 @@
         <span class="k">return</span> <span class="nb">repr</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="isProject"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.isProject">[docs]</a><span class="k">def</span> <span class="nf">isProject</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="isProject"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.project/pipeline.core.project.isProject.html#pipeline.core.project.isProject">[docs]</a><span class="k">def</span> <span class="nf">isProject</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function check if the current Db is contains a homeworks project.</span>
 
@@ -105,7 +105,7 @@
         <span class="k">return</span> <span class="bp">False</span>
 
    </div>
-<div class="viewcode-block" id="getProject"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.getProject">[docs]</a><span class="k">def</span> <span class="nf">getProject</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
+<div class="viewcode-block" id="getProject"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.project/pipeline.core.project.getProject.html#pipeline.core.project.getProject">[docs]</a><span class="k">def</span> <span class="nf">getProject</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function return the project Document from DB.</span>
 
@@ -129,7 +129,7 @@
     <span class="k">return</span> <span class="n">db</span> <span class="p">[</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span> <span class="p">]</span>
 
 </div>
-<div class="viewcode-block" id="getProjectUsers"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.getProjectUsers">[docs]</a><span class="k">def</span> <span class="nf">getProjectUsers</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>    
+<div class="viewcode-block" id="getProjectUsers"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.project/pipeline.core.project.getProjectUsers.html#pipeline.core.project.getProjectUsers">[docs]</a><span class="k">def</span> <span class="nf">getProjectUsers</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>    
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function return the list of authorised project users.</span>
 
@@ -159,7 +159,7 @@
     <span class="k">return</span> <span class="n">dbproject</span> <span class="p">[</span><span class="s">&quot;users&quot;</span><span class="p">]</span>
 
 </div>
-<div class="viewcode-block" id="lsProjectServer"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.lsProjectServer">[docs]</a><span class="k">def</span> <span class="nf">lsProjectServer</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">):</span>
+<div class="viewcode-block" id="lsProjectServer"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.project/pipeline.core.project.lsProjectServer.html#pipeline.core.project.lsProjectServer">[docs]</a><span class="k">def</span> <span class="nf">lsProjectServer</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function return a list of all DbServer homeworks projects.</span>
 
@@ -197,7 +197,7 @@
     <span class="k">return</span> <span class="n">projects</span>
 
 </div>
-<div class="viewcode-block" id="createProjectEnv"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.createProjectEnv">[docs]</a><span class="k">def</span> <span class="nf">createProjectEnv</span> <span class="p">(</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
+<div class="viewcode-block" id="createProjectEnv"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.project/pipeline.core.project.createProjectEnv.html#pipeline.core.project.createProjectEnv">[docs]</a><span class="k">def</span> <span class="nf">createProjectEnv</span> <span class="p">(</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function create a project environment file.</span>
 <span class="sd">    It contains project environment variables related to the project.</span>
@@ -283,7 +283,7 @@
         <span class="k">return</span> <span class="bp">False</span>
 
 </div>
-<div class="viewcode-block" id="createProjectCred"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.createProjectCred">[docs]</a><span class="k">def</span> <span class="nf">createProjectCred</span> <span class="p">(</span> <span class="n">name</span><span class="p">,</span> <span class="n">db_server</span><span class="p">,</span> <span class="n">host_root</span> <span class="p">):</span>
+<div class="viewcode-block" id="createProjectCred"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.project/pipeline.core.project.createProjectCred.html#pipeline.core.project.createProjectCred">[docs]</a><span class="k">def</span> <span class="nf">createProjectCred</span> <span class="p">(</span> <span class="n">name</span><span class="p">,</span> <span class="n">db_server</span><span class="p">,</span> <span class="n">host_root</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function create a project credential file.</span>
 <span class="sd">    It contains the project **database server adress** and</span>
@@ -328,7 +328,7 @@
     <span class="k">else</span> <span class="p">:</span>
         <span class="k">return</span> <span class="bp">False</span>
     </div>
-<div class="viewcode-block" id="createProject"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.project.createProject">[docs]</a><span class="k">def</span> <span class="nf">createProject</span> <span class="p">(</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Default&quot;</span><span class="p">,</span> <span class="n">db_server</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="createProject"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.project/pipeline.core.project.createProject.html#pipeline.core.project.createProject">[docs]</a><span class="k">def</span> <span class="nf">createProject</span> <span class="p">(</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Default&quot;</span><span class="p">,</span> <span class="n">db_server</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
                       <span class="n">host_root</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">overdoc</span> <span class="o">=</span> <span class="nb">dict</span> <span class="p">()</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function create a project.</span>

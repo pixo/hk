@@ -4,7 +4,7 @@ Created on Jan 8, 2013
 @author: pixo
 '''
 
-import os, time, shutil, hashlib, re, glob, commands
+import os, time, shutil, re, commands, glob
 import pipeline.utils as utils
 
 class RepositoryError ( Exception ):
@@ -12,102 +12,37 @@ class RepositoryError ( Exception ):
     Error raised by the repository module.
     
     """
+    
     def __init__ ( self, value ):
         self.value = value
     def __str__ ( self ):
         return repr ( self.value )
-
-def hashTime () :
-    """
-    This function return a hash based on sha1 current time.
-    Useful to get a random value. 
-    
-    :returns:  str -- Return the current time 'sha1' hash.
-    
-    >>> random_value = hashTime ()
-    >>> 'a8f2aa40f66a763dde036f83e854d1762436e97d'
-    
-    """
-    
-    # Get the hash from current time
-    sha1 = hashlib.sha1 ( str ( time.time () ) )
-    return str ( sha1.hexdigest () )
-     
-def hashFile ( path = "" ) :
-    """
-    This function compare the two files contains, based on sha1.
-    It is very useful if you need to know if the two file are the same.
-
-    :param path: The file path
-    :type path: str
-    :returns:  str -- sha1 hash file
-    :raises: RepositoryError if the path doesn't exists.
-
-    **Example:**
-    
-    >>> hashFile ( path = "/home/user/filea" )
-    >>> 'a8f2aa40f66a763dde036f83e854d1762436e97d'
-    
-    """
-    
-    #Check if the file exists
-    if os.path.exists ( path ):
-        raise RepositoryError ( "Can't compare '%s', file doesn't exists." % path )
-    
-    # Get the sha1lib
-    sha1 = hashlib.sha1 ()
-    
-    # Get the file for read
-    f = open ( path, 'rb' )
-     
-    # Try to get the hash
-    try:
-        sha1.update ( f.read () )    
-    finally:
-        f.close ()
-    
-    # return the hash
-    return sha1.hexdigest ()
-     
-def compareFile ( file_a = "", file_b = "" ):
-    """
-    This function compare two files contains based on sha1.
-    It is very useful if you need to know if two files are the same.
-
-    :param file_a: The first file path
-    :type file_a: str
-    :param file_b: The second file path
-    :type file_b: str
-    :returns:  bool -- True if file are the same.
-    :raises: RepositoryError if one of the file doesn't exists.
-
-    **Example:**
-    
-    >>> compareFile ( file_a = "/home/user/filea", file_b = "/home/user/fileb" )
-    >>> True
-    
-    """
-    
-    #Check if the file_a exists
-    if os.path.exists ( file_a ):
-        raise RepositoryError ( "Can't compare '%s', file doesn't exists." % file_a )
-    
-    #Check if the file_b exists
-    if not os.path.exists ( file_b ):
-        raise RepositoryError ( "Can't compare '%s', file doesn't exists." % file_b )
-         
-    #Compare the sha1 hash of the files
-    if hashFile ( file_a ) == hashFile ( file_b ):
-        # if the file are the same return True
-        return True
-    else :
-        # if they are not the same return False
-        return False
  
+def getIdFromFile ( path = "" ):
+    """
+    This function return the asset id from a file.
+    :param path: The asset file .
+    :type path: str
+    :returns:  str -- the asset code
+
+    **Example:**
+    
+    >>> getIdFromFile ( doc_id = "/homeworks/projects/prod/chr/mickey/mod/a/prod_chr_mickey_mod_a.mb" )
+    >>> 'prod_chr_mickey_mod_a'
+    
+    """
+    
+    # Check if the path exists
+    if os.path.exists ( path ):
+        raise RepositoryError ( "Can't get 'doc_id' from '%s', path doesn't exists." % path )
+    
+    basename = os.path.basename ( path )
+    doc_id = os.path.splitext ( basename )[0]
+    return doc_id
+
 def getIdFromPath ( path = "" ):
     """
-    This function compare the two files contains, based on sha1.
-    It is very useful if you need to know if the two file are the same.
+    This function return the asset id from path.
 
     :param path: The file path
     :type path: str
@@ -132,13 +67,13 @@ def getIdFromPath ( path = "" ):
     user_repo = os.getenv ( "HK_USER_REPO" ) + os.sep
     
     # Get the doc_id
-    path = path.replace ( user_repo , "" )
+    path = path.replace ( user_repo, "" )
     part = path.split ( os.sep )
     doc_id = "%s_%s_%s_%s_%s" % ( part[0],part[1], part[2], part[3], part[4] )
     
     return doc_id
      
-def getAssetPathFromId ( doc_id = "", local = False ):
+def getPathFromId ( doc_id = "", local = False ):
     """
     This function return a path based from a provided 'doc_id'.
 
@@ -151,11 +86,11 @@ def getAssetPathFromId ( doc_id = "", local = False ):
     **Example:**
     
     >>> #Repository
-    >>> getAssetPathFromId ( doc_id = "prod_chr_mickey_mod_a", local = False )
+    >>> getPathFromId ( doc_id = "prod_chr_mickey_mod_a", local = False )
     >>> '/homeworks/projects/prod/chr/mickey/mod/a'
     >>>
     >>> #Local
-    >>> getAssetPathFromId ( doc_id = "prod_chr_mickey_mod_a", local = True )
+    >>> getPathFromId ( doc_id = "prod_chr_mickey_mod_a", local = True )
     >>> '/homeworks/users/jdoe/projects/prod/chr/mickey/mod/a'    
     
     """
@@ -171,6 +106,10 @@ def getAssetPathFromId ( doc_id = "", local = False ):
         # If false return the repository project root
         root = os.getenv ( "HK_REPO" )
         
+    # Check the root path value
+    if ( not root ) or root == "" :
+        raise RepositoryError ( "getPathFromId(): incorrect value for root path " )
+    
     # Full path
     path = os.path.join ( root, path )
     
@@ -178,18 +117,24 @@ def getAssetPathFromId ( doc_id = "", local = False ):
     
 def getVersions ( db = None, doc_id = "" ):
     """
-    This function the a path of an asset version.
+    This function return all versions in a dictionnary of a particular asset.
 
     :param db: the database
     :type db: Database
     :param doc_id: The asset code.
     :type doc_id: str
-    :returns:  dict -- a dictionary with all versions of the asset
+    :returns:  dict -- a dictionary with all versions of the asset,
+                the key is a string with the version number without padding.
 
     **Example:**
     
     >>> db = utils.getDb()
-    >>> getVersions ( db = db, doc_id = "prod_chr_mickey_mod_a" )
+    >>> getVersions ( db = db, doc_id = "bls_chr_belanus_mod_main" )
+    >>> {'1': {'files': ['bls_chr_belanus_mod_main.mb'], 'path': '/homeworks/projects/bls/chr/belanus/mod/main/001',
+        'created': '2013 Mar 08 21:16:34', 'description': 'names cleaned\nnormal softened', 'creator': 'pixo'},
+        '3': {'files': ['bls_chr_belanus_mod_main.mb'], 'path': '/homeworks/projects/bls/chr/belanus/mod/main/003',
+        'created': '2013 Mar 08 23:13:54', 'description': 'test export gproject etc', 'creator': 'pixo'},
+        '2': {'files': ['bls_chr_belanus_mod_main.mb'] ... and so ... }
     
     """
     # If db is not provided get the current project DB
@@ -201,13 +146,32 @@ def getVersions ( db = None, doc_id = "" ):
         
     return versions
 
-def getAssetPath ( db = None, doc_id = "", version = "last" ):
+def getVersionPath ( db = None, doc_id = "", version = "last" ):
+    """
+    This function return the asset path of a particular version.
+
+    :param db: the database
+    :type db: Database
+    :param doc_id: The asset code.
+    :type doc_id: str
+    :param version: The asset code.
+    :type version: str/float/int -- 'last' or 1,2,3,4 etc
+    :returns:  str -- the asset directory
+
+    **Example:**
+    
+    >>> db = utils.getDb()
+    >>> getVersionPath ( db = db, doc_id = "bls_chr_belanus_mod_main", version = "last" )
+    >>> '/homeworks/projects/bls/chr/belanus/mod/main/008'
+    
+    """
+    #old getAssetPath
     
     # Get asset versions
     versions = getVersions ( db = db, doc_id = doc_id )
     num = None
     
-    # If queried version is the lastest
+    # If the queried version is the latest
     if version == "last" :
         num = int ( len ( versions ) ) 
     else:
@@ -221,75 +185,194 @@ def getAssetPath ( db = None, doc_id = "", version = "last" ):
     
     return path
 
-def getAssetTypeFromId ( doc_id ):
-    return doc_id.split("_")[1]
+def getLocalVersionPath ( doc_id = "", version = 1 ):
+    """
+    This function return the path of a particular asset version into the user directory .
 
-def getAssetTaskFromId ( doc_id ):
-    return doc_id.split("_")[3]
+    :param doc_id: The asset code.
+    :type doc_id: str
+    :param version: The asset code.
+    :type version: str/float/int -- 1,2,3,4 etc
+    :returns:  str -- the asset directory path
 
-def getIdFromPushedFile ( fname ):
-    basename = os.path.basename ( fname )
-    doc_id = os.path.splitext ( basename )[0]
-    return doc_id
-
-def getAssetLocalPath ( doc_id = "", version = 1 ):
-    count = 1
-    fdir = getAssetPathFromId ( doc_id, True )
+    **Example:**
+    
+    >>> getLocalVersionPath ( doc_id = "prod_chr_mickey_mod_a", version = 2 )
+    >>> '/homeworks/users/jdoe/projects/prod/chr/mickey/mod/a/prod_chr_mickey_main_a.v002.base'
+    
+    """
+    #old getAssetLocalPath
+    #Make sure to get the right type for concatenation 
+    version = int ( version )
+    
+    #Get asset local path
+    fdir = getPathFromId ( doc_id = doc_id, local = True )
     name = "%s.v%03d.base" % ( doc_id, version )
     dst = os.path.join ( fdir, name ) 
     
+    #Return a path that doesn't exist
+    count = 1
     while os.path.exists ( dst ) :
         dst = os.path.join ( fdir, name + str ( count ) )
         count += 1
-    
+
     return dst
 
-def getWorkspaceFromId ( doc_id = "" ):
-    """Get user asset workspace from doc_id"""
-    path = getAssetPathFromId ( doc_id, True )
-    return path
+def getTypeFromId ( doc_id = None ):
+    """
+    This function return the asset path of a particular version.
+    :param doc_id: The asset code.
+    :type doc_id: str
+    :returns:  str -- the asset type code
+
+    **Example:**
+    
+    >>> getTypeFromId ( doc_id = "prod_chr_mickey_mod_a" )
+    >>> 'chr'
+    
+    """
+    
+    if not ( doc_id ) :
+        raise RepositoryError ( "getTypeFromId(): can't get type from wrong 'doc_id'" )
+     
+    return doc_id.split("_")[1]
+
+def getTaskFromId ( doc_id = None ):
+    """
+    This function return the asset path of a particular version.
+    :param doc_id: The asset code.
+    :type doc_id: str
+    :returns:  str -- the asset task code
+
+    **Example:**
+    
+    >>> getTaskFromId ( doc_id = "prod_chr_mickey_mod_a" )
+    >>> 'mod'
+    
+    """
+    
+    if not ( doc_id ) :
+        raise RepositoryError ( "getTaskFromId(): can't get type from wrong 'doc_id'" )
+    
+    return doc_id.split("_")[3]
  
-def createWorkspace( doc_id = ""):
-    """Create the entity directory in the user repository  """
-    path = getWorkspaceFromId ( doc_id )
+def createWorkspace ( doc_id = "" ):
+    """
+    This function create the asset user path of a particular asset.
+    :param doc_id: The asset code.
+    :type doc_id: str
+    :returns:  str/bool -- Return the workspace path if path is created else False .
+
+    **Example:**
+    
+    >>> createWorkspace ( doc_id = "prod_chr_mickey_mod_a" )
+    >>> '/homeworks/users/jdoe/projects/prod/chr/mickey/mod/a'
+    
+    """
+    
+    #Get the local asset path to create from asset id
+    path = getPathFromId ( doc_id = doc_id, local = True )
+    
+    #Check if the path exist
     if os.path.exists ( path ) :
         print ( "createWorkspace(): %s already exist" % path )
         return False
     
+    #Create the asset path with the proper permission
     os.makedirs ( path, 0775 )
+    
+    #Check if the path was created
+    if not os.path.exists ( path ) :
+        raise RepositoryError ( "createWorkspace(): cannot create directory %s" % path )
+    
     print ( "createWorkspace(): %s created" % path )
     return path
 
 def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) :
-    """ Check the src_ls type is a list """
+    
+    """
+    This function create the asset user path of a particular asset.
+    :param doc_id: The asset code.
+    :type doc_id: str
+    :returns:  str/bool -- Return the workspace path if path is created else False .
+
+    **Example:**
+    
+    >>> createWorkspace ( doc_id = "prod_chr_mickey_mod_a" )
+    >>> '/homeworks/users/jdoe/projects/prod/chr/mickey/mod/a'
+    
+    """
+    
+    # Check the src_ls type is a list
     if type ( sources ) == str :
         sources = list ( [ sources ] )
                  
-    """ check if the source file exists in the repository """
-    files = dict()
+    files = dict ()
     
+    #Iterate over the file to transfer
     for src in sources :
-        
+         
+        # Check if the source file exists
         if os.path.exists ( src ) :
+            #TODO: Make it simpler
+            
+            # Create the destination path
             basename = os.path.basename ( src )
-            filename = basename.replace ( basename.split(".")[0], doc_id )
+            filename = basename.replace ( basename.split ( "." )[0], doc_id )
+            
+            #Set filename as key value for source file
             files [src] = os.path.join ( destination, filename )
-        else:
+        
+        else :
             print "Warning: %s doesn't exist" % src
     
-    os.system( "chmod 775  %s" % destination )
-    for fil in files:                
+    # Set the permission file
+    os.chmod ( destination, 0775)
+    
+    #Iterate over files
+    for fil in files:        
         dirname = os.path.dirname ( files [ fil ] )
+        
         if not os.path.exists ( dirname ) :
             os.makedirs ( dirname )
+        
         shutil.copy ( fil, files [ fil ] )
     os.system( "chmod -R 555  %s" % destination )
         
-def pull ( db = None, doc_id = "", ver = "latest", extension = "",
+def pull ( db = None, doc_id = "", version = "last", extension = False,
            progressbar = False, msgbar = False ):
+
+    """
+    This function copy the desired file from repository to local workspace.
+
+    :param db: the database
+    :type db: Database
+    :param doc_id: The asset code
+    :type doc_id: str
+    :param version: The asset version
+    :type version: int/str
+    :param extension: The file extension
+    :type extension: int/str
+    :param progressbar: The pyside progress bar
+    :type progressbar: PySide progressbar
+    :param msg: The pyside message bar
+    :type progressbar: PySide messagebar
+    :returns: list -- a list of the pulled file.
+
+    **Example:**
     
-    """Get the files from the repository """
+    >>> db = utils.getDb()
+    >>> pull ( db = db, doc_id = "bls_chr_belanus_mod_main", 2 )
+    >>> ['/homeworks/users/jdoe/projects/bls/chr/belanus/mod/main/bls_chr_belanus_mod_main.v002.base/bls_chr_belanus_mod_main.jpg',
+    >>> '/homeworks/users/jdoe/projects/bls/chr/belanus/mod/main/bls_chr_belanus_mod_main.v002.base/bls_chr_belanus_mod_main.mb']
+
+    """
     
+    def echoMsg ( msg = "", msgbar = None ):
+        print msg
+        if msgbar :
+            msgbar ( msg )
+            
     # If db is not provided get the current project DB
     if db == None :  
         db = utils.getDb()
@@ -297,81 +380,91 @@ def pull ( db = None, doc_id = "", ver = "latest", extension = "",
     # Check id is respecting the homeworks naming convention 
     docsplit = doc_id.split("_")
     if len ( docsplit ) < 5:
-        print "pull(): Wrong asset id"
+        echoMsg ( msg = "pull(): Wrong asset id", msgbar = msgbar )
         return False
     
     # Get asset repository and local asset path
-    src = getAssetPath ( db = db, doc_id = doc_id, version = ver )
-    dst = getAssetLocalPath ( doc_id = doc_id, version = ver)
-         
-    if not os.path.exists ( dst ):
-        os.makedirs ( dst, 0775 )
-         
-        lsdir = list()
-        for root, subFolders, files in os.walk(src):
-            for file in files:
-                lsdir.append ( os.path.join ( root, file ) )
-         
+    src = getVersionPath ( db = db, doc_id = doc_id, version = version )
+    dst = getLocalVersionPath ( doc_id = doc_id, version = version)
+              
+    # Add/Check files to pull
+    lsdir = list ()
+    for root, subFolders, files in os.walk ( src ):
+        
+        for fil in files:
+            curfile = os.path.join ( root, fil )
+            
+            if extension and extension != "" :
+                if os.path.splitext ( curfile )[-1] == extension :
+                    lsdir.append ( curfile )
+            else :
+                lsdir.append ( curfile )
+     
+    # Prepare the progress bar
+    if progressbar :
         progress_value = 0
         progress_step = 100.0 / len(lsdir) if len(lsdir) != 0 else 1
-         
-        pulled = list()
-        for file in lsdir:
-            fulldst = file.replace ( src, dst )
-            dirname = os.path.dirname ( fulldst )
-             
-            if not os.path.exists ( dirname ):
-                os.makedirs( dirname , 0775 )
-                  
-            if extension != "":
-                if os.path.splitext ( fulldst )[-1] == extension:
-                    shutil.copyfile( file, fulldst)
-                    pulled.append(fulldst)
-                    msg = "Pulled: %s" % fulldst
-                    print msg
-                    if msgbar :
-                        msgbar(msg)
-                    
-            else:
-                shutil.copyfile ( file, fulldst )
-                pulled.append ( fulldst )
-                msg = "Pulled: %s" % fulldst
-                
-                print msg
-                if msgbar :
-                    msgbar(msg)
-                             
-            if progressbar :
-                progress_value += progress_step
-                progressbar.setProperty("value", progress_value)
-             
-        return pulled
+     
+    # Check there is something to pull 
+    if len ( lsdir ) > 0 :
+        os.makedirs ( dst, 0775 )
+        if not os.path.exists ( dst ):
+            raise RepositoryError ( "Pull(): cannot create %s " % dst)
     
-    else :
-        msg = "File already exist, please rename or remove it : %s" % dst
+    # Pull lsdir file
+    pulled = list()
+    for fil in lsdir:
+        fulldst = fil.replace ( src, dst )
+#         dirname = os.path.dirname ( fulldst )
+                       
+        shutil.copyfile ( fil, fulldst )
+        pulled.append ( fulldst )
         
-        if msgbar :
-            msgbar(msg)
-            
-        print msg
-        return False 
+        #Echo message
+        msg = "Pulled: %s" % fulldst
+        echoMsg ( msg = msg, msgbar = msgbar )
+                         
+        if progressbar :
+            progress_value += progress_step
+            progressbar.setProperty ( "value", progress_value )
+         
+    return pulled
+
 
 def push ( db = "", doc_id = "", src_ls = list(), description = "",
-          progressbar = False, msgbar = False, rename = True):
-     
-    """
-    push() Put the datas into the repository 
-    db, type couch.db.Server
-    doc_id, type string
-    src_ls, type list of string
-    description, type string
-    """
+          progressbar = False, msgbar = False, rename = True ):
          
-    """ Check the src_ls type is a list """
+    """
+    This function copy the desired file from local workspace to repository.
+
+    :param db: the database
+    :type db: Database
+    :param doc_id: The asset code
+    :type doc_id: str
+    :param src_ls: The list of files to push
+    :type src_ls: str/list of str
+    :param description: The file extension
+    :type description: str
+    :param progressbar: The pyside progress bar
+    :type progressbar: PySide progressbar
+    :param msg: The pyside message bar
+    :type progressbar: PySide messagebar
+    :param rename: Rename the file (default True)
+    :type rename: bool -- if True rename the file(s)
+    :returns: str -- Return the published directory
+
+    **Example:**
+    
+    >>> db = utils.getDb()
+    >>> push ( db = db, doc_id = "bls_chr_belanus_mod_main", "/homeworks/users/jdoe/projects/bls/chr/belanus/mod/main/file_to_push.mb" )
+
+    """
+
+    # Check the src_ls type is a list
     if type ( src_ls ) == str :
         src_ls = list ( [ src_ls ] )
                  
-    """ check if the source file exists in the repository """
+    # check if the source file exists in the repository
     file_list = list()
     
     for src in src_ls :
@@ -381,31 +474,30 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
         else:
             print "Warning: %s doesn't exist" % src
               
-    """ Get root destination directory to push files """
-    dst_dir = getAssetPathFromId ( doc_id )
+    # Get root destination directory to push files
+    dst_dir = getPathFromId ( doc_id )
      
-    """ Get temporary destination directory to push files """
-    tmp_dir = os.path.join ( dst_dir, hashTime () )
+    # Get temporary destination directory to push files
+    tmp_dir = os.path.join ( dst_dir, utils.hashTime () )
              
-    """ Copy all the files in the destination directory """
+    # Copy all the files in the destination directory
     progress_value = 0
     progress_step = 100.0/len ( file_list )
     files_attr = list ()
-    wspace = getWorkspaceFromId ( doc_id )
+    wspace = getPathFromId ( doc_id = doc_id, local = True )
              
-    """ Iterate over all the provided source files """
+    # Iterate over all the provided source files
     for src in file_list :
-        """Get file dir"""
+        # Get file dir
         file_space = os.path.dirname ( src )
-        """file space in case we need to publish directories """
-        file_space = file_space.replace( wspace, "" )
-        file_name =  os.path.join( file_space, os.path.basename ( src ) )
+        # file space in case we need to publish directories
+        file_space = file_space.replace ( wspace, "" )
+        file_name =  os.path.join ( file_space, os.path.basename ( src ) )
           
-        """ Get extension(s) ,UDIMs and frames are commonly separated 
-            with this char """
+        # Get extension(s) ,UDIMs and frames are commonly separated with this char
         file_ext = file_name.replace(file_name.split(".")[0],"")
           
-        """ Creating the full file name """
+        # Creating the full file name
         if rename:
             dst_file = doc_id + file_ext
             
@@ -417,16 +509,15 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
              
         tmp_file = os.path.join ( tmp_dir, dst_file )
         
-        """ Store the files names in a list to avoid to call 
-            the database for each source file """
+        # Store the files names in a list to avoid to call the database for each source file
         files_attr.append ( dst_file )
                     
-        """Create temporary directory"""
+        # Create temporary directory
         dirname = os.path.dirname ( tmp_file )
         if not os.path.exists ( dirname ):
             os.makedirs(dirname)
         
-        """Copy files to temporary directory"""  
+        # Copy files to temporary directory  
         shutil.copy ( src, tmp_file )
                             
         if progressbar :
@@ -438,18 +529,20 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
         if msgbar :
             msgbar ( dst_file )
              
-    """ Get latest version """
+    # Get latest version
     doc = db [ doc_id ]
-    ver_attr = doc [ "versions" ]
+    ver_attr = getVersions ( db, doc_id )
     ver = len ( ver_attr ) + 1
     path_attr = os.path.join ( dst_dir, "%03d" % ver )
     repo = os.path.expandvars ( path_attr )
     
-    """Rename the temp dir"""
-    os.rename( tmp_dir, repo )
-    os.system( "chmod -R 555  %s" % repo )
+    # Rename the temp dir
+    os.rename ( tmp_dir, repo )
+    
+    #TODO:Replace os.system ( "chmod -R 555  %s" % repo ) by python function
+    os.system ( "chmod -R 555  %s" % repo )
          
-    """ Create the new version data for the "versions" document's attribute """
+    # Create the new version data for the "versions" document's attribute
     fileinfo = {
                 "creator" : os.getenv ( "USER" ),
                 "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.localtime()),
@@ -458,20 +551,20 @@ def push ( db = "", doc_id = "", src_ls = list(), description = "",
                 "files" : files_attr
                 }
      
-    """ Append the data into the document version attribute copy """
+    # Append the data into the document version attribute copy
     ver_attr [ ver ] = fileinfo
       
-    """ Replace the original "versions" attribute by our modified version """
+    # Replace the original "versions" attribute by our modified version
     doc [ "versions" ] = ver_attr
      
-    """ Push the info into the db """
+    # Push the info into the db
     db [ doc_id ] = doc
      
-    """ print published file for the user"""
-    for file in files_attr:
-        print os.path.join( repo , file)
+    # print published file for the user
+    for fil in files_attr:
+        print os.path.join ( repo , fil )
          
-    """Return the published directory"""
+    # Return the published directory
     return repo
 
 def pushDir ( db = "", doc_id = "", path = list(), description = "" ):
@@ -484,24 +577,24 @@ def pushDir ( db = "", doc_id = "", path = list(), description = "" ):
     description, type string
     """
                           
-    """ check if the source file exists in the repository """
+    # check if the source file exists in the repository
     if not os.path.exists ( path ) :
         print "pushDir(): %s doesn't exist" % path
         return False
     
-    """ Get root destination directory to push files """
-    dst_dir = getAssetPathFromId ( doc_id )
+    # Get root destination directory to push files
+    dst_dir = getPathFromId ( doc_id )
      
-    """ Get temporary destination directory to push files """
-    tmp_dir = os.path.join ( dst_dir, hashTime () )
+    # Get temporary destination directory to push files
+    tmp_dir = os.path.join ( dst_dir, utils.hashTime () )
     os.makedirs ( tmp_dir )
     
-    """ Copy all the files in the destination directory """
+    # Copy all the files in the destination directory
     files_attr = list ()
     file_list = os.listdir ( path )
     
     for src in file_list :
-        """file space in case we need to publish directories """
+        # file space in case we need to publish directories """
         path_src =  os.path.join ( path, src )                           
         dst = os.path.join ( tmp_dir, src )
                                 
@@ -512,22 +605,21 @@ def pushDir ( db = "", doc_id = "", path = list(), description = "" ):
             print  "pushDir(): copying directory %s " % src
             shutil.copytree ( path_src, dst )
           
-        """ Store the files names in a list to avoid to call 
-            the database for each source file """
+        # Store the files names in a list to avoid to call the database for each source file
         files_attr.append ( src )
              
-    """ Get latest version number because somebody may push a new version 
-        during the process """
+    # Get latest version number because somebody may push a new version during the process
     doc = db [ doc_id ]
-    ver_attr = doc [ "versions" ]
+    ver_attr = getVersions ( db, doc_id )
     ver = len ( ver_attr ) + 1
     path_attr = os.path.join ( dst_dir, "%03d" % ver )
     repo = os.path.expandvars ( path_attr )
-    """Rename the temp dir"""
+    
+    # Rename the temp dir
     os.rename ( tmp_dir, repo )
-    os.chmod( repo, 0555)
+    os.chmod ( repo, 0555)
          
-    """ Create the new version data for the "versions" document's attribute """
+    # Create the new version data for the "versions" document's attribute
     fileinfo = {
                 "creator" : os.getenv ( "USER" ),
                 "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.localtime()),
@@ -536,20 +628,20 @@ def pushDir ( db = "", doc_id = "", path = list(), description = "" ):
                 "files" : files_attr
                 }
      
-    """ Append the data into the document version attribute copy """
+    # Append the data into the document version attribute copy
     ver_attr [ ver ] = fileinfo
       
-    """ Replace the original "versions" attribute by our modified version """
+    # Replace the original "versions" attribute by our modified version
     doc [ "versions" ] = ver_attr
      
-    """ Push the info into the db """
+    # Push the info into the db
     db [ doc_id ] = doc
      
-    """ print published file for the user"""
-    for file in files_attr:
-        print os.path.join( repo , file)
+    # print published file for the user
+    for fil in files_attr:
+        print os.path.join ( repo , fil )
          
-    """Return the published directory"""
+    # Return the published directory
     return repo
 
 def pushFile ( db = "", doc_id = False, path = list (), description="", rename = True ):
@@ -567,8 +659,9 @@ def pushFile ( db = "", doc_id = False, path = list (), description="", rename =
                   description =  description, progressbar = False,
                   msgbar = False, rename = rename )
 
+
 def getTextureAttr ( path ):
-    textureType = utils.getTextureTypes()
+    textureType = utils.getTextureTypes ()
     fname = os.path.basename ( path )
     
     for typ in textureType :
@@ -582,7 +675,7 @@ def getTextureAttr ( path ):
     return ( False, False )
 
 def textureBuild ( path = "", mode = "ww", texfilter = None ):
-    """Guerilla texture build"""
+    # Guerilla texture build
     
     #TODO: Add Gamma support
     if texfilter == None :
@@ -596,10 +689,10 @@ def textureBuild ( path = "", mode = "ww", texfilter = None ):
                 return False
             
             texfilter = texattr[4]
-            texgamma = texattr[5]
+            # texgamma = texattr[5]
         
-    file, ext = os.path.splitext ( path )
-    tex = file + ".tex"
+    fil = os.path.splitext ( path )[0]
+    tex = fil + ".tex"
     
     cmd = """render --buildtex --in %s --mode %s --filter %s --out %s""" % ( path, mode, texfilter, tex )
     os.system ( cmd )
@@ -617,7 +710,7 @@ def textureOptimise ( path ):
         texdepth = texattr[1]
         texbgcolor = texattr[2]
         texcompress = texattr[3]
-        texfilter = texattr[4]
+        # texfilter = texattr[4]
         
         #Current image attributes
         cmd_identify = "identify %s" % path
@@ -625,7 +718,7 @@ def textureOptimise ( path ):
         imgattr = imgattr.split(" ")
         imgdepth = imgattr[4]
         imgformat = imgattr[1]
-        imgres = imgattr[2]
+        # imgres = imgattr[2]
         
         if texcompress :
             cmd_compress = "mogrify -compress Zip %s" % path
@@ -655,9 +748,9 @@ def textureOptimise ( path ):
 def textureExport ( path = "", progressbar = False ):
     files = glob.glob ( os.path.join ( path, "*.tif" ) )
     #TODO: support progressbar for textures optimisation
-    for file in files :
-        textureOptimise ( file )
-        textureBuild ( file )
+    for fil in files :
+        textureOptimise ( fil )
+        textureBuild ( fil )
         
     return True
 
@@ -665,8 +758,8 @@ def textureCheck ( doc_id = "", files = list() ) :
     textureType = utils.getTextureTypes ()
     not_pushed = list ( files )
         
-    for file in files :
-        fname = os.path.basename ( file )
+    for fil in files :
+        fname = os.path.basename ( fil )
         
         for typ in textureType :
             simpTex = "%s_\d*_%s\d*.\d\d\d\d." % ( doc_id, typ )
@@ -676,17 +769,17 @@ def textureCheck ( doc_id = "", files = list() ) :
             pattern = "%s|%s" % ( simpTex, animTex )
                         
             if re.findall ( pattern, fname ):
-                """check if the textures are builded"""
+                # check if the textures are builded
                 texfile = ""
                 fext = fname.split (".")[-1]
                                 
                 if fext != "tex":
                     for ext in ( "tif", "exr" ):
                         if fext == ext:
-                            texfile = file.replace ( ".%s" % ext, ".tex" )
+                            texfile = fil.replace ( ".%s" % ext, ".tex" )
                         
                     if os.path.exists ( texfile ):
-                        not_pushed.remove ( file )
+                        not_pushed.remove ( fil )
                         not_pushed.remove ( texfile )  
                         print "textureCheck: %s OK" % fname
                     
@@ -697,19 +790,19 @@ def textureCheck ( doc_id = "", files = list() ) :
 
 def texturePush ( db = None, doc_id = "", path = "", description = "",
                   progressbar = False, msgbar = False, rename = False ) :
-    
+        
     lsdir = os.listdir ( path )
     files = list ()
     
-    for file in lsdir:
-        base, ext = os.path.splitext ( file )        
+    for fil in lsdir:
+        ext = os.path.splitext ( fil ) [-1]       
         
         if ext != ".mra":
-            files.append ( os.path.join ( path, file ) )
+            files.append ( os.path.join ( path, fil ) )
         
         else:
-            if not ( file.find ( doc_id ) == 0 ) :
-                print file, "should begin with %s" % doc_id
+            if not ( fil.find ( doc_id ) == 0 ) :
+                print fil, "should begin with %s" % doc_id
                 return 1
                 
     texCheck = textureCheck ( doc_id, files )
@@ -727,4 +820,3 @@ def texturePush ( db = None, doc_id = "", path = "", description = "",
         print "texturePush(): expect %s or %s " % ( simptex , animtex)
         
         return False
-       

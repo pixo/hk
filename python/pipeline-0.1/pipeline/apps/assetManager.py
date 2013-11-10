@@ -48,7 +48,7 @@ class UiPush ( QtGui.QWidget ) :
         self.searchLineChanged(self.lineEdit_file, self.listWidget_file)
         
     def createWidgetList( self ):
-        self.workspace = core.getWorkspaceFromId ( self.doc_id )
+        self.workspace = core.getPathFromId ( self.doc_id, True )
         lsdir = os.listdir ( self.workspace )
         dictpath = dict()
         
@@ -224,7 +224,7 @@ class UiPushLs ( UiPush ) :
     
     def createWidgetList( self ):
         self.checkBox.setVisible ( True )
-        self.workspace = core.getWorkspaceFromId ( self.doc_id )        
+        self.workspace = core.getPathFromId ( self.doc_id, True)
         self.dictpath = utils.lsSeq ( self.workspace )
         
         lspath = list ()
@@ -985,7 +985,7 @@ class UiAssetManager ( UiMainManager ):
         
         """Get workspace"""
         doc_id = item.hkid
-        path = core.getWorkspaceFromId ( doc_id )
+        path = core.getPathFromId ( doc_id, True )
         
         if os.path.exists ( path ) :
             """Check if workspace exists"""

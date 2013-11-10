@@ -83,7 +83,7 @@ class UiCheckDependencies ( QtGui.QMainWindow ):
         return version 
     
     def getVersionsList ( self, id = "" ):
-        paths = core.getAssetVersions ( id )
+        paths = core.getVersions ( id )
         versions = list ()
         
         for path in paths :
@@ -208,7 +208,7 @@ class UiCheckDependencies ( QtGui.QMainWindow ):
 
             item = QtGui.QTableWidgetItem ( doc_id )
             item.setForeground ( QtGui.QBrush ( QtGui.QColor ( 0, 0, 0 ) ) )
-            item.setIcon( QtGui.QIcon ( os.path.join ( CC_PATH, "%s.png" % core.getAssetTypeFromId ( doc_id ) )))
+            item.setIcon( QtGui.QIcon ( os.path.join ( CC_PATH, "%s.png" % core.getTypeFromId ( doc_id ) )))
             item.setFlags ( QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled )
             item.setBackground ( bg_color )
             item.setFont ( font )

@@ -55,110 +55,45 @@
 <span class="sd">@author: pixo</span>
 <span class="sd">&#39;&#39;&#39;</span>
 
-<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">hashlib</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">commands</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">commands</span><span class="o">,</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">pipeline.utils</span> <span class="kn">as</span> <span class="nn">utils</span>
 
-<div class="viewcode-block" id="RepositoryError"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.RepositoryError">[docs]</a><span class="k">class</span> <span class="nc">RepositoryError</span> <span class="p">(</span> <span class="ne">Exception</span> <span class="p">):</span>
+<div class="viewcode-block" id="RepositoryError"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.RepositoryError.html#pipeline.core.repository.RepositoryError">[docs]</a><span class="k">class</span> <span class="nc">RepositoryError</span> <span class="p">(</span> <span class="ne">Exception</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Error raised by the repository module.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    
     <span class="k">def</span> <span class="nf">__init__</span> <span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">value</span> <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
     <span class="k">def</span> <span class="nf">__str__</span> <span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="k">return</span> <span class="nb">repr</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="p">)</span>
-</div>
-<div class="viewcode-block" id="hashTime"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.hashTime">[docs]</a><span class="k">def</span> <span class="nf">hashTime</span> <span class="p">()</span> <span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function return a hash based on sha1 current time.</span>
-<span class="sd">    Useful to get a random value. </span>
-<span class="sd">    </span>
-<span class="sd">    :returns:  str -- Return the current time &#39;sha1&#39; hash.</span>
-<span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; random_value = hashTime ()</span>
-<span class="sd">    &gt;&gt;&gt; &#39;a8f2aa40f66a763dde036f83e854d1762436e97d&#39;</span>
-<span class="sd">    </span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    
-    <span class="c"># Get the hash from current time</span>
-    <span class="n">sha1</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span> <span class="p">(</span> <span class="nb">str</span> <span class="p">(</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span> <span class="p">()</span> <span class="p">)</span> <span class="p">)</span>
-    <span class="k">return</span> <span class="nb">str</span> <span class="p">(</span> <span class="n">sha1</span><span class="o">.</span><span class="n">hexdigest</span> <span class="p">()</span> <span class="p">)</span>
-     </div>
-<div class="viewcode-block" id="hashFile"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.hashFile">[docs]</a><span class="k">def</span> <span class="nf">hashFile</span> <span class="p">(</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function compare the two files contains, based on sha1.</span>
-<span class="sd">    It is very useful if you need to know if the two file are the same.</span>
-
-<span class="sd">    :param path: The file path</span>
-<span class="sd">    :type path: str</span>
-<span class="sd">    :returns:  str -- sha1 hash file</span>
-<span class="sd">    :raises: RepositoryError if the path doesn&#39;t exists.</span>
-
-<span class="sd">    **Example:**</span>
-<span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; hashFile ( path = &quot;/home/user/filea&quot; )</span>
-<span class="sd">    &gt;&gt;&gt; &#39;a8f2aa40f66a763dde036f83e854d1762436e97d&#39;</span>
-<span class="sd">    </span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    
-    <span class="c">#Check if the file exists</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">path</span> <span class="p">):</span>
-        <span class="k">raise</span> <span class="n">RepositoryError</span> <span class="p">(</span> <span class="s">&quot;Can&#39;t compare &#39;</span><span class="si">%s</span><span class="s">&#39;, file doesn&#39;t exists.&quot;</span> <span class="o">%</span> <span class="n">path</span> <span class="p">)</span>
-    
-    <span class="c"># Get the sha1lib</span>
-    <span class="n">sha1</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span> <span class="p">()</span>
-    
-    <span class="c"># Get the file for read</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span> <span class="p">(</span> <span class="n">path</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span> <span class="p">)</span>
-     
-    <span class="c"># Try to get the hash</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">sha1</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span> <span class="p">()</span> <span class="p">)</span>    
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">close</span> <span class="p">()</span>
-    
-    <span class="c"># return the hash</span>
-    <span class="k">return</span> <span class="n">sha1</span><span class="o">.</span><span class="n">hexdigest</span> <span class="p">()</span>
-     </div>
-<div class="viewcode-block" id="compareFile"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.compareFile">[docs]</a><span class="k">def</span> <span class="nf">compareFile</span> <span class="p">(</span> <span class="n">file_a</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">file_b</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function compare two files contains based on sha1.</span>
-<span class="sd">    It is very useful if you need to know if two files are the same.</span>
-
-<span class="sd">    :param file_a: The first file path</span>
-<span class="sd">    :type file_a: str</span>
-<span class="sd">    :param file_b: The second file path</span>
-<span class="sd">    :type file_b: str</span>
-<span class="sd">    :returns:  bool -- True if file are the same.</span>
-<span class="sd">    :raises: RepositoryError if one of the file doesn&#39;t exists.</span>
-
-<span class="sd">    **Example:**</span>
-<span class="sd">    </span>
-<span class="sd">    &gt;&gt;&gt; compareFile ( file_a = &quot;/home/user/filea&quot;, file_b = &quot;/home/user/fileb&quot; )</span>
-<span class="sd">    &gt;&gt;&gt; True</span>
-<span class="sd">    </span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    
-    <span class="c">#Check if the file_a exists</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">file_a</span> <span class="p">):</span>
-        <span class="k">raise</span> <span class="n">RepositoryError</span> <span class="p">(</span> <span class="s">&quot;Can&#39;t compare &#39;</span><span class="si">%s</span><span class="s">&#39;, file doesn&#39;t exists.&quot;</span> <span class="o">%</span> <span class="n">file_a</span> <span class="p">)</span>
-    
-    <span class="c">#Check if the file_b exists</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">file_b</span> <span class="p">):</span>
-        <span class="k">raise</span> <span class="n">RepositoryError</span> <span class="p">(</span> <span class="s">&quot;Can&#39;t compare &#39;</span><span class="si">%s</span><span class="s">&#39;, file doesn&#39;t exists.&quot;</span> <span class="o">%</span> <span class="n">file_b</span> <span class="p">)</span>
-         
-    <span class="c">#Compare the sha1 hash of the files</span>
-    <span class="k">if</span> <span class="n">hashFile</span> <span class="p">(</span> <span class="n">file_a</span> <span class="p">)</span> <span class="o">==</span> <span class="n">hashFile</span> <span class="p">(</span> <span class="n">file_b</span> <span class="p">):</span>
-        <span class="c"># if the file are the same return True</span>
-        <span class="k">return</span> <span class="bp">True</span>
-    <span class="k">else</span> <span class="p">:</span>
-        <span class="c"># if they are not the same return False</span>
-        <span class="k">return</span> <span class="bp">False</span>
  </div>
-<div class="viewcode-block" id="getIdFromPath"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getIdFromPath">[docs]</a><span class="k">def</span> <span class="nf">getIdFromPath</span> <span class="p">(</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
+<span class="k">def</span> <span class="nf">getIdFromFile</span> <span class="p">(</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function compare the two files contains, based on sha1.</span>
-<span class="sd">    It is very useful if you need to know if the two file are the same.</span>
+<span class="sd">    This function return the asset id from a file.</span>
+<span class="sd">    :param path: The asset file .</span>
+<span class="sd">    :type path: str</span>
+<span class="sd">    :returns:  str -- the asset code</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; getIdFromFile ( doc_id = &quot;/homeworks/projects/prod/chr/mickey/mod/a/prod_chr_mickey_mod_a.mb&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; &#39;prod_chr_mickey_mod_a&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c"># Check if the path exists</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">path</span> <span class="p">):</span>
+        <span class="k">raise</span> <span class="n">RepositoryError</span> <span class="p">(</span> <span class="s">&quot;Can&#39;t get &#39;doc_id&#39; from &#39;</span><span class="si">%s</span><span class="s">&#39;, path doesn&#39;t exists.&quot;</span> <span class="o">%</span> <span class="n">path</span> <span class="p">)</span>
+    
+    <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span> <span class="p">(</span> <span class="n">path</span> <span class="p">)</span>
+    <span class="n">doc_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span> <span class="p">(</span> <span class="n">basename</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">doc_id</span>
+
+<div class="viewcode-block" id="getIdFromPath"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.getIdFromPath.html#pipeline.core.repository.getIdFromPath">[docs]</a><span class="k">def</span> <span class="nf">getIdFromPath</span> <span class="p">(</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function return the asset id from path.</span>
 
 <span class="sd">    :param path: The file path</span>
 <span class="sd">    :type path: str</span>
@@ -183,13 +118,13 @@
     <span class="n">user_repo</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;HK_USER_REPO&quot;</span> <span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span>
     
     <span class="c"># Get the doc_id</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">replace</span> <span class="p">(</span> <span class="n">user_repo</span> <span class="p">,</span> <span class="s">&quot;&quot;</span> <span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">replace</span> <span class="p">(</span> <span class="n">user_repo</span><span class="p">,</span> <span class="s">&quot;&quot;</span> <span class="p">)</span>
     <span class="n">part</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span> <span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="p">)</span>
     <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">part</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">part</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">part</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">part</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">part</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="p">)</span>
     
     <span class="k">return</span> <span class="n">doc_id</span>
      </div>
-<div class="viewcode-block" id="getAssetPathFromId"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getAssetPathFromId">[docs]</a><span class="k">def</span> <span class="nf">getAssetPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">local</span> <span class="o">=</span> <span class="bp">False</span> <span class="p">):</span>
+<div class="viewcode-block" id="getPathFromId"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.getPathFromId.html#pipeline.core.repository.getPathFromId">[docs]</a><span class="k">def</span> <span class="nf">getPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">local</span> <span class="o">=</span> <span class="bp">False</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function return a path based from a provided &#39;doc_id&#39;.</span>
 
@@ -202,11 +137,11 @@
 <span class="sd">    **Example:**</span>
 <span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; #Repository</span>
-<span class="sd">    &gt;&gt;&gt; getAssetPathFromId ( doc_id = &quot;prod_chr_mickey_mod_a&quot;, local = False )</span>
+<span class="sd">    &gt;&gt;&gt; getPathFromId ( doc_id = &quot;prod_chr_mickey_mod_a&quot;, local = False )</span>
 <span class="sd">    &gt;&gt;&gt; &#39;/homeworks/projects/prod/chr/mickey/mod/a&#39;</span>
 <span class="sd">    &gt;&gt;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; #Local</span>
-<span class="sd">    &gt;&gt;&gt; getAssetPathFromId ( doc_id = &quot;prod_chr_mickey_mod_a&quot;, local = True )</span>
+<span class="sd">    &gt;&gt;&gt; getPathFromId ( doc_id = &quot;prod_chr_mickey_mod_a&quot;, local = True )</span>
 <span class="sd">    &gt;&gt;&gt; &#39;/homeworks/users/jdoe/projects/prod/chr/mickey/mod/a&#39;    </span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -222,25 +157,35 @@
         <span class="c"># If false return the repository project root</span>
         <span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;HK_REPO&quot;</span> <span class="p">)</span>
         
+    <span class="c"># Check the root path value</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="ow">not</span> <span class="n">root</span> <span class="p">)</span> <span class="ow">or</span> <span class="n">root</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="p">:</span>
+        <span class="k">raise</span> <span class="n">RepositoryError</span> <span class="p">(</span> <span class="s">&quot;getPathFromId(): incorrect value for root path &quot;</span> <span class="p">)</span>
+    
     <span class="c"># Full path</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">root</span><span class="p">,</span> <span class="n">path</span> <span class="p">)</span>
     
     <span class="k">return</span> <span class="n">path</span>
     </div>
-<div class="viewcode-block" id="getVersions"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getVersions">[docs]</a><span class="k">def</span> <span class="nf">getVersions</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
+<div class="viewcode-block" id="getVersions"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.getVersions.html#pipeline.core.repository.getVersions">[docs]</a><span class="k">def</span> <span class="nf">getVersions</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function the a path of an asset version.</span>
+<span class="sd">    This function return all versions in a dictionnary of a particular asset.</span>
 
 <span class="sd">    :param db: the database</span>
 <span class="sd">    :type db: Database</span>
 <span class="sd">    :param doc_id: The asset code.</span>
 <span class="sd">    :type doc_id: str</span>
-<span class="sd">    :returns:  dict -- a dictionary with all versions of the asset</span>
+<span class="sd">    :returns:  dict -- a dictionary with all versions of the asset,</span>
+<span class="sd">                the key is a string with the version number without padding.</span>
 
 <span class="sd">    **Example:**</span>
 <span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; db = utils.getDb()</span>
-<span class="sd">    &gt;&gt;&gt; getVersions ( db = db, doc_id = &quot;prod_chr_mickey_mod_a&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; getVersions ( db = db, doc_id = &quot;bls_chr_belanus_mod_main&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; {&#39;1&#39;: {&#39;files&#39;: [&#39;bls_chr_belanus_mod_main.mb&#39;], &#39;path&#39;: &#39;/homeworks/projects/bls/chr/belanus/mod/main/001&#39;,</span>
+<span class="sd">        &#39;created&#39;: &#39;2013 Mar 08 21:16:34&#39;, &#39;description&#39;: &#39;names cleaned\nnormal softened&#39;, &#39;creator&#39;: &#39;pixo&#39;},</span>
+<span class="sd">        &#39;3&#39;: {&#39;files&#39;: [&#39;bls_chr_belanus_mod_main.mb&#39;], &#39;path&#39;: &#39;/homeworks/projects/bls/chr/belanus/mod/main/003&#39;,</span>
+<span class="sd">        &#39;created&#39;: &#39;2013 Mar 08 23:13:54&#39;, &#39;description&#39;: &#39;test export gproject etc&#39;, &#39;creator&#39;: &#39;pixo&#39;},</span>
+<span class="sd">        &#39;2&#39;: {&#39;files&#39;: [&#39;bls_chr_belanus_mod_main.mb&#39;] ... and so ... }</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c"># If db is not provided get the current project DB</span>
@@ -252,13 +197,32 @@
         
     <span class="k">return</span> <span class="n">versions</span>
 </div>
-<div class="viewcode-block" id="getAssetPath"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getAssetPath">[docs]</a><span class="k">def</span> <span class="nf">getAssetPath</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="s">&quot;last&quot;</span> <span class="p">):</span>
+<div class="viewcode-block" id="getVersionPath"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.getVersionPath.html#pipeline.core.repository.getVersionPath">[docs]</a><span class="k">def</span> <span class="nf">getVersionPath</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="s">&quot;last&quot;</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function return the asset path of a particular version.</span>
+
+<span class="sd">    :param db: the database</span>
+<span class="sd">    :type db: Database</span>
+<span class="sd">    :param doc_id: The asset code.</span>
+<span class="sd">    :type doc_id: str</span>
+<span class="sd">    :param version: The asset code.</span>
+<span class="sd">    :type version: str/float/int -- &#39;last&#39; or 1,2,3,4 etc</span>
+<span class="sd">    :returns:  str -- the asset directory</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; db = utils.getDb()</span>
+<span class="sd">    &gt;&gt;&gt; getVersionPath ( db = db, doc_id = &quot;bls_chr_belanus_mod_main&quot;, version = &quot;last&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; &#39;/homeworks/projects/bls/chr/belanus/mod/main/008&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c">#old getAssetPath</span>
     
     <span class="c"># Get asset versions</span>
     <span class="n">versions</span> <span class="o">=</span> <span class="n">getVersions</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span> <span class="p">)</span>
     <span class="n">num</span> <span class="o">=</span> <span class="bp">None</span>
     
-    <span class="c"># If queried version is the lastest</span>
+    <span class="c"># If the queried version is the latest</span>
     <span class="k">if</span> <span class="n">version</span> <span class="o">==</span> <span class="s">&quot;last&quot;</span> <span class="p">:</span>
         <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span> <span class="p">(</span> <span class="nb">len</span> <span class="p">(</span> <span class="n">versions</span> <span class="p">)</span> <span class="p">)</span> 
     <span class="k">else</span><span class="p">:</span>
@@ -272,75 +236,194 @@
     
     <span class="k">return</span> <span class="n">path</span>
 </div>
-<div class="viewcode-block" id="getAssetTypeFromId"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getAssetTypeFromId">[docs]</a><span class="k">def</span> <span class="nf">getAssetTypeFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">):</span>
-    <span class="k">return</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-</div>
-<div class="viewcode-block" id="getAssetTaskFromId"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getAssetTaskFromId">[docs]</a><span class="k">def</span> <span class="nf">getAssetTaskFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">):</span>
-    <span class="k">return</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
-</div>
-<div class="viewcode-block" id="getIdFromPushedFile"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getIdFromPushedFile">[docs]</a><span class="k">def</span> <span class="nf">getIdFromPushedFile</span> <span class="p">(</span> <span class="n">fname</span> <span class="p">):</span>
-    <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span> <span class="p">(</span> <span class="n">fname</span> <span class="p">)</span>
-    <span class="n">doc_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span> <span class="p">(</span> <span class="n">basename</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">doc_id</span>
-</div>
-<div class="viewcode-block" id="getAssetLocalPath"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getAssetLocalPath">[docs]</a><span class="k">def</span> <span class="nf">getAssetLocalPath</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">):</span>
-    <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">fdir</span> <span class="o">=</span> <span class="n">getAssetPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span><span class="p">,</span> <span class="bp">True</span> <span class="p">)</span>
+<div class="viewcode-block" id="getLocalVersionPath"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.getLocalVersionPath.html#pipeline.core.repository.getLocalVersionPath">[docs]</a><span class="k">def</span> <span class="nf">getLocalVersionPath</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function return the path of a particular asset version into the user directory .</span>
+
+<span class="sd">    :param doc_id: The asset code.</span>
+<span class="sd">    :type doc_id: str</span>
+<span class="sd">    :param version: The asset code.</span>
+<span class="sd">    :type version: str/float/int -- 1,2,3,4 etc</span>
+<span class="sd">    :returns:  str -- the asset directory path</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; getLocalVersionPath ( doc_id = &quot;prod_chr_mickey_mod_a&quot;, version = 2 )</span>
+<span class="sd">    &gt;&gt;&gt; &#39;/homeworks/users/jdoe/projects/prod/chr/mickey/mod/a/prod_chr_mickey_main_a.v002.base&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c">#old getAssetLocalPath</span>
+    <span class="c">#Make sure to get the right type for concatenation </span>
+    <span class="n">version</span> <span class="o">=</span> <span class="nb">int</span> <span class="p">(</span> <span class="n">version</span> <span class="p">)</span>
+    
+    <span class="c">#Get asset local path</span>
+    <span class="n">fdir</span> <span class="o">=</span> <span class="n">getPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">local</span> <span class="o">=</span> <span class="bp">True</span> <span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">.v</span><span class="si">%03d</span><span class="s">.base&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">version</span> <span class="p">)</span>
     <span class="n">dst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">fdir</span><span class="p">,</span> <span class="n">name</span> <span class="p">)</span> 
     
+    <span class="c">#Return a path that doesn&#39;t exist</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">while</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">dst</span> <span class="p">)</span> <span class="p">:</span>
         <span class="n">dst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">fdir</span><span class="p">,</span> <span class="n">name</span> <span class="o">+</span> <span class="nb">str</span> <span class="p">(</span> <span class="n">count</span> <span class="p">)</span> <span class="p">)</span>
         <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-    
+
     <span class="k">return</span> <span class="n">dst</span>
 </div>
-<div class="viewcode-block" id="getWorkspaceFromId"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getWorkspaceFromId">[docs]</a><span class="k">def</span> <span class="nf">getWorkspaceFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get user asset workspace from doc_id&quot;&quot;&quot;</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">getAssetPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span><span class="p">,</span> <span class="bp">True</span> <span class="p">)</span>
-    <span class="k">return</span> <span class="n">path</span>
+<div class="viewcode-block" id="getTypeFromId"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.getTypeFromId.html#pipeline.core.repository.getTypeFromId">[docs]</a><span class="k">def</span> <span class="nf">getTypeFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function return the asset path of a particular version.</span>
+<span class="sd">    :param doc_id: The asset code.</span>
+<span class="sd">    :type doc_id: str</span>
+<span class="sd">    :returns:  str -- the asset type code</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; getTypeFromId ( doc_id = &quot;prod_chr_mickey_mod_a&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; &#39;chr&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">)</span> <span class="p">:</span>
+        <span class="k">raise</span> <span class="n">RepositoryError</span> <span class="p">(</span> <span class="s">&quot;getTypeFromId(): can&#39;t get type from wrong &#39;doc_id&#39;&quot;</span> <span class="p">)</span>
+     
+    <span class="k">return</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="getTaskFromId"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.getTaskFromId.html#pipeline.core.repository.getTaskFromId">[docs]</a><span class="k">def</span> <span class="nf">getTaskFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function return the asset path of a particular version.</span>
+<span class="sd">    :param doc_id: The asset code.</span>
+<span class="sd">    :type doc_id: str</span>
+<span class="sd">    :returns:  str -- the asset task code</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; getTaskFromId ( doc_id = &quot;prod_chr_mickey_mod_a&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; &#39;mod&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">)</span> <span class="p">:</span>
+        <span class="k">raise</span> <span class="n">RepositoryError</span> <span class="p">(</span> <span class="s">&quot;getTaskFromId(): can&#39;t get type from wrong &#39;doc_id&#39;&quot;</span> <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
  </div>
-<div class="viewcode-block" id="createWorkspace"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.createWorkspace">[docs]</a><span class="k">def</span> <span class="nf">createWorkspace</span><span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create the entity directory in the user repository  &quot;&quot;&quot;</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">getWorkspaceFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">)</span>
+<div class="viewcode-block" id="createWorkspace"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.createWorkspace.html#pipeline.core.repository.createWorkspace">[docs]</a><span class="k">def</span> <span class="nf">createWorkspace</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function create the asset user path of a particular asset.</span>
+<span class="sd">    :param doc_id: The asset code.</span>
+<span class="sd">    :type doc_id: str</span>
+<span class="sd">    :returns:  str/bool -- Return the workspace path if path is created else False .</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; createWorkspace ( doc_id = &quot;prod_chr_mickey_mod_a&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; &#39;/homeworks/users/jdoe/projects/prod/chr/mickey/mod/a&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c">#Get the local asset path to create from asset id</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">getPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">local</span> <span class="o">=</span> <span class="bp">True</span> <span class="p">)</span>
+    
+    <span class="c">#Check if the path exist</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">path</span> <span class="p">)</span> <span class="p">:</span>
         <span class="k">print</span> <span class="p">(</span> <span class="s">&quot;createWorkspace(): </span><span class="si">%s</span><span class="s"> already exist&quot;</span> <span class="o">%</span> <span class="n">path</span> <span class="p">)</span>
         <span class="k">return</span> <span class="bp">False</span>
     
+    <span class="c">#Create the asset path with the proper permission</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span> <span class="p">(</span> <span class="n">path</span><span class="p">,</span> <span class="mo">0775</span> <span class="p">)</span>
+    
+    <span class="c">#Check if the path was created</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">path</span> <span class="p">)</span> <span class="p">:</span>
+        <span class="k">raise</span> <span class="n">RepositoryError</span> <span class="p">(</span> <span class="s">&quot;createWorkspace(): cannot create directory </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">path</span> <span class="p">)</span>
+    
     <span class="k">print</span> <span class="p">(</span> <span class="s">&quot;createWorkspace(): </span><span class="si">%s</span><span class="s"> created&quot;</span> <span class="o">%</span> <span class="n">path</span> <span class="p">)</span>
     <span class="k">return</span> <span class="n">path</span>
 </div>
-<div class="viewcode-block" id="transfer"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.transfer">[docs]</a><span class="k">def</span> <span class="nf">transfer</span> <span class="p">(</span> <span class="n">sources</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="n">destination</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">rename</span> <span class="o">=</span> <span class="bp">True</span> <span class="p">)</span> <span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; Check the src_ls type is a list &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="transfer"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.transfer.html#pipeline.core.repository.transfer">[docs]</a><span class="k">def</span> <span class="nf">transfer</span> <span class="p">(</span> <span class="n">sources</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="n">destination</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">rename</span> <span class="o">=</span> <span class="bp">True</span> <span class="p">)</span> <span class="p">:</span>
+    
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function create the asset user path of a particular asset.</span>
+<span class="sd">    :param doc_id: The asset code.</span>
+<span class="sd">    :type doc_id: str</span>
+<span class="sd">    :returns:  str/bool -- Return the workspace path if path is created else False .</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; createWorkspace ( doc_id = &quot;prod_chr_mickey_mod_a&quot; )</span>
+<span class="sd">    &gt;&gt;&gt; &#39;/homeworks/users/jdoe/projects/prod/chr/mickey/mod/a&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c"># Check the src_ls type is a list</span>
     <span class="k">if</span> <span class="nb">type</span> <span class="p">(</span> <span class="n">sources</span> <span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="p">:</span>
         <span class="n">sources</span> <span class="o">=</span> <span class="nb">list</span> <span class="p">(</span> <span class="p">[</span> <span class="n">sources</span> <span class="p">]</span> <span class="p">)</span>
                  
-    <span class="sd">&quot;&quot;&quot; check if the source file exists in the repository &quot;&quot;&quot;</span>
-    <span class="n">files</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="nb">dict</span> <span class="p">()</span>
     
+    <span class="c">#Iterate over the file to transfer</span>
     <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">sources</span> <span class="p">:</span>
-        
+         
+        <span class="c"># Check if the source file exists</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">src</span> <span class="p">)</span> <span class="p">:</span>
+            <span class="c">#TODO: Make it simpler</span>
+            
+            <span class="c"># Create the destination path</span>
             <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span> <span class="p">(</span> <span class="n">src</span> <span class="p">)</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="n">basename</span><span class="o">.</span><span class="n">replace</span> <span class="p">(</span> <span class="n">basename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">doc_id</span> <span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">basename</span><span class="o">.</span><span class="n">replace</span> <span class="p">(</span> <span class="n">basename</span><span class="o">.</span><span class="n">split</span> <span class="p">(</span> <span class="s">&quot;.&quot;</span> <span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">doc_id</span> <span class="p">)</span>
+            
+            <span class="c">#Set filename as key value for source file</span>
             <span class="n">files</span> <span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">destination</span><span class="p">,</span> <span class="n">filename</span> <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        
+        <span class="k">else</span> <span class="p">:</span>
             <span class="k">print</span> <span class="s">&quot;Warning: </span><span class="si">%s</span><span class="s"> doesn&#39;t exist&quot;</span> <span class="o">%</span> <span class="n">src</span>
     
-    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s">&quot;chmod 775  </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">destination</span> <span class="p">)</span>
-    <span class="k">for</span> <span class="n">fil</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>                
+    <span class="c"># Set the permission file</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span> <span class="p">(</span> <span class="n">destination</span><span class="p">,</span> <span class="mo">0775</span><span class="p">)</span>
+    
+    <span class="c">#Iterate over files</span>
+    <span class="k">for</span> <span class="n">fil</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>        
         <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span> <span class="p">(</span> <span class="n">files</span> <span class="p">[</span> <span class="n">fil</span> <span class="p">]</span> <span class="p">)</span>
+        
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">dirname</span> <span class="p">)</span> <span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span> <span class="p">(</span> <span class="n">dirname</span> <span class="p">)</span>
+        
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span> <span class="p">(</span> <span class="n">fil</span><span class="p">,</span> <span class="n">files</span> <span class="p">[</span> <span class="n">fil</span> <span class="p">]</span> <span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s">&quot;chmod -R 555  </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">destination</span> <span class="p">)</span>
         </div>
-<div class="viewcode-block" id="pull"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.pull">[docs]</a><span class="k">def</span> <span class="nf">pull</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">ver</span> <span class="o">=</span> <span class="s">&quot;latest&quot;</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="pull"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.pull.html#pipeline.core.repository.pull">[docs]</a><span class="k">def</span> <span class="nf">pull</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="s">&quot;last&quot;</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
            <span class="n">progressbar</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">msgbar</span> <span class="o">=</span> <span class="bp">False</span> <span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function copy the desired file from repository to local workspace.</span>
+
+<span class="sd">    :param db: the database</span>
+<span class="sd">    :type db: Database</span>
+<span class="sd">    :param doc_id: The asset code</span>
+<span class="sd">    :type doc_id: str</span>
+<span class="sd">    :param version: The asset version</span>
+<span class="sd">    :type version: int/str</span>
+<span class="sd">    :param extension: The file extension</span>
+<span class="sd">    :type extension: int/str</span>
+<span class="sd">    :param progressbar: The pyside progress bar</span>
+<span class="sd">    :type progressbar: PySide progressbar</span>
+<span class="sd">    :param msg: The pyside message bar</span>
+<span class="sd">    :type progressbar: PySide messagebar</span>
+<span class="sd">    :returns: list -- a list of the pulled file.</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; db = utils.getDb()</span>
+<span class="sd">    &gt;&gt;&gt; pull ( db = db, doc_id = &quot;bls_chr_belanus_mod_main&quot;, 2 )</span>
+<span class="sd">    &gt;&gt;&gt; [&#39;/homeworks/users/jdoe/projects/bls/chr/belanus/mod/main/bls_chr_belanus_mod_main.v002.base/bls_chr_belanus_mod_main.jpg&#39;,</span>
+<span class="sd">    &gt;&gt;&gt; &#39;/homeworks/users/jdoe/projects/bls/chr/belanus/mod/main/bls_chr_belanus_mod_main.v002.base/bls_chr_belanus_mod_main.mb&#39;]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="sd">&quot;&quot;&quot;Get the files from the repository &quot;&quot;&quot;</span>
-    
+    <span class="k">def</span> <span class="nf">echoMsg</span> <span class="p">(</span> <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">msgbar</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
+        <span class="k">print</span> <span class="n">msg</span>
+        <span class="k">if</span> <span class="n">msgbar</span> <span class="p">:</span>
+            <span class="n">msgbar</span> <span class="p">(</span> <span class="n">msg</span> <span class="p">)</span>
+            
     <span class="c"># If db is not provided get the current project DB</span>
     <span class="k">if</span> <span class="n">db</span> <span class="o">==</span> <span class="bp">None</span> <span class="p">:</span>  
         <span class="n">db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getDb</span><span class="p">()</span>
@@ -348,81 +431,91 @@
     <span class="c"># Check id is respecting the homeworks naming convention </span>
     <span class="n">docsplit</span> <span class="o">=</span> <span class="n">doc_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span> <span class="p">(</span> <span class="n">docsplit</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s">&quot;pull(): Wrong asset id&quot;</span>
+        <span class="n">echoMsg</span> <span class="p">(</span> <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;pull(): Wrong asset id&quot;</span><span class="p">,</span> <span class="n">msgbar</span> <span class="o">=</span> <span class="n">msgbar</span> <span class="p">)</span>
         <span class="k">return</span> <span class="bp">False</span>
     
     <span class="c"># Get asset repository and local asset path</span>
-    <span class="n">src</span> <span class="o">=</span> <span class="n">getAssetPath</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="n">ver</span> <span class="p">)</span>
-    <span class="n">dst</span> <span class="o">=</span> <span class="n">getAssetLocalPath</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="n">ver</span><span class="p">)</span>
-         
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">dst</span> <span class="p">):</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span> <span class="p">(</span> <span class="n">dst</span><span class="p">,</span> <span class="mo">0775</span> <span class="p">)</span>
-         
-        <span class="n">lsdir</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">subFolders</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">src</span><span class="p">):</span>
-            <span class="k">for</span> <span class="nb">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-                <span class="n">lsdir</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">root</span><span class="p">,</span> <span class="nb">file</span> <span class="p">)</span> <span class="p">)</span>
-         
+    <span class="n">src</span> <span class="o">=</span> <span class="n">getVersionPath</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="n">version</span> <span class="p">)</span>
+    <span class="n">dst</span> <span class="o">=</span> <span class="n">getLocalVersionPath</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">)</span>
+              
+    <span class="c"># Add/Check files to pull</span>
+    <span class="n">lsdir</span> <span class="o">=</span> <span class="nb">list</span> <span class="p">()</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">subFolders</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span> <span class="p">(</span> <span class="n">src</span> <span class="p">):</span>
+        
+        <span class="k">for</span> <span class="n">fil</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="n">curfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">root</span><span class="p">,</span> <span class="n">fil</span> <span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">extension</span> <span class="ow">and</span> <span class="n">extension</span> <span class="o">!=</span> <span class="s">&quot;&quot;</span> <span class="p">:</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span> <span class="p">(</span> <span class="n">curfile</span> <span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">extension</span> <span class="p">:</span>
+                    <span class="n">lsdir</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span> <span class="n">curfile</span> <span class="p">)</span>
+            <span class="k">else</span> <span class="p">:</span>
+                <span class="n">lsdir</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span> <span class="n">curfile</span> <span class="p">)</span>
+     
+    <span class="c"># Prepare the progress bar</span>
+    <span class="k">if</span> <span class="n">progressbar</span> <span class="p">:</span>
         <span class="n">progress_value</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">progress_step</span> <span class="o">=</span> <span class="mf">100.0</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">lsdir</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lsdir</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
-         
-        <span class="n">pulled</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="k">for</span> <span class="nb">file</span> <span class="ow">in</span> <span class="n">lsdir</span><span class="p">:</span>
-            <span class="n">fulldst</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">replace</span> <span class="p">(</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="p">)</span>
-            <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span> <span class="p">(</span> <span class="n">fulldst</span> <span class="p">)</span>
-             
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">dirname</span> <span class="p">):</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span> <span class="n">dirname</span> <span class="p">,</span> <span class="mo">0775</span> <span class="p">)</span>
-                  
-            <span class="k">if</span> <span class="n">extension</span> <span class="o">!=</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span> <span class="p">(</span> <span class="n">fulldst</span> <span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">extension</span><span class="p">:</span>
-                    <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span> <span class="nb">file</span><span class="p">,</span> <span class="n">fulldst</span><span class="p">)</span>
-                    <span class="n">pulled</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fulldst</span><span class="p">)</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Pulled: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">fulldst</span>
-                    <span class="k">print</span> <span class="n">msg</span>
-                    <span class="k">if</span> <span class="n">msgbar</span> <span class="p">:</span>
-                        <span class="n">msgbar</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-                    
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span> <span class="p">(</span> <span class="nb">file</span><span class="p">,</span> <span class="n">fulldst</span> <span class="p">)</span>
-                <span class="n">pulled</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span> <span class="n">fulldst</span> <span class="p">)</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Pulled: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">fulldst</span>
-                
-                <span class="k">print</span> <span class="n">msg</span>
-                <span class="k">if</span> <span class="n">msgbar</span> <span class="p">:</span>
-                    <span class="n">msgbar</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-                             
-            <span class="k">if</span> <span class="n">progressbar</span> <span class="p">:</span>
-                <span class="n">progress_value</span> <span class="o">+=</span> <span class="n">progress_step</span>
-                <span class="n">progressbar</span><span class="o">.</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;value&quot;</span><span class="p">,</span> <span class="n">progress_value</span><span class="p">)</span>
-             
-        <span class="k">return</span> <span class="n">pulled</span>
-    
-    <span class="k">else</span> <span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;File already exist, please rename or remove it : </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">dst</span>
-        
-        <span class="k">if</span> <span class="n">msgbar</span> <span class="p">:</span>
-            <span class="n">msgbar</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            
-        <span class="k">print</span> <span class="n">msg</span>
-        <span class="k">return</span> <span class="bp">False</span> 
-</div>
-<div class="viewcode-block" id="push"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.push">[docs]</a><span class="k">def</span> <span class="nf">push</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">src_ls</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
-          <span class="n">progressbar</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">msgbar</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">rename</span> <span class="o">=</span> <span class="bp">True</span><span class="p">):</span>
      
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    push() Put the datas into the repository </span>
-<span class="sd">    db, type couch.db.Server</span>
-<span class="sd">    doc_id, type string</span>
-<span class="sd">    src_ls, type list of string</span>
-<span class="sd">    description, type string</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Check there is something to pull </span>
+    <span class="k">if</span> <span class="nb">len</span> <span class="p">(</span> <span class="n">lsdir</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span> <span class="p">(</span> <span class="n">dst</span><span class="p">,</span> <span class="mo">0775</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">dst</span> <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">RepositoryError</span> <span class="p">(</span> <span class="s">&quot;Pull(): cannot create </span><span class="si">%s</span><span class="s"> &quot;</span> <span class="o">%</span> <span class="n">dst</span><span class="p">)</span>
+    
+    <span class="c"># Pull lsdir file</span>
+    <span class="n">pulled</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">fil</span> <span class="ow">in</span> <span class="n">lsdir</span><span class="p">:</span>
+        <span class="n">fulldst</span> <span class="o">=</span> <span class="n">fil</span><span class="o">.</span><span class="n">replace</span> <span class="p">(</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="p">)</span>
+<span class="c">#         dirname = os.path.dirname ( fulldst )</span>
+                       
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span> <span class="p">(</span> <span class="n">fil</span><span class="p">,</span> <span class="n">fulldst</span> <span class="p">)</span>
+        <span class="n">pulled</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span> <span class="n">fulldst</span> <span class="p">)</span>
+        
+        <span class="c">#Echo message</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Pulled: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">fulldst</span>
+        <span class="n">echoMsg</span> <span class="p">(</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="p">,</span> <span class="n">msgbar</span> <span class="o">=</span> <span class="n">msgbar</span> <span class="p">)</span>
+                         
+        <span class="k">if</span> <span class="n">progressbar</span> <span class="p">:</span>
+            <span class="n">progress_value</span> <span class="o">+=</span> <span class="n">progress_step</span>
+            <span class="n">progressbar</span><span class="o">.</span><span class="n">setProperty</span> <span class="p">(</span> <span class="s">&quot;value&quot;</span><span class="p">,</span> <span class="n">progress_value</span> <span class="p">)</span>
          
-    <span class="sd">&quot;&quot;&quot; Check the src_ls type is a list &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">pulled</span>
+
+</div>
+<div class="viewcode-block" id="push"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.push.html#pipeline.core.repository.push">[docs]</a><span class="k">def</span> <span class="nf">push</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">src_ls</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+          <span class="n">progressbar</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">msgbar</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">rename</span> <span class="o">=</span> <span class="bp">True</span> <span class="p">):</span>
+         
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function copy the desired file from local workspace to repository.</span>
+
+<span class="sd">    :param db: the database</span>
+<span class="sd">    :type db: Database</span>
+<span class="sd">    :param doc_id: The asset code</span>
+<span class="sd">    :type doc_id: str</span>
+<span class="sd">    :param src_ls: The list of files to push</span>
+<span class="sd">    :type src_ls: str/list of str</span>
+<span class="sd">    :param description: The file extension</span>
+<span class="sd">    :type description: str</span>
+<span class="sd">    :param progressbar: The pyside progress bar</span>
+<span class="sd">    :type progressbar: PySide progressbar</span>
+<span class="sd">    :param msg: The pyside message bar</span>
+<span class="sd">    :type progressbar: PySide messagebar</span>
+<span class="sd">    :param rename: Rename the file (default True)</span>
+<span class="sd">    :type rename: bool -- if True rename the file(s)</span>
+<span class="sd">    :returns: str -- Return the published directory</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; db = utils.getDb()</span>
+<span class="sd">    &gt;&gt;&gt; push ( db = db, doc_id = &quot;bls_chr_belanus_mod_main&quot;, &quot;/homeworks/users/jdoe/projects/bls/chr/belanus/mod/main/file_to_push.mb&quot; )</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># Check the src_ls type is a list</span>
     <span class="k">if</span> <span class="nb">type</span> <span class="p">(</span> <span class="n">src_ls</span> <span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="p">:</span>
         <span class="n">src_ls</span> <span class="o">=</span> <span class="nb">list</span> <span class="p">(</span> <span class="p">[</span> <span class="n">src_ls</span> <span class="p">]</span> <span class="p">)</span>
                  
-    <span class="sd">&quot;&quot;&quot; check if the source file exists in the repository &quot;&quot;&quot;</span>
+    <span class="c"># check if the source file exists in the repository</span>
     <span class="n">file_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     
     <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">src_ls</span> <span class="p">:</span>
@@ -432,31 +525,30 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">print</span> <span class="s">&quot;Warning: </span><span class="si">%s</span><span class="s"> doesn&#39;t exist&quot;</span> <span class="o">%</span> <span class="n">src</span>
               
-    <span class="sd">&quot;&quot;&quot; Get root destination directory to push files &quot;&quot;&quot;</span>
-    <span class="n">dst_dir</span> <span class="o">=</span> <span class="n">getAssetPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">)</span>
+    <span class="c"># Get root destination directory to push files</span>
+    <span class="n">dst_dir</span> <span class="o">=</span> <span class="n">getPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">)</span>
      
-    <span class="sd">&quot;&quot;&quot; Get temporary destination directory to push files &quot;&quot;&quot;</span>
-    <span class="n">tmp_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">dst_dir</span><span class="p">,</span> <span class="n">hashTime</span> <span class="p">()</span> <span class="p">)</span>
+    <span class="c"># Get temporary destination directory to push files</span>
+    <span class="n">tmp_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">dst_dir</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">hashTime</span> <span class="p">()</span> <span class="p">)</span>
              
-    <span class="sd">&quot;&quot;&quot; Copy all the files in the destination directory &quot;&quot;&quot;</span>
+    <span class="c"># Copy all the files in the destination directory</span>
     <span class="n">progress_value</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">progress_step</span> <span class="o">=</span> <span class="mf">100.0</span><span class="o">/</span><span class="nb">len</span> <span class="p">(</span> <span class="n">file_list</span> <span class="p">)</span>
     <span class="n">files_attr</span> <span class="o">=</span> <span class="nb">list</span> <span class="p">()</span>
-    <span class="n">wspace</span> <span class="o">=</span> <span class="n">getWorkspaceFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">)</span>
+    <span class="n">wspace</span> <span class="o">=</span> <span class="n">getPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">local</span> <span class="o">=</span> <span class="bp">True</span> <span class="p">)</span>
              
-    <span class="sd">&quot;&quot;&quot; Iterate over all the provided source files &quot;&quot;&quot;</span>
+    <span class="c"># Iterate over all the provided source files</span>
     <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">file_list</span> <span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get file dir&quot;&quot;&quot;</span>
+        <span class="c"># Get file dir</span>
         <span class="n">file_space</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span> <span class="p">(</span> <span class="n">src</span> <span class="p">)</span>
-        <span class="sd">&quot;&quot;&quot;file space in case we need to publish directories &quot;&quot;&quot;</span>
-        <span class="n">file_space</span> <span class="o">=</span> <span class="n">file_space</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span> <span class="n">wspace</span><span class="p">,</span> <span class="s">&quot;&quot;</span> <span class="p">)</span>
-        <span class="n">file_name</span> <span class="o">=</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">file_space</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span> <span class="p">(</span> <span class="n">src</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="c"># file space in case we need to publish directories</span>
+        <span class="n">file_space</span> <span class="o">=</span> <span class="n">file_space</span><span class="o">.</span><span class="n">replace</span> <span class="p">(</span> <span class="n">wspace</span><span class="p">,</span> <span class="s">&quot;&quot;</span> <span class="p">)</span>
+        <span class="n">file_name</span> <span class="o">=</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">file_space</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span> <span class="p">(</span> <span class="n">src</span> <span class="p">)</span> <span class="p">)</span>
           
-        <span class="sd">&quot;&quot;&quot; Get extension(s) ,UDIMs and frames are commonly separated </span>
-<span class="sd">            with this char &quot;&quot;&quot;</span>
+        <span class="c"># Get extension(s) ,UDIMs and frames are commonly separated with this char</span>
         <span class="n">file_ext</span> <span class="o">=</span> <span class="n">file_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">file_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span><span class="s">&quot;&quot;</span><span class="p">)</span>
           
-        <span class="sd">&quot;&quot;&quot; Creating the full file name &quot;&quot;&quot;</span>
+        <span class="c"># Creating the full file name</span>
         <span class="k">if</span> <span class="n">rename</span><span class="p">:</span>
             <span class="n">dst_file</span> <span class="o">=</span> <span class="n">doc_id</span> <span class="o">+</span> <span class="n">file_ext</span>
             
@@ -468,16 +560,15 @@
              
         <span class="n">tmp_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">dst_file</span> <span class="p">)</span>
         
-        <span class="sd">&quot;&quot;&quot; Store the files names in a list to avoid to call </span>
-<span class="sd">            the database for each source file &quot;&quot;&quot;</span>
+        <span class="c"># Store the files names in a list to avoid to call the database for each source file</span>
         <span class="n">files_attr</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span> <span class="n">dst_file</span> <span class="p">)</span>
                     
-        <span class="sd">&quot;&quot;&quot;Create temporary directory&quot;&quot;&quot;</span>
+        <span class="c"># Create temporary directory</span>
         <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span> <span class="p">(</span> <span class="n">tmp_file</span> <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">dirname</span> <span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
         
-        <span class="sd">&quot;&quot;&quot;Copy files to temporary directory&quot;&quot;&quot;</span>  
+        <span class="c"># Copy files to temporary directory  </span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span> <span class="p">(</span> <span class="n">src</span><span class="p">,</span> <span class="n">tmp_file</span> <span class="p">)</span>
                             
         <span class="k">if</span> <span class="n">progressbar</span> <span class="p">:</span>
@@ -489,18 +580,20 @@
         <span class="k">if</span> <span class="n">msgbar</span> <span class="p">:</span>
             <span class="n">msgbar</span> <span class="p">(</span> <span class="n">dst_file</span> <span class="p">)</span>
              
-    <span class="sd">&quot;&quot;&quot; Get latest version &quot;&quot;&quot;</span>
+    <span class="c"># Get latest version</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">db</span> <span class="p">[</span> <span class="n">doc_id</span> <span class="p">]</span>
-    <span class="n">ver_attr</span> <span class="o">=</span> <span class="n">doc</span> <span class="p">[</span> <span class="s">&quot;versions&quot;</span> <span class="p">]</span>
+    <span class="n">ver_attr</span> <span class="o">=</span> <span class="n">getVersions</span> <span class="p">(</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="p">)</span>
     <span class="n">ver</span> <span class="o">=</span> <span class="nb">len</span> <span class="p">(</span> <span class="n">ver_attr</span> <span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="n">path_attr</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">dst_dir</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%03d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">ver</span> <span class="p">)</span>
     <span class="n">repo</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span> <span class="p">(</span> <span class="n">path_attr</span> <span class="p">)</span>
     
-    <span class="sd">&quot;&quot;&quot;Rename the temp dir&quot;&quot;&quot;</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">repo</span> <span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s">&quot;chmod -R 555  </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">repo</span> <span class="p">)</span>
+    <span class="c"># Rename the temp dir</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">rename</span> <span class="p">(</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">repo</span> <span class="p">)</span>
+    
+    <span class="c">#TODO:Replace os.system ( &quot;chmod -R 555  %s&quot; % repo ) by python function</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span> <span class="p">(</span> <span class="s">&quot;chmod -R 555  </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">repo</span> <span class="p">)</span>
          
-    <span class="sd">&quot;&quot;&quot; Create the new version data for the &quot;versions&quot; document&#39;s attribute &quot;&quot;&quot;</span>
+    <span class="c"># Create the new version data for the &quot;versions&quot; document&#39;s attribute</span>
     <span class="n">fileinfo</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s">&quot;creator&quot;</span> <span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;USER&quot;</span> <span class="p">),</span>
                 <span class="s">&quot;created&quot;</span> <span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span> <span class="p">(</span> <span class="s">&quot;%Y %b </span><span class="si">%d</span><span class="s"> %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">()),</span>
@@ -509,23 +602,23 @@
                 <span class="s">&quot;files&quot;</span> <span class="p">:</span> <span class="n">files_attr</span>
                 <span class="p">}</span>
      
-    <span class="sd">&quot;&quot;&quot; Append the data into the document version attribute copy &quot;&quot;&quot;</span>
+    <span class="c"># Append the data into the document version attribute copy</span>
     <span class="n">ver_attr</span> <span class="p">[</span> <span class="n">ver</span> <span class="p">]</span> <span class="o">=</span> <span class="n">fileinfo</span>
       
-    <span class="sd">&quot;&quot;&quot; Replace the original &quot;versions&quot; attribute by our modified version &quot;&quot;&quot;</span>
+    <span class="c"># Replace the original &quot;versions&quot; attribute by our modified version</span>
     <span class="n">doc</span> <span class="p">[</span> <span class="s">&quot;versions&quot;</span> <span class="p">]</span> <span class="o">=</span> <span class="n">ver_attr</span>
      
-    <span class="sd">&quot;&quot;&quot; Push the info into the db &quot;&quot;&quot;</span>
+    <span class="c"># Push the info into the db</span>
     <span class="n">db</span> <span class="p">[</span> <span class="n">doc_id</span> <span class="p">]</span> <span class="o">=</span> <span class="n">doc</span>
      
-    <span class="sd">&quot;&quot;&quot; print published file for the user&quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="nb">file</span> <span class="ow">in</span> <span class="n">files_attr</span><span class="p">:</span>
-        <span class="k">print</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">repo</span> <span class="p">,</span> <span class="nb">file</span><span class="p">)</span>
+    <span class="c"># print published file for the user</span>
+    <span class="k">for</span> <span class="n">fil</span> <span class="ow">in</span> <span class="n">files_attr</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">repo</span> <span class="p">,</span> <span class="n">fil</span> <span class="p">)</span>
          
-    <span class="sd">&quot;&quot;&quot;Return the published directory&quot;&quot;&quot;</span>
+    <span class="c"># Return the published directory</span>
     <span class="k">return</span> <span class="n">repo</span>
 </div>
-<div class="viewcode-block" id="pushDir"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.pushDir">[docs]</a><span class="k">def</span> <span class="nf">pushDir</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
+<div class="viewcode-block" id="pushDir"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.pushDir.html#pipeline.core.repository.pushDir">[docs]</a><span class="k">def</span> <span class="nf">pushDir</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
      
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    push() Put the datas into the repository </span>
@@ -535,24 +628,24 @@
 <span class="sd">    description, type string</span>
 <span class="sd">    &quot;&quot;&quot;</span>
                           
-    <span class="sd">&quot;&quot;&quot; check if the source file exists in the repository &quot;&quot;&quot;</span>
+    <span class="c"># check if the source file exists in the repository</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">path</span> <span class="p">)</span> <span class="p">:</span>
         <span class="k">print</span> <span class="s">&quot;pushDir(): </span><span class="si">%s</span><span class="s"> doesn&#39;t exist&quot;</span> <span class="o">%</span> <span class="n">path</span>
         <span class="k">return</span> <span class="bp">False</span>
     
-    <span class="sd">&quot;&quot;&quot; Get root destination directory to push files &quot;&quot;&quot;</span>
-    <span class="n">dst_dir</span> <span class="o">=</span> <span class="n">getAssetPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">)</span>
+    <span class="c"># Get root destination directory to push files</span>
+    <span class="n">dst_dir</span> <span class="o">=</span> <span class="n">getPathFromId</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">)</span>
      
-    <span class="sd">&quot;&quot;&quot; Get temporary destination directory to push files &quot;&quot;&quot;</span>
-    <span class="n">tmp_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">dst_dir</span><span class="p">,</span> <span class="n">hashTime</span> <span class="p">()</span> <span class="p">)</span>
+    <span class="c"># Get temporary destination directory to push files</span>
+    <span class="n">tmp_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">dst_dir</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">hashTime</span> <span class="p">()</span> <span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span> <span class="p">(</span> <span class="n">tmp_dir</span> <span class="p">)</span>
     
-    <span class="sd">&quot;&quot;&quot; Copy all the files in the destination directory &quot;&quot;&quot;</span>
+    <span class="c"># Copy all the files in the destination directory</span>
     <span class="n">files_attr</span> <span class="o">=</span> <span class="nb">list</span> <span class="p">()</span>
     <span class="n">file_list</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span> <span class="p">(</span> <span class="n">path</span> <span class="p">)</span>
     
     <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">file_list</span> <span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;file space in case we need to publish directories &quot;&quot;&quot;</span>
+        <span class="c"># file space in case we need to publish directories &quot;&quot;&quot;</span>
         <span class="n">path_src</span> <span class="o">=</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">path</span><span class="p">,</span> <span class="n">src</span> <span class="p">)</span>                           
         <span class="n">dst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">src</span> <span class="p">)</span>
                                 
@@ -563,22 +656,21 @@
             <span class="k">print</span>  <span class="s">&quot;pushDir(): copying directory </span><span class="si">%s</span><span class="s"> &quot;</span> <span class="o">%</span> <span class="n">src</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span> <span class="p">(</span> <span class="n">path_src</span><span class="p">,</span> <span class="n">dst</span> <span class="p">)</span>
           
-        <span class="sd">&quot;&quot;&quot; Store the files names in a list to avoid to call </span>
-<span class="sd">            the database for each source file &quot;&quot;&quot;</span>
+        <span class="c"># Store the files names in a list to avoid to call the database for each source file</span>
         <span class="n">files_attr</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span> <span class="n">src</span> <span class="p">)</span>
              
-    <span class="sd">&quot;&quot;&quot; Get latest version number because somebody may push a new version </span>
-<span class="sd">        during the process &quot;&quot;&quot;</span>
+    <span class="c"># Get latest version number because somebody may push a new version during the process</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">db</span> <span class="p">[</span> <span class="n">doc_id</span> <span class="p">]</span>
-    <span class="n">ver_attr</span> <span class="o">=</span> <span class="n">doc</span> <span class="p">[</span> <span class="s">&quot;versions&quot;</span> <span class="p">]</span>
+    <span class="n">ver_attr</span> <span class="o">=</span> <span class="n">getVersions</span> <span class="p">(</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="p">)</span>
     <span class="n">ver</span> <span class="o">=</span> <span class="nb">len</span> <span class="p">(</span> <span class="n">ver_attr</span> <span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="n">path_attr</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">dst_dir</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%03d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">ver</span> <span class="p">)</span>
     <span class="n">repo</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span> <span class="p">(</span> <span class="n">path_attr</span> <span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;Rename the temp dir&quot;&quot;&quot;</span>
+    
+    <span class="c"># Rename the temp dir</span>
     <span class="n">os</span><span class="o">.</span><span class="n">rename</span> <span class="p">(</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">repo</span> <span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span> <span class="n">repo</span><span class="p">,</span> <span class="mo">0555</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span> <span class="p">(</span> <span class="n">repo</span><span class="p">,</span> <span class="mo">0555</span><span class="p">)</span>
          
-    <span class="sd">&quot;&quot;&quot; Create the new version data for the &quot;versions&quot; document&#39;s attribute &quot;&quot;&quot;</span>
+    <span class="c"># Create the new version data for the &quot;versions&quot; document&#39;s attribute</span>
     <span class="n">fileinfo</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s">&quot;creator&quot;</span> <span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;USER&quot;</span> <span class="p">),</span>
                 <span class="s">&quot;created&quot;</span> <span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span> <span class="p">(</span> <span class="s">&quot;%Y %b </span><span class="si">%d</span><span class="s"> %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">()),</span>
@@ -587,23 +679,23 @@
                 <span class="s">&quot;files&quot;</span> <span class="p">:</span> <span class="n">files_attr</span>
                 <span class="p">}</span>
      
-    <span class="sd">&quot;&quot;&quot; Append the data into the document version attribute copy &quot;&quot;&quot;</span>
+    <span class="c"># Append the data into the document version attribute copy</span>
     <span class="n">ver_attr</span> <span class="p">[</span> <span class="n">ver</span> <span class="p">]</span> <span class="o">=</span> <span class="n">fileinfo</span>
       
-    <span class="sd">&quot;&quot;&quot; Replace the original &quot;versions&quot; attribute by our modified version &quot;&quot;&quot;</span>
+    <span class="c"># Replace the original &quot;versions&quot; attribute by our modified version</span>
     <span class="n">doc</span> <span class="p">[</span> <span class="s">&quot;versions&quot;</span> <span class="p">]</span> <span class="o">=</span> <span class="n">ver_attr</span>
      
-    <span class="sd">&quot;&quot;&quot; Push the info into the db &quot;&quot;&quot;</span>
+    <span class="c"># Push the info into the db</span>
     <span class="n">db</span> <span class="p">[</span> <span class="n">doc_id</span> <span class="p">]</span> <span class="o">=</span> <span class="n">doc</span>
      
-    <span class="sd">&quot;&quot;&quot; print published file for the user&quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="nb">file</span> <span class="ow">in</span> <span class="n">files_attr</span><span class="p">:</span>
-        <span class="k">print</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">repo</span> <span class="p">,</span> <span class="nb">file</span><span class="p">)</span>
+    <span class="c"># print published file for the user</span>
+    <span class="k">for</span> <span class="n">fil</span> <span class="ow">in</span> <span class="n">files_attr</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">repo</span> <span class="p">,</span> <span class="n">fil</span> <span class="p">)</span>
          
-    <span class="sd">&quot;&quot;&quot;Return the published directory&quot;&quot;&quot;</span>
+    <span class="c"># Return the published directory</span>
     <span class="k">return</span> <span class="n">repo</span>
 </div>
-<div class="viewcode-block" id="pushFile"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.pushFile">[docs]</a><span class="k">def</span> <span class="nf">pushFile</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="nb">list</span> <span class="p">(),</span> <span class="n">description</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">rename</span> <span class="o">=</span> <span class="bp">True</span> <span class="p">):</span>
+<div class="viewcode-block" id="pushFile"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.pushFile.html#pipeline.core.repository.pushFile">[docs]</a><span class="k">def</span> <span class="nf">pushFile</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="nb">list</span> <span class="p">(),</span> <span class="n">description</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">rename</span> <span class="o">=</span> <span class="bp">True</span> <span class="p">):</span>
      
     <span class="k">if</span> <span class="n">db</span> <span class="o">==</span> <span class="bp">None</span> <span class="p">:</span>
         <span class="n">db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getDb</span><span class="p">()</span>
@@ -617,9 +709,10 @@
     <span class="k">return</span> <span class="n">push</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="n">db</span> <span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="n">doc_id</span> <span class="p">,</span> <span class="n">src_ls</span> <span class="o">=</span> <span class="n">path</span> <span class="p">,</span>
                   <span class="n">description</span> <span class="o">=</span>  <span class="n">description</span><span class="p">,</span> <span class="n">progressbar</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
                   <span class="n">msgbar</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">rename</span> <span class="o">=</span> <span class="n">rename</span> <span class="p">)</span>
+
 </div>
-<div class="viewcode-block" id="getTextureAttr"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.getTextureAttr">[docs]</a><span class="k">def</span> <span class="nf">getTextureAttr</span> <span class="p">(</span> <span class="n">path</span> <span class="p">):</span>
-    <span class="n">textureType</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getTextureTypes</span><span class="p">()</span>
+<div class="viewcode-block" id="getTextureAttr"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.getTextureAttr.html#pipeline.core.repository.getTextureAttr">[docs]</a><span class="k">def</span> <span class="nf">getTextureAttr</span> <span class="p">(</span> <span class="n">path</span> <span class="p">):</span>
+    <span class="n">textureType</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getTextureTypes</span> <span class="p">()</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span> <span class="p">(</span> <span class="n">path</span> <span class="p">)</span>
     
     <span class="k">for</span> <span class="n">typ</span> <span class="ow">in</span> <span class="n">textureType</span> <span class="p">:</span>
@@ -632,8 +725,8 @@
         
     <span class="k">return</span> <span class="p">(</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span> <span class="p">)</span>
 </div>
-<div class="viewcode-block" id="textureBuild"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.textureBuild">[docs]</a><span class="k">def</span> <span class="nf">textureBuild</span> <span class="p">(</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s">&quot;ww&quot;</span><span class="p">,</span> <span class="n">texfilter</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Guerilla texture build&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="textureBuild"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.textureBuild.html#pipeline.core.repository.textureBuild">[docs]</a><span class="k">def</span> <span class="nf">textureBuild</span> <span class="p">(</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s">&quot;ww&quot;</span><span class="p">,</span> <span class="n">texfilter</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
+    <span class="c"># Guerilla texture build</span>
     
     <span class="c">#TODO: Add Gamma support</span>
     <span class="k">if</span> <span class="n">texfilter</span> <span class="o">==</span> <span class="bp">None</span> <span class="p">:</span>
@@ -647,17 +740,17 @@
                 <span class="k">return</span> <span class="bp">False</span>
             
             <span class="n">texfilter</span> <span class="o">=</span> <span class="n">texattr</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
-            <span class="n">texgamma</span> <span class="o">=</span> <span class="n">texattr</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+            <span class="c"># texgamma = texattr[5]</span>
         
-    <span class="nb">file</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span> <span class="p">(</span> <span class="n">path</span> <span class="p">)</span>
-    <span class="n">tex</span> <span class="o">=</span> <span class="nb">file</span> <span class="o">+</span> <span class="s">&quot;.tex&quot;</span>
+    <span class="n">fil</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span> <span class="p">(</span> <span class="n">path</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">tex</span> <span class="o">=</span> <span class="n">fil</span> <span class="o">+</span> <span class="s">&quot;.tex&quot;</span>
     
     <span class="n">cmd</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;render --buildtex --in </span><span class="si">%s</span><span class="s"> --mode </span><span class="si">%s</span><span class="s"> --filter </span><span class="si">%s</span><span class="s"> --out </span><span class="si">%s</span><span class="s">&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">texfilter</span><span class="p">,</span> <span class="n">tex</span> <span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">system</span> <span class="p">(</span> <span class="n">cmd</span> <span class="p">)</span>
     <span class="k">print</span> <span class="s">&quot;buildtex: building </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">tex</span>
     <span class="k">return</span> <span class="bp">True</span>
    </div>
-<div class="viewcode-block" id="textureOptimise"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.textureOptimise">[docs]</a><span class="k">def</span> <span class="nf">textureOptimise</span> <span class="p">(</span> <span class="n">path</span> <span class="p">):</span>
+<div class="viewcode-block" id="textureOptimise"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.textureOptimise.html#pipeline.core.repository.textureOptimise">[docs]</a><span class="k">def</span> <span class="nf">textureOptimise</span> <span class="p">(</span> <span class="n">path</span> <span class="p">):</span>
     
     <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="n">texattr</span> <span class="o">=</span> <span class="n">getTextureAttr</span> <span class="p">(</span> <span class="n">path</span> <span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
@@ -668,7 +761,7 @@
         <span class="n">texdepth</span> <span class="o">=</span> <span class="n">texattr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">texbgcolor</span> <span class="o">=</span> <span class="n">texattr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">texcompress</span> <span class="o">=</span> <span class="n">texattr</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-        <span class="n">texfilter</span> <span class="o">=</span> <span class="n">texattr</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="c"># texfilter = texattr[4]</span>
         
         <span class="c">#Current image attributes</span>
         <span class="n">cmd_identify</span> <span class="o">=</span> <span class="s">&quot;identify </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">path</span>
@@ -676,7 +769,7 @@
         <span class="n">imgattr</span> <span class="o">=</span> <span class="n">imgattr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">)</span>
         <span class="n">imgdepth</span> <span class="o">=</span> <span class="n">imgattr</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
         <span class="n">imgformat</span> <span class="o">=</span> <span class="n">imgattr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">imgres</span> <span class="o">=</span> <span class="n">imgattr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="c"># imgres = imgattr[2]</span>
         
         <span class="k">if</span> <span class="n">texcompress</span> <span class="p">:</span>
             <span class="n">cmd_compress</span> <span class="o">=</span> <span class="s">&quot;mogrify -compress Zip </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">path</span>
@@ -703,21 +796,21 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">print</span> <span class="s">&quot;Can&#39;t find the &#39;</span><span class="si">%s</span><span class="s">&#39; texture type&quot;</span> <span class="o">%</span> <span class="n">fname</span>
     </div>
-<div class="viewcode-block" id="textureExport"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.textureExport">[docs]</a><span class="k">def</span> <span class="nf">textureExport</span> <span class="p">(</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">progressbar</span> <span class="o">=</span> <span class="bp">False</span> <span class="p">):</span>
+<div class="viewcode-block" id="textureExport"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.textureExport.html#pipeline.core.repository.textureExport">[docs]</a><span class="k">def</span> <span class="nf">textureExport</span> <span class="p">(</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">progressbar</span> <span class="o">=</span> <span class="bp">False</span> <span class="p">):</span>
     <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span> <span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">path</span><span class="p">,</span> <span class="s">&quot;*.tif&quot;</span> <span class="p">)</span> <span class="p">)</span>
     <span class="c">#TODO: support progressbar for textures optimisation</span>
-    <span class="k">for</span> <span class="nb">file</span> <span class="ow">in</span> <span class="n">files</span> <span class="p">:</span>
-        <span class="n">textureOptimise</span> <span class="p">(</span> <span class="nb">file</span> <span class="p">)</span>
-        <span class="n">textureBuild</span> <span class="p">(</span> <span class="nb">file</span> <span class="p">)</span>
+    <span class="k">for</span> <span class="n">fil</span> <span class="ow">in</span> <span class="n">files</span> <span class="p">:</span>
+        <span class="n">textureOptimise</span> <span class="p">(</span> <span class="n">fil</span> <span class="p">)</span>
+        <span class="n">textureBuild</span> <span class="p">(</span> <span class="n">fil</span> <span class="p">)</span>
         
     <span class="k">return</span> <span class="bp">True</span>
 </div>
-<div class="viewcode-block" id="textureCheck"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.textureCheck">[docs]</a><span class="k">def</span> <span class="nf">textureCheck</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span> <span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="textureCheck"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.textureCheck.html#pipeline.core.repository.textureCheck">[docs]</a><span class="k">def</span> <span class="nf">textureCheck</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span> <span class="p">)</span> <span class="p">:</span>
     <span class="n">textureType</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getTextureTypes</span> <span class="p">()</span>
     <span class="n">not_pushed</span> <span class="o">=</span> <span class="nb">list</span> <span class="p">(</span> <span class="n">files</span> <span class="p">)</span>
         
-    <span class="k">for</span> <span class="nb">file</span> <span class="ow">in</span> <span class="n">files</span> <span class="p">:</span>
-        <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span> <span class="p">(</span> <span class="nb">file</span> <span class="p">)</span>
+    <span class="k">for</span> <span class="n">fil</span> <span class="ow">in</span> <span class="n">files</span> <span class="p">:</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span> <span class="p">(</span> <span class="n">fil</span> <span class="p">)</span>
         
         <span class="k">for</span> <span class="n">typ</span> <span class="ow">in</span> <span class="n">textureType</span> <span class="p">:</span>
             <span class="n">simpTex</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_\d*_</span><span class="si">%s</span><span class="s">\d*.\d\d\d\d.&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">typ</span> <span class="p">)</span>
@@ -727,17 +820,17 @@
             <span class="n">pattern</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">|</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">simpTex</span><span class="p">,</span> <span class="n">animTex</span> <span class="p">)</span>
                         
             <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span> <span class="p">(</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">fname</span> <span class="p">):</span>
-                <span class="sd">&quot;&quot;&quot;check if the textures are builded&quot;&quot;&quot;</span>
+                <span class="c"># check if the textures are builded</span>
                 <span class="n">texfile</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
                 <span class="n">fext</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">split</span> <span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                                 
                 <span class="k">if</span> <span class="n">fext</span> <span class="o">!=</span> <span class="s">&quot;tex&quot;</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span> <span class="s">&quot;tif&quot;</span><span class="p">,</span> <span class="s">&quot;exr&quot;</span> <span class="p">):</span>
                         <span class="k">if</span> <span class="n">fext</span> <span class="o">==</span> <span class="n">ext</span><span class="p">:</span>
-                            <span class="n">texfile</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">replace</span> <span class="p">(</span> <span class="s">&quot;.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">ext</span><span class="p">,</span> <span class="s">&quot;.tex&quot;</span> <span class="p">)</span>
+                            <span class="n">texfile</span> <span class="o">=</span> <span class="n">fil</span><span class="o">.</span><span class="n">replace</span> <span class="p">(</span> <span class="s">&quot;.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">ext</span><span class="p">,</span> <span class="s">&quot;.tex&quot;</span> <span class="p">)</span>
                         
                     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span> <span class="p">(</span> <span class="n">texfile</span> <span class="p">):</span>
-                        <span class="n">not_pushed</span><span class="o">.</span><span class="n">remove</span> <span class="p">(</span> <span class="nb">file</span> <span class="p">)</span>
+                        <span class="n">not_pushed</span><span class="o">.</span><span class="n">remove</span> <span class="p">(</span> <span class="n">fil</span> <span class="p">)</span>
                         <span class="n">not_pushed</span><span class="o">.</span><span class="n">remove</span> <span class="p">(</span> <span class="n">texfile</span> <span class="p">)</span>  
                         <span class="k">print</span> <span class="s">&quot;textureCheck: </span><span class="si">%s</span><span class="s"> OK&quot;</span> <span class="o">%</span> <span class="n">fname</span>
                     
@@ -746,21 +839,21 @@
 
     <span class="k">return</span> <span class="n">not_pushed</span>
 </div>
-<div class="viewcode-block" id="texturePush"><a class="viewcode-back" href="../../../pipeline.core.html#pipeline.core.repository.texturePush">[docs]</a><span class="k">def</span> <span class="nf">texturePush</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="texturePush"><a class="viewcode-back" href="../../../modules/functions/pipeline.core.repository/pipeline.core.repository.texturePush.html#pipeline.core.repository.texturePush">[docs]</a><span class="k">def</span> <span class="nf">texturePush</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
                   <span class="n">progressbar</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">msgbar</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">rename</span> <span class="o">=</span> <span class="bp">False</span> <span class="p">)</span> <span class="p">:</span>
-    
+        
     <span class="n">lsdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span> <span class="p">(</span> <span class="n">path</span> <span class="p">)</span>
     <span class="n">files</span> <span class="o">=</span> <span class="nb">list</span> <span class="p">()</span>
     
-    <span class="k">for</span> <span class="nb">file</span> <span class="ow">in</span> <span class="n">lsdir</span><span class="p">:</span>
-        <span class="n">base</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span> <span class="p">(</span> <span class="nb">file</span> <span class="p">)</span>        
+    <span class="k">for</span> <span class="n">fil</span> <span class="ow">in</span> <span class="n">lsdir</span><span class="p">:</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span> <span class="p">(</span> <span class="n">fil</span> <span class="p">)</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>       
         
         <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s">&quot;.mra&quot;</span><span class="p">:</span>
-            <span class="n">files</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">path</span><span class="p">,</span> <span class="nb">file</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span> <span class="p">(</span> <span class="n">path</span><span class="p">,</span> <span class="n">fil</span> <span class="p">)</span> <span class="p">)</span>
         
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="nb">file</span><span class="o">.</span><span class="n">find</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">:</span>
-                <span class="k">print</span> <span class="nb">file</span><span class="p">,</span> <span class="s">&quot;should begin with </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">doc_id</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">fil</span><span class="o">.</span><span class="n">find</span> <span class="p">(</span> <span class="n">doc_id</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">:</span>
+                <span class="k">print</span> <span class="n">fil</span><span class="p">,</span> <span class="s">&quot;should begin with </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">doc_id</span>
                 <span class="k">return</span> <span class="mi">1</span>
                 
     <span class="n">texCheck</span> <span class="o">=</span> <span class="n">textureCheck</span> <span class="p">(</span> <span class="n">doc_id</span><span class="p">,</span> <span class="n">files</span> <span class="p">)</span>
@@ -777,8 +870,7 @@
         <span class="n">animtex</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">doc_id</span><span class="p">,</span> <span class="s">&quot;&lt;variation&gt;&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;type&gt;&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;udim&gt;&quot;</span><span class="p">,</span><span class="s">&quot;&lt;frame&gt;&quot;</span><span class="p">,</span> <span class="s">&quot;tif&quot;</span><span class="p">)</span>
         <span class="k">print</span> <span class="s">&quot;texturePush(): expect </span><span class="si">%s</span><span class="s"> or </span><span class="si">%s</span><span class="s"> &quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">simptex</span> <span class="p">,</span> <span class="n">animtex</span><span class="p">)</span>
         
-        <span class="k">return</span> <span class="bp">False</span>
-       </div>
+        <span class="k">return</span> <span class="bp">False</span></div>
 </pre></div>
 
           </div>

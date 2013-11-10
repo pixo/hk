@@ -1,0 +1,70 @@
+#!/bin/bash
+
+if [ -n "$HK_ROOT" ]
+	
+	then
+
+		if [ -n "$HK_PROJECT" ]
+			
+			then
+
+				if [ $HK_DEV_MODE == true ]
+
+					then
+
+						#Build Documentation
+						docpath=$HK_PIPELINE/build_doc
+						funcpath=$docpath/modules/functions
+						buildpath=$docpath/build
+
+						if [[ ( $funcpath != "/" ) && ( -a $funcpath ) ]]
+							then
+								rm -rfv $funcpath
+						fi
+
+						if [[ ( $buildpath != "/" ) && ( -a $buildpath ) ]]
+						        then
+						                rm -rfv $buildpath
+						fi
+
+						for i in $docpath/source/modules/*.rst;
+							do sphinx-autogen -o $docpath/source/modules/functions/`basename $i .rst` $i;
+						done;
+
+						make html
+
+
+						#Copy built documentation to web directory
+						hdk_dir=/mnt/web/hdk
+						dochtml=$buildpath/html
+
+						if [[ ( $hdk_dir != "/" ) && ( -a $hdk_dir ) && ( -a $dochtml ) ]]
+
+							then
+								dir=$hdk_dir/$HK_PIPELINE_VER
+								
+								if [[ ( $dir != "/" ) && ( -a $dir ) ]]
+									
+									then
+										rm -rfv $dir
+								
+								fi
+
+								cp -rv $dochtml $dir
+
+						fi
+
+					else
+						echo "You should login a project as developer, see 'hk-project' help"
+				
+				fi
+
+			else
+				echo "You should login a project as developer, see 'hk-project' help"
+		
+		fi
+
+	else
+		echo "Bad env,'HK_ROOT' is null. Please call a system administrator."
+
+fi

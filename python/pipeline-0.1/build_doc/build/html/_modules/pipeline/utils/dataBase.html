@@ -54,11 +54,11 @@
 
 <span class="sd">@author: pixo</span>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">couchdb</span>
 <span class="kn">import</span> <span class="nn">rule</span>
 
-<div class="viewcode-block" id="DatabaseError"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.DatabaseError">[docs]</a><span class="k">class</span> <span class="nc">DatabaseError</span> <span class="p">(</span> <span class="ne">Exception</span> <span class="p">):</span>
+<div class="viewcode-block" id="DatabaseError"><a class="viewcode-back" href="../../../modules/functions/pipeline.utils.dataBase/pipeline.utils.dataBase.DatabaseError.html#pipeline.utils.dataBase.DatabaseError">[docs]</a><span class="k">class</span> <span class="nc">DatabaseError</span> <span class="p">(</span> <span class="ne">Exception</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Error raised by the project module.</span>
 <span class="sd">    </span>
@@ -69,11 +69,11 @@
         <span class="k">return</span> <span class="nb">repr</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="getDesign"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.getDesign">[docs]</a><span class="k">def</span> <span class="nf">getDesign</span> <span class="p">()</span> <span class="p">:</span>
+<div class="viewcode-block" id="getDesign"><a class="viewcode-back" href="../../../modules/functions/pipeline.utils.dataBase/pipeline.utils.dataBase.getDesign.html#pipeline.utils.dataBase.getDesign">[docs]</a><span class="k">def</span> <span class="nf">getDesign</span> <span class="p">()</span> <span class="p">:</span>
     <span class="k">return</span> <span class="s">&quot;AssetManager&quot;</span>
 
 </div>
-<div class="viewcode-block" id="getServer"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.getServer">[docs]</a><span class="k">def</span> <span class="nf">getServer</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="getServer"><a class="viewcode-back" href="../../../modules/functions/pipeline.utils.dataBase/pipeline.utils.dataBase.getServer.html#pipeline.utils.dataBase.getServer">[docs]</a><span class="k">def</span> <span class="nf">getServer</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">:</span>
     
     <span class="k">if</span> <span class="n">serveradress</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="p">:</span>
         <span class="n">serveradress</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;HK_DB_SERVER&quot;</span> <span class="p">)</span>
@@ -86,7 +86,7 @@
     <span class="k">return</span> <span class="n">db_server</span>
 
 </div>
-<div class="viewcode-block" id="serverExists"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.serverExists">[docs]</a><span class="k">def</span> <span class="nf">serverExists</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="serverExists"><a class="viewcode-back" href="../../../modules/functions/pipeline.utils.dataBase/pipeline.utils.dataBase.serverExists.html#pipeline.utils.dataBase.serverExists">[docs]</a><span class="k">def</span> <span class="nf">serverExists</span> <span class="p">(</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">:</span>
     <span class="k">if</span> <span class="n">serveradress</span><span class="o">.</span><span class="n">find</span> <span class="p">(</span> <span class="s">&quot;http://&quot;</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;http://</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">serveradress</span>
     
@@ -94,12 +94,12 @@
     
     <span class="k">try</span><span class="p">:</span>
         <span class="n">stats</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">stats</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="n">stats</span>
     
     <span class="k">except</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">False</span>
 </div>
-<div class="viewcode-block" id="getDb"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.getDb">[docs]</a><span class="k">def</span> <span class="nf">getDb</span> <span class="p">(</span> <span class="n">dbname</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">,</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="getDb"><a class="viewcode-back" href="../../../modules/functions/pipeline.utils.dataBase/pipeline.utils.dataBase.getDb.html#pipeline.utils.dataBase.getDb">[docs]</a><span class="k">def</span> <span class="nf">getDb</span> <span class="p">(</span> <span class="n">dbname</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">,</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">:</span>
     
     <span class="k">if</span> <span class="n">dbname</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="ow">or</span> <span class="n">dbname</span> <span class="o">==</span> <span class="bp">None</span>  <span class="p">:</span>
         <span class="n">dbname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span> <span class="p">(</span> <span class="s">&quot;HK_DB&quot;</span> <span class="p">)</span>
@@ -121,7 +121,7 @@
 
 
 </div>
-<div class="viewcode-block" id="lsDb"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.lsDb">[docs]</a><span class="k">def</span> <span class="nf">lsDb</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">,</span> <span class="n">view</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">startkey</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">endkey</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
+<div class="viewcode-block" id="lsDb"><a class="viewcode-back" href="../../../modules/functions/pipeline.utils.dataBase/pipeline.utils.dataBase.lsDb.html#pipeline.utils.dataBase.lsDb">[docs]</a><span class="k">def</span> <span class="nf">lsDb</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">,</span> <span class="n">view</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">startkey</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">endkey</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="p">):</span>
     
     <span class="k">if</span> <span class="n">db</span> <span class="o">==</span> <span class="bp">None</span> <span class="p">:</span>
         <span class="n">db</span> <span class="o">=</span> <span class="n">getDb</span> <span class="p">()</span>
@@ -140,7 +140,7 @@
         
     <span class="k">return</span> <span class="n">doc_ls</span>
 </div>
-<div class="viewcode-block" id="createDbViews"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.createDbViews">[docs]</a><span class="k">def</span> <span class="nf">createDbViews</span> <span class="p">(</span><span class="n">db</span><span class="p">):</span>
+<div class="viewcode-block" id="createDbViews"><a class="viewcode-back" href="../../../modules/functions/pipeline.utils.dataBase/pipeline.utils.dataBase.createDbViews.html#pipeline.utils.dataBase.createDbViews">[docs]</a><span class="k">def</span> <span class="nf">createDbViews</span> <span class="p">(</span><span class="n">db</span><span class="p">):</span>
     <span class="n">asset</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">getAssetTypes</span> <span class="p">()</span>
     <span class="n">task</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">getAssetTasks</span><span class="p">()</span>
     
@@ -164,7 +164,7 @@
     <span class="n">_id</span><span class="p">,</span> <span class="n">_rev</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">save</span> <span class="p">(</span><span class="n">doc</span> <span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">_rev</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="createDb"><a class="viewcode-back" href="../../../pipeline.utils.html#pipeline.utils.dataBase.createDb">[docs]</a><span class="k">def</span> <span class="nf">createDb</span> <span class="p">(</span> <span class="n">name</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
+<div class="viewcode-block" id="createDb"><a class="viewcode-back" href="../../../modules/functions/pipeline.utils.dataBase/pipeline.utils.dataBase.createDb.html#pipeline.utils.dataBase.createDb">[docs]</a><span class="k">def</span> <span class="nf">createDb</span> <span class="p">(</span> <span class="n">name</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function create a **DataBase** into the provided server.</span>
 

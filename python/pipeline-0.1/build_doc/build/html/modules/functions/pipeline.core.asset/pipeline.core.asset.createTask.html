@@ -1,0 +1,155 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pipeline.core.asset.createTask &mdash; HDK 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="HDK 0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="pipeline.core.asset" href="../../pipeline.core.asset.html" />
+    <link rel="next" title="pipeline.core.project" href="../../pipeline.core.project.html" />
+    <link rel="prev" title="pipeline.core.asset.createShot" href="pipeline.core.asset.createShot.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../pipeline.core.project.html" title="pipeline.core.project"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pipeline.core.asset.createShot.html" title="pipeline.core.asset.createShot"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../index.html">HDK 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../pipeline.core.asset.html" accesskey="U">pipeline.core.asset</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pipeline-core-asset-createtask">
+<h1>pipeline.core.asset.createTask<a class="headerlink" href="#pipeline-core-asset-createtask" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="pipeline.core.asset.createTask">
+<tt class="descclassname">pipeline.core.asset.</tt><tt class="descname">createTask</tt><big>(</big><em>db=None</em>, <em>doc_id=''</em>, <em>description=''</em>, <em>overdoc={}</em><big>)</big><a class="reference internal" href="../../../_modules/pipeline/core/asset.html#createTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipeline.core.asset.createTask" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function create a <strong>task</strong> into the provided database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> (<em>couchdb.client.Database</em>) &#8211; The database.</li>
+<li><strong>doc_id</strong> (<em>str</em>) &#8211; The asset code.</li>
+<li><strong>description</strong> (<em>str</em>) &#8211; The asset description.</li>
+<li><strong>overdoc</strong> (<em>dict</em>) &#8211; A dictionnary that contains extra document attributes.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">document &#8211; The database document.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">AttributeError, KeyError</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">getDb</span> <span class="p">(</span> <span class="n">dbname</span> <span class="o">=</span> <span class="s">&quot;prod&quot;</span> <span class="p">,</span> <span class="n">serveradress</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1:5984&quot;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">createTask</span> <span class="p">(</span> <span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="p">,</span> <span class="n">doc_id</span> <span class="o">=</span> <span class="s">&quot;prod_ch_mickey_mod_a&quot;</span><span class="p">,</span> <span class="s">&quot;This is the mickey modeling task &#39;a&#39;&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/hk_title_medium.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pipeline.core.asset.createShot.html"
+                        title="previous chapter">pipeline.core.asset.createShot</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../pipeline.core.project.html"
+                        title="next chapter">pipeline.core.project</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../_sources/modules/functions/pipeline.core.asset/pipeline.core.asset.createTask.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../pipeline.core.project.html" title="pipeline.core.project"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pipeline.core.asset.createShot.html" title="pipeline.core.asset.createShot"
+             >previous</a> |</li>
+        <li><a href="../../../index.html">HDK 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../pipeline.core.asset.html" >pipeline.core.asset</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, r.chikh.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

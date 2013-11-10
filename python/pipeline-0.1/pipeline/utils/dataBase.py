@@ -3,7 +3,7 @@ Created on Jan 6, 2013
 
 @author: pixo
 '''
-import os, socket
+import os
 import couchdb
 import rule
 
@@ -43,7 +43,7 @@ def serverExists ( serveradress = "" ) :
     
     try:
         stats = server.stats()
-        return True
+        return stats
     
     except:
         return False

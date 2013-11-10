@@ -6,17 +6,34 @@
 Welcome to Homeworks's documentation!
 =====================================
 
-Contents:
+core Package
+============
 
-.. toctree::
-   :maxdepth: 2
+.. autosummary::
+        :nosignatures:
+        :toctree: modules/
 
+        pipeline.core.asset
+        pipeline.core.project
+        pipeline.core.repository
 
+utils Package
+============
 
-Indices and tables
-==================
+.. autosummary::
+        :nosignatures:
+        :toctree: modules/
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+	pipeline.utils.dataBase
+	pipeline.utils.rule
+	pipeline.utils.system
+
+examples Package
+============
+
+.. autosummary::
+        :nosignatures:
+        :toctree: modules/
+
+        pipeline.examples.examples
 
