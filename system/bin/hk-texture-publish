@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import sys, argparse, os
-import pipeline.core as core
-import pipeline.utils as utils
+import badass.core as core
+import badass.utils as utils
 
 def cli ( path, description ):
     

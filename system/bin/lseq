@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import pipeline.utils as utils
+import badass.utils as utils
 import os
 
 if __name__ == '__main__':

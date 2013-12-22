@@ -2,7 +2,7 @@
 
 import sys
 from PySide import QtGui
-import pipeline.apps as apps
+import badass.apps as apps
 
 if __name__ == '__main__':
     app = QtGui.QApplication ( sys.argv )    
