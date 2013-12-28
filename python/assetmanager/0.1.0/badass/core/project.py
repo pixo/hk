@@ -189,7 +189,7 @@ def createProjectEnv ( name = "" ):
     env_data += "export HK_BADASS_VER=%s\n\n" % utils.getBadassVersion ()
     env_data += "if $HK_DEV_MODE\n"
     env_data += "    then\n"
-    env_data += "        hkmode=\"dev\"\n"
+    env_data += "        hkmode=\"|dev\"\n"
     env_data += "fi\n\n"
     env_data += "alias work='cd $HK_HOME'\n\n"
     env_data += "logpath=\"$HK_USER_REPO\"\n"
@@ -200,7 +200,7 @@ def createProjectEnv ( name = "" ):
     env_data += "json=\"$HK_CODE_PATH/python/json\"\n"
     env_data += "export PYTHONPATH=\"$HK_BADASS:$json:$argparse:$PYTHONPATH\"\n\n"
     env_data += "#Set PS1\n"
-    env_data += r"export PS1='\[\033[1;34m\]|\u@\h\[\033[1;37m\]|\t\[\033[1;31m\]|$HK_PROJECT|$hkmode>\[\033[0;33m\]\w$ \[\033[00m\]'" + "\n\n"
+    env_data += r"export PS1='\[\033[1;34m\]|\u@\h\[\033[1;37m\]|\t\[\033[1;31m\]|$HK_PROJECT$hkmode>\[\033[0;33m\]\w$ \[\033[00m\]'" + "\n\n"
     env_data += "#Set the current directory\n"
     env_data += "if ! ([ -d $logpath ])\n"
     env_data += "      then\n"
