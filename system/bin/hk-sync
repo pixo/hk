@@ -76,12 +76,12 @@ def hk_rsync ( sync, push, pull, dev ):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument( "-sync", "--sync", help = "push/pull data, type hk-sync -sync all to sync all")
-    parser.add_argument( "-push", "--push", help = "commit data to server, type hk-sync -push all to push all")
-    parser.add_argument( "-pull", "--pull", help = "import data from server, type hk-sync -pull all to pull all")
-    parser.add_argument( "-dev", "--dev", help = "set to 1 to sync your 'codes' folder, should be use with others flag")
+    parser = argparse.ArgumentParser ()
+    parser.add_argument ( "-sync", "--sync", default = "all", help = "push/pull data, default sync all" )
+    parser.add_argument ( "-push", "--push", default = "all", help = "commit data to server, default push all" )
+    parser.add_argument ( "-pull", "--pull", default = "all", help = "import data from server, default pull all" )
+    parser.add_argument ( "-dev", "--dev", default = False, help = "set to 1 to sync your 'codes' folder should be use in conjunction of sync/push/pull, default codes is not sync" )
 
-    args = parser.parse_args()
+    args = parser.parse_args ()
 
     hk_rsync ( args.sync, args.push, args.pull, args.dev )

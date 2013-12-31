@@ -432,7 +432,7 @@ def pull ( db = None, doc_id = "", version = "last", extension = False,
 
 
 def push ( db = "", doc_id = "", path = list(), description = "",
-          progressbar = False, msgbar = False, rename = True ):         
+          progressbar = False, msgbar = False, rename = True ):     
     """
     This function copy the desired file from local workspace to repository.
 
@@ -461,6 +461,7 @@ def push ( db = "", doc_id = "", path = list(), description = "",
 
     """
 
+    #TODO: Check push for auto screenshot publish
     # Check the path type is a list
     if type ( path ) == str :
         path = list ( [ path ] )
@@ -480,6 +481,10 @@ def push ( db = "", doc_id = "", path = list(), description = "",
      
     # Get temporary destination directory to push files
     tmp_dir = os.path.join ( dst_dir, utils.hashTime () )
+    
+    # Create temporary directory
+    if not os.path.exists ( tmp_dir ):
+        os.makedirs ( tmp_dir )
              
     # Copy all the files in the destination directory
     progress_value = 0
@@ -494,32 +499,54 @@ def push ( db = "", doc_id = "", path = list(), description = "",
         # file space in case we need to publish directories
         file_space = file_space.replace ( wspace, "" )
         file_name =  os.path.join ( file_space, os.path.basename ( src ) )
-          
+                  
         # Get extension(s) ,UDIMs and frames are commonly separated with this char
-        file_ext = file_name.replace(file_name.split(".")[0],"")
-          
+        file_ext = file_name.replace ( file_name.split(".")[0], "" )
+        
+        #Get screenshot file
+        screenshot = False
+        screenshot_exts = [ ".jpg", ".jpeg", ".png" ]
+        screenshot_ext = ""
+        
+        for ext in screenshot_exts :
+            screenpath = file_name + ext
+            
+            if os.path.exists ( screenpath ) :
+                screenshot = screenpath
+                
+            else :
+                screenpath = screenpath.replace ( "." + file_ext, ext )
+                if screenpath != file_name :
+                    if os.path.exists ( screenpath ) :
+                        screenshot_ext = ext
+                        screenshot = screenpath
+                               
         # Creating the full file name
         if rename:
             dst_file = doc_id + file_ext
+            dst_screenshot = doc_id + screenshot_ext
             
         else:
             dst_file = file_name
+            dst_screenshot = screenshot 
               
-        if dst_file[0] == os.sep :
-            dst_file = dst_file[1:]
-             
+        if dst_file [0] == os.sep :
+            dst_file = dst_file [1:]
+            
         tmp_file = os.path.join ( tmp_dir, dst_file )
         
         # Store the files names in a list to avoid to call the database for each source file
         files_attr.append ( dst_file )
-                    
-        # Create temporary directory
-        dirname = os.path.dirname ( tmp_file )
-        if not os.path.exists ( dirname ):
-            os.makedirs(dirname)
-        
+                            
         # Copy files to temporary directory  
         shutil.copy ( src, tmp_file )
+        
+        # Copy screenshot to temporary directory
+        if screenshot :
+            if dst_screenshot [0] == os.sep :
+                dst_screenshot = dst_screenshot [1:]
+            tmp_screenshot = os.path.join ( tmp_dir, dst_screenshot )
+            shutil.copy ( src, tmp_screenshot )
                             
         if progressbar :
             progress_value += progress_step

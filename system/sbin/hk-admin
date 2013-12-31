@@ -5,7 +5,7 @@ if [ -n "$HK_ROOT" ]
 		if [ -z "$HK_PROJECT" ] 
 			then
 
-				project="ADMIN"
+				project="admin"
 
 				if [ "-d" == $1 ]
 					then

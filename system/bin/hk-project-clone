@@ -4,7 +4,7 @@ from PySide import QtGui
 import badass.apps as apps
 
 if __name__ == '__main__':
-	if os.getenv("HK_PROJECT") == "ADMIN":
+	if os.getenv ( "HK_PROJECT" ) == "admin" :
 	    app = QtGui.QApplication ( sys.argv )    
 	    main = apps.UiProjectCloner ()
 	    main.show()
