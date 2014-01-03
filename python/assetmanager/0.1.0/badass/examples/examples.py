@@ -1,3 +1,4 @@
+import os
 import badass.core as core
 import badass.utils as utils
 
@@ -79,4 +80,34 @@ def getEnv ():
 
     return env_data
     
-# getEnv ()
+def pushfile ( path, description ):
+    
+    if not os.path.isabs ( path ) :
+        path = os.path.abspath ( path )   
+
+    if not os.path.exists ( path ):
+        print "hk-texture-publish: %s doesn't exists" % path
+        return 1
+
+    db = utils.getDb ()
+    doc_id = core.getIdFromPath ( path )
+        
+    if not ( doc_id in db ) :
+        print "hk-push: %s isn't in the  database" % doc_id
+        return 1
+
+    if os.path.isdir ( path ) :
+        core.pushDir ( db, doc_id, path, description )
+            
+    else :
+        basename = os.path.basename ( path )
+        if basename.find ( doc_id ) == 0 :
+            core.pushFile ( db, doc_id, path, description )
+    
+        else:
+            print "wrong naming convention"
+
+if __name__ == '__main__':
+    path = "/homeworks/users/pixo/projects/test/chr/mickey/mod/a/test_chr_mickey_mod_a.ma"
+    description = "test asset"
+    pushfile ( path, description )

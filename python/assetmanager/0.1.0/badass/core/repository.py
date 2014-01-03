@@ -57,7 +57,7 @@ def getIdFromPath ( path = "" ):
     """
     
     # Check if the path exists
-    if os.path.exists ( path ):
+    if not os.path.exists ( path ):
         raise RepositoryError ( "Can't get 'doc_id' from '%s', path doesn't exists." % path )
     
     # Expand contained variables
@@ -467,11 +467,11 @@ def push ( db = "", doc_id = "", path = list(), description = "",
         path = list ( [ path ] )
                  
     # check if the source file exists in the repository
-    file_list = list()
+    file_list = list ()
     
     for src in path :
         if os.path.exists ( src ) :
-            file_list.append(src)
+            file_list.append ( src )
             
         else:
             print "Warning: %s doesn't exist" % src
@@ -495,13 +495,13 @@ def push ( db = "", doc_id = "", path = list(), description = "",
     # Iterate over all the provided source files
     for src in file_list :
         # Get file dir
-        file_space = os.path.dirname ( src )
+        src_dir = os.path.dirname ( src )
         # file space in case we need to publish directories
-        file_space = file_space.replace ( wspace, "" )
+        file_space = src_dir.replace ( wspace, "" )
         file_name =  os.path.join ( file_space, os.path.basename ( src ) )
                   
         # Get extension(s) ,UDIMs and frames are commonly separated with this char
-        file_ext = file_name.replace ( file_name.split(".")[0], "" )
+        file_ext = "." + file_name.split (".")[-1]
         
         #Get screenshot file
         screenshot = False
@@ -510,10 +510,12 @@ def push ( db = "", doc_id = "", path = list(), description = "",
         
         for ext in screenshot_exts :
             screenpath = file_name + ext
+            screenpath = os.path.join ( src_dir, screenpath )
             
             if os.path.exists ( screenpath ) :
+                screenshot_ext = ext
                 screenshot = screenpath
-                
+                break
             else :
                 screenpath = screenpath.replace ( "." + file_ext, ext )
                 if screenpath != file_name :
@@ -546,13 +548,14 @@ def push ( db = "", doc_id = "", path = list(), description = "",
             if dst_screenshot [0] == os.sep :
                 dst_screenshot = dst_screenshot [1:]
             tmp_screenshot = os.path.join ( tmp_dir, dst_screenshot )
-            shutil.copy ( src, tmp_screenshot )
-                            
+            shutil.copy ( screenshot, tmp_screenshot )
+        
+        # Set progress value
+        progress_value += progress_step
         if progressbar :
-            progress_value += progress_step
             progressbar.setProperty ( "value", progress_value )
         else :
-            print progress_value 
+            print ( str ( progress_value ) +"%" )
              
         if msgbar :
             msgbar ( dst_file )
@@ -724,9 +727,10 @@ def pushFile ( db = None, doc_id = False, path = list (), description = "", rena
         doc_id = getIdFromPath ( path[0] )
     
     # Return the directory of the pushed files
-    return push ( db = db , doc_id = doc_id , path = path ,
+    result = push ( db = db , doc_id = doc_id , path = path ,
                   description =  description, progressbar = False,
                   msgbar = False, rename = rename )
+    return result
 
 
 def getTextureAttr ( path = None ):

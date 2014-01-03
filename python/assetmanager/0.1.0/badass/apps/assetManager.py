@@ -1164,12 +1164,12 @@ class UiAssetManager ( UiMainManager ):
 
     def itemClickedVersion( self, item ) :
                 
-        """Set the data to the plain text"""
+        # Set the data to the plain text
         creator  = "Creator:\t%s\n" % item.info [ 'creator' ]
         created  = "\nCreated:\t%s\n" % item.info [ 'created' ]
         description = "\nDescription:\n\t%s\n" % item.info [ 'description' ]
         
-        path = os.path.expandvars( item.info["path"] )
+        path = os.path.expandvars( item.info [ "path" ] )
         pathinfo = "\nPath:\n\t%s\n" % os.path.expandvars( item.info [ "path" ] )
         
         files ="\n\t".join ( map ( str, item.info [ "files" ] ) )
@@ -1178,14 +1178,19 @@ class UiAssetManager ( UiMainManager ):
         infos = creator + created + description + pathinfo + files
         self.plainTextEdit_description.setPlainText ( infos )
         
-        """Set the screenshot"""
-        screenshot = "%s.jpg" % item.parent().hkid
-        screenshot = os.path.join( path, screenshot )
-        
+        # Set the screenshot
+        screenshot = ""
+        for ext in ( "jpg", "jpeg", "png" ) :
+            screenshot = "%s.%s" % ( item.parent().hkid, ext )
+            screenshot = os.path.join ( path, screenshot )
+            
+            if os.path.exists ( screenshot ):
+                break
+            
         if not os.path.exists ( screenshot ) :
-            screenshot = os.path.join( CC_PATH, "hk_title_medium.png" )
+            screenshot = os.path.join ( CC_PATH, "hk_title_medium.png" )
 
-        self.labelImage.setPixmap( screenshot )
+        self.labelImage.setPixmap ( screenshot )
         
     def itemClicked ( self, item ) :
        
