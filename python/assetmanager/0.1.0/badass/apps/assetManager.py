@@ -157,7 +157,7 @@ class UiPush ( QtGui.QWidget ) :
         self.label_description.setObjectName("label_description")
         self.verticalLayout.addWidget(self.label_description)
         self.plainTextEdit_description = QtGui.QPlainTextEdit(self)
-        self.plainTextEdit_description.setMinimumSize(QtCore.QSize(300, 0))
+        self.plainTextEdit_description.setMinimumSize ( QtCore.QSize ( 300, 300 ) )
         self.plainTextEdit_description.setObjectName("plainTextEdit_description")
         self.verticalLayout.addWidget(self.plainTextEdit_description)
         self.horizontalLayout_center.addLayout(self.verticalLayout)
@@ -296,11 +296,10 @@ class UiPush3dPack ( QtGui.QWidget ) :
         self.label_proj.setObjectName("label_proj")
         self.horizontalLayout_2.addWidget(self.label_proj)
         self.verticalLayout_3.addLayout(self.horizontalLayout_2)
-        self.labelImage = QtGui.QLabel(self)
-        self.labelImage.setMinimumSize(QtCore.QSize(300, 300))
-        self.labelImage.setText("")
-        self.labelImage.setObjectName("labelImage")
-        self.verticalLayout_3.addWidget(self.labelImage)
+        self.labelImage = QtGui.QLabel ( self )
+        self.labelImage.setText ( "" )
+        self.labelImage.setObjectName ( "labelImage" )
+        self.verticalLayout_3.addWidget ( self.labelImage )
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem = QtGui.QSpacerItem( 40, 20, QtGui.QSizePolicy.Expanding,
@@ -372,7 +371,7 @@ class UiPush3dPack ( QtGui.QWidget ) :
         icon_push_2 = QtGui.QIcon ( os.path.join ( CC_PATH, "screenshot.png" ) )
         self.screenshotButton.setIcon ( icon_push_2 )
 
-        self.labelImage.setPixmap(self.screenshot)
+        self.labelImage.setPixmap ( self.screenshot )
         
     def signalConnect(self):
         self.pushButton.clicked.connect( self.pushClicked )
@@ -817,10 +816,13 @@ class UiMainManager(QtGui.QMainWindow):
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.labelImage = QtGui.QLabel(self.centralwidget)
         self.labelImage.setMinimumSize ( QtCore.QSize ( 300, 300 ) )
+        self.labelImage.setMaximumSize ( QtCore.QSize ( 960, 540 ) )
+        self.labelImage.setScaledContents ( True )
         self.labelImage.setObjectName ( "labelImage" )
         self.verticalLayout_2.addWidget(self.labelImage)
         self.plainTextEdit_description = QtGui.QPlainTextEdit(self.centralwidget)
         self.plainTextEdit_description.setObjectName("plainTextEdit_description")
+        self.plainTextEdit_description.setMinimumSize ( QtCore.QSize ( 300, 300 ) )
         self.verticalLayout_2.addWidget(self.plainTextEdit_description)
         self.horizontalLayout.addLayout(self.verticalLayout_2)
         self.verticalLayout_main.addLayout(self.horizontalLayout)
@@ -1191,6 +1193,7 @@ class UiAssetManager ( UiMainManager ):
             screenshot = os.path.join ( CC_PATH, "hk_title_medium.png" )
 
         self.labelImage.setPixmap ( screenshot )
+#         self.labelImage.setFixedSize ( QtCore.QSize ( 640, 480 ) )
         
     def itemClicked ( self, item ) :
        
