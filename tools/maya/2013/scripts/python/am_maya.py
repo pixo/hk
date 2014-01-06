@@ -7,9 +7,9 @@ import glob, os, commands
 import maya.cmds as cmds
 import maya.OpenMaya as api
 import maya.OpenMayaUI as apiUI
-import pipeline.apps as apps
-import pipeline.utils as utils
-import pipeline.core as core
+import badass.apps as apps
+import badass.utils as utils
+import badass.core as core
 import PySide.QtGui as QtGui
 import checkDeps_maya
 
@@ -295,7 +295,7 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
                 selection = False, rename = True, extension = ".mb" ) :
 
     if not ( screenshot == "" ) :
-      fname = os.path.join ( "/tmp", "%s%s" % ( core.hashTime (), extension ) )
+      fname = os.path.join ( "/tmp", "%s%s" % ( utils.hashTime (), extension ) )
       fname = saveFile ( fname, selection, msgbar, doc_id )
       
       if fname :
@@ -404,13 +404,13 @@ class UiPushMaya(apps.UiPush3dPack):
             progressbar = self.progressBar
         
             """Push asset"""
-            pushed = self.fnPush[ taskType ] ( db, doc_id, description, item, screenshot, msgbar, progressbar )
+            pushed = self.fnPush [ taskType ] ( db, doc_id, description, item, screenshot, msgbar, progressbar )
   
             if pushed :
                 self.close()
      
     def screenshotClicked ( self ) :
-        self.screenshot = doScreenshot ( os.path.join ( "/tmp", "%s.jpg" % core.hashTime() ) )
+        self.screenshot = doScreenshot ( os.path.join ( "/tmp", "%s.jpg" % utils.hashTime() ) )
         self.labelImage.setPixmap ( self.screenshot )
          
  
@@ -534,7 +534,7 @@ class UiMayaAM(apps.UiAssetManager):
         
         """Get workspace"""
         doc_id = item.hkid
-        path = core.getWorkspaceFromId ( doc_id )
+        path = core.getPathFromId ( doc_id = doc_id, local = True )
         
         if os.path.exists ( path ) :
             """Check if workspace exists"""

@@ -32,11 +32,13 @@ def get_sync_exclude ( sync_args ) :
 def hk_rsync_cmd ( source = "", destination = "", excludes = list (), dev = None ):
     """ Check if sync 'codes' or 'projects' directory """
     if dev and bool ( int ( dev ) ) :
+        print "directory: codes\n"
         category = "codes"
         source = os.path.join ( source, category )
         destination = os.path.join ( destination ) 
 
     else:
+        print "directory: projects\n"
         category = "projects"
         directory = utils.getProjectName ()
         source = os.path.join ( source, category, directory ) 
@@ -53,6 +55,7 @@ def hk_rsync ( sync, push, pull, dev ):
     host_root = utils.getHostRoot ()
     
     if sync :
+        print "sync:", sync
         excludes = get_sync_exclude ( sync )
         """Pushing"""
         cmd = hk_rsync_cmd ( source = local_root, destination = host_root, excludes = excludes, dev = dev )
@@ -63,12 +66,14 @@ def hk_rsync ( sync, push, pull, dev ):
         # print cmd
 
     if push :
+        print "push:", push  
         excludes = get_sync_exclude ( push )
         """Pushing"""
         cmd = hk_rsync_cmd ( source = local_root, destination = host_root, excludes = excludes, dev = dev )
         # print cmd
 
     if pull :
+        print "pull:", pull
         excludes = get_sync_exclude ( pull )
         """Pulling"""
         cmd = hk_rsync_cmd ( source = host_root, destination = local_root, excludes = excludes, dev = dev )
@@ -78,8 +83,8 @@ def hk_rsync ( sync, push, pull, dev ):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser ()
     parser.add_argument ( "-sync", "--sync", default = "all", help = "push/pull data, default sync all" )
-    parser.add_argument ( "-push", "--push", default = "all", help = "commit data to server, default push all" )
-    parser.add_argument ( "-pull", "--pull", default = "all", help = "import data from server, default pull all" )
+    parser.add_argument ( "-push", "--push", default = False, help = "commit data to server, default push all" )
+    parser.add_argument ( "-pull", "--pull", default = False, help = "import data from server, default pull all" )
     parser.add_argument ( "-dev", "--dev", default = False, help = "set to 1 to sync your 'codes' folder should be use in conjunction of sync/push/pull, default codes is not sync" )
 
     args = parser.parse_args ()

@@ -1,6 +1,6 @@
 #/usr/bin/python
 import os
-import pipeline.apps as apps
+import badass.apps as apps
 import maya.cmds as cmds
 
 def getRefsFromFile ( fname ):
