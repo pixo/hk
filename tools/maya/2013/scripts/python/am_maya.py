@@ -317,7 +317,7 @@ def pushMaya ( db = None, doc_id = "", description = "", item = None,
       msgbar ( "Please make a screenshot" )
 
 def pullMaya ( db = None, doc_id = "", ver = "latest" ):
-    path = core.getAssetPath ( doc_id, ver )
+    path = core.getVersionPath ( doc_id = doc_id, version = ver )
     files = glob.glob ( os.path.join ( path, "*.ma" ) )
     files.extend ( glob.glob ( os.path.join ( path, "*.mb" ) ) )
     openFile ( files[0] )
@@ -432,9 +432,9 @@ class UiMayaAM(apps.UiAssetManager):
              
             self.statusbar.showMessage ( "Pulling %s %s" % ( doc_id, str ( ver ) ) )
          
-            path = core.getAssetPath ( doc_id, ver )
-            files = glob.glob(os.path.join(path,"*.ma"))
-            files.extend(glob.glob(os.path.join(path,"*.mb")))
+            path = core.getVersionPath ( doc_id = doc_id, version = ver )
+            files = glob.glob(os.path.join ( path, "*.ma" ) )
+            files.extend ( glob.glob ( os.path.join ( path, "*.mb" ) ) )
              
             importFile ( files [0] )
             
@@ -449,7 +449,7 @@ class UiMayaAM(apps.UiAssetManager):
         ver = int ( item.text ( 0 ) )
         self.statusbar.showMessage ( "Reference %s %s" % ( doc_id, str ( ver ) ) )
      
-        path = core.getAssetPath ( doc_id, ver )
+        path = core.getVersionPath ( doc_id = doc_id, version = ver )
         files = glob.glob(os.path.join(path,"*.ma"))
         files.extend(glob.glob(os.path.join(path,"*.mb")))
          

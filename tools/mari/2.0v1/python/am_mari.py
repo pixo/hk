@@ -1,6 +1,6 @@
-import pipeline.apps as apps
-import pipeline.utils as utils
-import pipeline.core as core
+import badass.apps as apps
+import badass.utils as utils
+import badass.core as core
 import glob, os, PythonQt
 import PySide.QtGui as QtGui 
 import commands

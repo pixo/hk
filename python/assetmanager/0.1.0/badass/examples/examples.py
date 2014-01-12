@@ -17,7 +17,7 @@ def getAnAssetVersion ():
     This is a simple example to get a particular asset version path.
     """
     db = utils.getDb()
-    version = core.getVersionPath ( db = db, doc_id = "bls_chr_belanus_mod_main", version = "last" )
+    version = core.getVersionPath ( db = db, doc_id = "cpt_chr_jdoe_mod_a", version = "last" )
     print version
     return version
 
@@ -108,6 +108,10 @@ def pushfile ( path, description ):
             print "wrong naming convention"
 
 if __name__ == '__main__':
-    path = "/homeworks/users/pixo/projects/test/chr/mickey/mod/a/test_chr_mickey_mod_a.ma"
-    description = "test asset"
-    pushfile ( path, description )
+#     path = "/homeworks/users/pixo/projects/test/chr/mickey/mod/a/test_chr_mickey_mod_a.ma"
+#     description = "test asset"
+#     pushfile ( path, description )
+#     getAnAssetVersion ()
+    db = utils.getDb()
+    versions = db [ "cpt_chr_jdoe_mod_a" ]["versions"]
+    print (versions)

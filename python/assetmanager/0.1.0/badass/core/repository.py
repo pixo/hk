@@ -146,7 +146,7 @@ def getVersions ( db = None, doc_id = "" ):
         
     return versions
 
-def getVersionPath ( db = None, doc_id = "", version = "last" ):
+def getVersionPath ( doc_id = "", version = "last", db = None ):
     """
     This function return the asset path of a particular version.
 
@@ -384,7 +384,7 @@ def pull ( db = None, doc_id = "", version = "last", extension = False,
         return False
     
     # Get asset repository and local asset path
-    src = getVersionPath ( db = db, doc_id = doc_id, version = version )
+    src = getVersionPath ( doc_id = doc_id, version = version, db = db )
     dst = getLocalVersionPath ( doc_id = doc_id, version = version)
               
     # Add/Check files to pull
