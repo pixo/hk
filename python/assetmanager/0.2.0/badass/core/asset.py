@@ -55,7 +55,9 @@ def createAsset ( db = None, doc_id = "", description = "", overdoc = dict() ):
         "description" : description,
         "creator" : os.getenv ( "USER" ),
         "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.localtime() ),
-        "state" : "na"
+        "status": {"art":"ns","tec":"ns"},
+        "visible" : True,
+        "dependencies": {}
         }
     
     #Add extra data if needed
@@ -123,11 +125,12 @@ def createTask ( db = None, doc_id = "", description = "", overdoc = dict() ):
         "fork" : fork,
         "name" : name,
         "description" : description,
-        "trial" : dict(),
-        "stock" : dict(),
+        "review" : dict(),
+        "release" : dict(),
         "creator" : os.getenv ( "USER" ),
         "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.localtime() ),
-        "status" : "ns"
+        "status": {"art":"ns","tec":"ns"},
+        "dependencies" : {}
         }
     
     #Add extra data if needed

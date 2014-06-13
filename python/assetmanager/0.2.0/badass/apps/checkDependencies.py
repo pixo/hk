@@ -83,7 +83,7 @@ class UiCheckDependencies ( QtGui.QMainWindow ):
         return version 
     
     def getVersionsList ( self, doc_id = "" ):
-        paths = core.getVersions ( doc_id )
+        paths = core.getVersions ( db = self.db, doc_id = doc_id )
         versions = list ()
         
         for path in paths :
@@ -100,7 +100,7 @@ class UiCheckDependencies ( QtGui.QMainWindow ):
         current_version = comboBox.currentText ()
         doc_id = comboBox.doc.id
         ver = str ( int ( current_version ) )        
-        versions = comboBox.doc [ "versions" ]
+        versions = comboBox.doc [ "review" ]
         path = versions [ ver ]["path" ]
         
         if current_version == comboBox.versions [ -1 ] :
@@ -162,7 +162,7 @@ class UiCheckDependencies ( QtGui.QMainWindow ):
                 
         for i in range ( 0, self.tableWidget.rowCount() ):
             comboBox = self.tableWidget.cellWidget ( i, 0 )
-            versions = comboBox.doc [ "versions" ]
+            versions = comboBox.doc [ "review" ]
             ver = str ( int ( comboBox.currentText () ) )            
             src = comboBox.path
             dst = os.path.join ( versions [ ver ][ "path" ], os.path.basename ( comboBox.path ) )
@@ -318,7 +318,7 @@ class UiCheckDependencies ( QtGui.QMainWindow ):
                           
 if __name__ == '__main__':
     app = QtGui.QApplication ( sys.argv )
-    fpath = "/homeworks/users/pixo/projects/testing/shot/op001/lay/a/testing_shot_op001_lay_a.v003.base1/testing_shot_op001_lay_a.ma"
+    fpath = "/homeworks/projects/bls/shot/studio-bls/lay/main/006/bls_shot_studio-bls_lay_main.ma"
     main = UiCheckDependencies ( fpath = fpath )
     main.show ()
     app.exec_ ()

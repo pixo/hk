@@ -4,7 +4,7 @@ Created on Feb 17, 2013
 @author: pixo
 '''
 def checkVersionType ( vtype = "" ):
-    types = ["trial", "stock"]
+    types = ["review", "release"]
     if vtype in types :
         return False
     else :

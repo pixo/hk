@@ -106,12 +106,16 @@ def pushfile ( path, description ):
     
         else:
             print "wrong naming convention"
+            
+def createAssetWS():
+    core.createWorkspace ( "test_ch_mickey_mod", "release" )
 
 if __name__ == '__main__':
 #     path = "/homeworks/users/pixo/projects/test/chr/mickey/mod/a/test_chr_mickey_mod_a.ma"
 #     description = "test asset"
 #     pushfile ( path, description )
 #     getAnAssetVersion ()
-    db = utils.getDb()
-    versions = db [ "cpt_chr_jdoe_mod_a" ]["versions"]
-    print (versions)
+#     db = utils.getDb()
+#     versions = db [ "cpt_chr_jdoe_mod_a" ]["versions"]
+#     print (versions)
+    createAssetWS()

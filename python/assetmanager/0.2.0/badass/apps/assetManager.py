@@ -1122,7 +1122,7 @@ class UiAssetManager ( UiMainManager ):
             font.setItalic ( True )
 
             if item.versions == dict ():
-                item.versions = item.dbdoc [ "versions" ]
+                item.versions = item.dbdoc [ "review" ]
                 
                 if len ( item.versions ) > 0:
                     brush = QtGui.QBrush ( QtGui.QColor ( 128, 128, 128 ) )
@@ -1158,10 +1158,10 @@ class UiAssetManager ( UiMainManager ):
         """Set the data to the plain text"""
         creator  = "Creator:\t%s\n" % item.dbdoc [ 'creator' ]
         created  = "\nCreated:\t%s\n" % item.dbdoc [ 'created' ]
-        state = "\nState:\t%s\n" % item.dbdoc [ 'state' ]
+        status = "\nStatus:\t%s\n" % item.dbdoc [ 'status' ]
         description = "\nDescription:\n\t%s\n" % item.dbdoc [ 'description' ]
           
-        infos = creator + created + state + description
+        infos = creator + created + status + description
         self.plainTextEdit_description.setPlainText ( infos )  
 
     def itemClickedVersion( self, item ) :

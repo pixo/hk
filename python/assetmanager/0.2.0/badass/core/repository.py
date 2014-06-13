@@ -73,7 +73,7 @@ def getIdFromPath ( path = "" ):
     
     return doc_id
      
-def getPathFromId ( doc_id = "", local = False, vtype = "trial" ):
+def getPathFromId ( doc_id = "", local = False, vtype = "review" ):
     """
     This function return a path based from a provided 'doc_id'.
 
@@ -119,7 +119,7 @@ def getPathFromId ( doc_id = "", local = False, vtype = "trial" ):
     
     return path
     
-def getVersions ( db = None, doc_id = "", vtype = "trial" ):
+def getVersions ( db = None, doc_id = "", vtype = "review" ):
     """
     This function return all versions in a dictionnary of a particular asset.
 
@@ -155,7 +155,7 @@ def getVersions ( db = None, doc_id = "", vtype = "trial" ):
         
     return versions
 
-def getVersionPath ( doc_id = "", version = "last", db = None, vtype = "trial" ):
+def getVersionPath ( doc_id = "", version = "last", db = None, vtype = "review" ):
     """
     This function return the asset path of a particular version.
 
@@ -199,7 +199,7 @@ def getVersionPath ( doc_id = "", version = "last", db = None, vtype = "trial" )
     
     return path
 
-def getLocalVersionPath ( doc_id = "", version = 1, vtype = "trial" ):
+def getLocalVersionPath ( doc_id = "", version = 1, vtype = "review" ):
     """
     This function return the path of a particular asset version into the user directory .
 
@@ -277,7 +277,7 @@ def getTaskFromId ( doc_id = None ):
     
     return doc_id.split("_")[3]
  
-def createWorkspace ( doc_id = "", vtype = "trial" ):
+def createWorkspace ( doc_id = "", vtype = "review" ):
     """
     This function create the asset user path of a particular asset.
     :param doc_id: The asset code.
@@ -365,7 +365,7 @@ def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) 
     os.system( "chmod -R 555  %s" % destination )
         
 def pull ( db = None, doc_id = "", version = "last", extension = False,
-           progressbar = False, msgbar = False, vtype = "trial" ):
+           progressbar = False, msgbar = False, vtype = "review" ):
 
     """
     This function copy the desired file from repository to local workspace.
@@ -462,7 +462,7 @@ def pull ( db = None, doc_id = "", version = "last", extension = False,
 
 
 def push ( db = "", doc_id = "", path = list(), description = "",
-          progressbar = False, msgbar = False, rename = True, vtype = "trial" ):     
+          progressbar = False, msgbar = False, rename = True, vtype = "review" ):     
     """
     This function copy the desired file from local workspace to repository.
 
@@ -634,7 +634,7 @@ def push ( db = "", doc_id = "", path = list(), description = "",
     # Return the published directory
     return repo
 
-def pushDir ( db = "", doc_id = "", path = list(), description = "", vtype = "trial" ):
+def pushDir ( db = "", doc_id = "", path = list(), description = "", vtype = "review" ):
     """
     This function copy the desired file from local workspace to repository.
 
@@ -729,7 +729,7 @@ def pushDir ( db = "", doc_id = "", path = list(), description = "", vtype = "tr
     # Return the published directory
     return repo
 
-def pushFile ( db = None, doc_id = False, path = list (), description = "", rename = True, vtype = "trial" ):
+def pushFile ( db = None, doc_id = False, path = list (), description = "", rename = True, vtype = "review" ):
     """
     This function copy the desired file from local workspace to repository.
 
@@ -1049,7 +1049,7 @@ def textureCheck ( doc_id = "", files = list() ) :
     return not_success
 
 def texturePush ( db = None, doc_id = "", path = "", description = "",
-                  progressbar = False, msgbar = False, rename = False, vtype = "trial" ) :
+                  progressbar = False, msgbar = False, rename = False, vtype = "review" ) :
 
     """
     This function copy the desired file from local workspace to repository.
