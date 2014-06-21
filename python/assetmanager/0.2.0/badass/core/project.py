@@ -3,7 +3,7 @@ Created on Jan 11, 2013
 
 @author: pixo
 '''
-import os,time
+import os, time
 import badass.utils as utils
 
 
@@ -14,12 +14,12 @@ class ProjectError ( Exception ):
     """
     def __init__ ( self, value ):
         self.value = value
-        
+
     def __str__ ( self ):
         return repr ( self.value )
 
 
-def isProject ( db = None):
+def isProject ( db = None ):
     """
     This function check if the current Db is contains a homeworks project.
 
@@ -34,26 +34,26 @@ def isProject ( db = None):
     >>> True
     
     """
-    
+
     # Check if Db contains a Document with the same name
     if not ( db.name in db ) :
         return False
-    
+
     dbproj = db [ db.name ]
-    
+
     # Check if the Document have a type attr
     if not ( "type" in dbproj ) :
         return False
-    
+
     doctype = dbproj [ "type" ]
-    
+
     # Check if the Document is a project type Document
     if doctype == "project":
         return True
     else :
         return False
 
-   
+
 def getProject ( db = None ):
     """
     This function return the project Document from DB.
@@ -69,16 +69,16 @@ def getProject ( db = None ):
     >>> <Document 'bls'@'5-97ef4c34350f1c4f5141f05048150bdb' ... >
     
     """
-    
-    # Check if the db contains project 
-    if not ( isProject ( db ) ): 
+
+    # Check if the db contains project
+    if not ( isProject ( db ) ):
         raise ProjectError ( "getProject(): Db %s doesn't  contains a project" % db.name )
-    
+
     # Return the Project Document from db
     return db [ db.name ]
 
 
-def getProjectUsers ( db = None ):    
+def getProjectUsers ( db = None ):
     """
     This function return the list of authorised project users.
 
@@ -93,17 +93,17 @@ def getProjectUsers ( db = None ):
     >>> [ 'jdoe', 'mickey', 'pixo' ]
     
     """
-    
-    # Check if the db contains project 
-    if not ( isProject ( db ) ): 
+
+    # Check if the db contains project
+    if not ( isProject ( db ) ):
         raise ProjectError ( "getProjectUsers(): Db %s isn't a project" % db.name )
-    
+
     dbproject = db [ db.name ]
-    
-    # Check if the project contains Users 
-    if not ( "users" in dbproject ): 
+
+    # Check if the project contains Users
+    if not ( "users" in dbproject ):
         raise ProjectError ( "getProjectUsers(): Project %s doesn't contains Users" % db.name )
-    
+
     # Return the Users list
     return dbproject ["users"]
 
@@ -122,31 +122,32 @@ def lsProjectServer ( serveradress ):
     >>> [ 'prod1', 'prod2', 'prod3' ]
     
     """
-    
+
     # Get db server from adress
     server = utils.getServer ( serveradress )
     projects = list ()
-    user = os.getenv ( "USER" )
-    
-    # Iterate over all databases contained in the DB server     
+    user = utils.getCurrentUser()
+
+    # Iterate over all databases contained in the DB server
     for db_name in server :
-        db = server [ db_name ]
-        
-        # Check if the current db is a HK project
-        if isProject ( db ) :
-            
-            # Get project authorized users
-            users = getProjectUsers ( db )
-            
-            # If current user is in the user list append project in the project list
-            if user in users:
-                projects.append ( db_name )
-    
+        if not db_name in ( "_replicator", "_users" ):
+            db = server [ db_name ]
+
+            # Check if the current db is a HK project
+            if isProject ( db ) :
+
+                # Get project authorized users
+                users = getProjectUsers ( db )
+
+                # If current user is in the user list append project in the project list
+                if user in users:
+                    projects.append ( db_name )
+
     # Return a list of projects name (str)
     return projects
 
 
-def createProjectEnv ( name = "" ):
+def createProjectEnv ( name = "", badassversion = None ):
     """
     This function create a project environment file.
     It contains project environment variables related to the project.
@@ -154,6 +155,8 @@ def createProjectEnv ( name = "" ):
 
     :param name: The project name.
     :type name: str
+    :param badassVersion: The asset manager version.
+    :type badassVersion: str
     :returns:  str/bool -- If environment file created return the file path else False
 
     **Example:**
@@ -162,10 +165,13 @@ def createProjectEnv ( name = "" ):
     >>> '/homeworks/projects/prod/config/prod.env'
     
     """
-    
+
     # Check the project name is
     if ( name != None ) and ( name == "" ):
         return False
+
+    if not badassversion:
+        badassversion = utils.getBadassVersion()
 
     # TODO:Create this document with a ui
     env_data = "source $HOME/.bashrc\n"
@@ -186,7 +192,7 @@ def createProjectEnv ( name = "" ):
     env_data += "export HK_MODO_VER=701\n"
     env_data += "export HK_MUDBOX_VER=2013\n"
     env_data += "export HK_NUKE_VER=7.0v2\n"
-    env_data += "export HK_BADASS_VER=%s\n\n" % utils.getBadassVersion ()
+    env_data += "export HK_BADASS_VER=%s\n\n" % badassversion
     env_data += "if $HK_DEV_MODE\n"
     env_data += "    then\n"
     env_data += "        hkmode=\"|dev\"\n"
@@ -209,7 +215,7 @@ def createProjectEnv ( name = "" ):
 
     # Get the project env file
     env_file = utils.getProjectEnv ( name )
-        
+
     if env_file :
         # Create Environment file
         if utils.createFile ( env_file, env_data ):
@@ -244,32 +250,32 @@ def createProjectCred ( name, db_server, host_root ):
     >>> '/homeworks/users/jdoe/.hk/prod'
     
     """
-    
+
     # Create credential file contains
     cred = "export HK_DB_SERVER=%s\n" % db_server
     cred += "export HK_HOST_ROOT=%s\n" % host_root
-            
+
     # Create credential file
     file_cred = os.path.join ( os.getenv ( "HK_ROOT" ), "users", os.getenv ( "USER" ) )
-    file_cred = os.path.join ( file_cred , ".hk", name  )
-    
+    file_cred = os.path.join ( file_cred , ".hk", name )
+
     # Create the file with the collected credential data
     iscreated = utils.createFile ( file_cred, cred, True )
-    
+
     # Check if the file is created
     if iscreated :
-        
+
         # Change the permission
         os.chmod ( file_cred, 0600 )
-        
-        # Return the create file credential path (str) 
+
+        # Return the create file credential path (str)
         return file_cred
-    
+
     else :
         return False
-    
+
 def createProject ( name = "", description = "Default", db_server = "",
-                      host_root = "", overdoc = dict () ):
+                      host_root = "", overdoc = dict (), badassversion = None ):
     """
     This function create a project.
 
@@ -292,59 +298,63 @@ def createProject ( name = "", description = "Default", db_server = "",
                         db_server = "admin:pass@127.0.0.1:5984", host_root = "admin@127.0.0.1:/homeworks" )
     
     """
-    
-    #Check if DB server exists
+    # Check if DB server exists
     adress = "http://%s/" % db_server
     exists = utils.serverExists ( adress )
-    
+
     if not exists :
         print "createProject(): Wrong DB server adress,user or/and password"
         return False
-    
-    #Check args
+
+    # Check args
     if name == "" :
         print "CreateProject(): Please provide a project name"
         return False
-    
+
     if db_server == "" or db_server == None :
         print "CreateProject(): No server adress provided"
         return False
-    
-    #Check if DB and project already exist
-    db = utils.getDb ( name, adress )
-        
-    #If DB and project exists return                 
+
+    # Check if DB and project already exist
+    db = utils.getDb( name, adress )
+
+    # If DB and project exists return
     if db != False :
         return False
-        
-    #Create DB
-    db = utils.createDb ( name, adress )
-        
-    #Create project env and cred file
-    createProjectEnv ( name )
-    createProjectCred ( name, db_server, host_root )    
-    
-    #Adding db project documents    
-    assets = utils.getAssetTypes ()
-    tasks = utils.getAssetTasks ()
-    
+
+    # Create DB
+    db = utils.createDb( name, adress )
+
+    # Create project env and cred file
+    createProjectEnv( name, badassversion )
+    createProjectCred( name, db_server, host_root )
+
+    # Adding db project documents
+    assets = utils.getAssetTypes()
+    tasks = utils.getAssetTasks()
+
+    # Users
+    users = dict()
+    users[utils.getCurrentUser()] = "admin"
+
     doc = {
             "_id" : "%s" % name,
             "type" : "project",
             "name" : name,
             "description" : description,
-            "assets_type" : assets,
-            "tasks_type" : tasks,
+            "asset_types" : assets,
+            "asset_tasks" : tasks,
             "creator" : os.getenv ( "USER" ),
-            "created" : time.strftime ( "%Y %b %d %H:%M:%S", time.localtime() ),
+            "created" : time.time(),
             "root" : "/homeworks",
-            "users" : list ( [ os.getenv ( "USER" ) ] ),
+            "users" : users,
+            "status": {"art":"ns", "tech":"ns"},
             "host" : host_root
             }
-    
+
     doc.update( overdoc )
-    
+
     _id, _rev = db.save( doc )
     print "createProject(): Project '%s' created" % ( name )
-    
+
     return db

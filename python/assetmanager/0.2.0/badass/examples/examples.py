@@ -1,7 +1,15 @@
 import os
 import badass.core as core
 import badass.utils as utils
+import time
 
+def measureTime( a ):
+    start = time.clock()
+    l = a()
+    elapsed = time.clock()
+    elapsed = elapsed - start
+    print "Time spent in (function name) is: ", elapsed
+    return l
 
 def getAllAssetVersions ():
     """
@@ -79,36 +87,65 @@ def getEnv ():
     env_data += "fi\n"
 
     return env_data
-    
-def pushfile ( path, description ):
-    
-    if not os.path.isabs ( path ) :
-        path = os.path.abspath ( path )   
 
-    if not os.path.exists ( path ):
+
+def pushfile ( path, description ):
+
+    if not os.path.isabs( path ) :
+        path = os.path.abspath( path )
+
+    if not os.path.exists( path ):
         print "hk-texture-publish: %s doesn't exists" % path
         return 1
 
-    db = utils.getDb ()
-    doc_id = core.getIdFromPath ( path )
-        
+    db = utils.getDb()
+    doc_id = core.getIdFromPath( path )
+
     if not ( doc_id in db ) :
         print "hk-push: %s isn't in the  database" % doc_id
         return 1
 
     if os.path.isdir ( path ) :
-        core.pushDir ( db, doc_id, path, description )
-            
+        core.pushDir( db, doc_id, path, description )
     else :
-        basename = os.path.basename ( path )
-        if basename.find ( doc_id ) == 0 :
-            core.pushFile ( db, doc_id, path, description )
-    
-        else:
-            print "wrong naming convention"
-            
-def createAssetWS():
-    core.createWorkspace ( "test_ch_mickey_mod", "release" )
+        core.pushFile( db, doc_id, path, description )
+
+def lsAllType():
+    db = utils.getDb()
+    typ = "asset"
+    startkey = "loc"
+    asset_ls = utils.lsDb( db, typ, startkey )
+    return asset_ls
+
+def createAssetWS( doc_id ):
+    core.createWorkspace( doc_id )
+
+def createAssetOnDB( doc_id ):
+    description = "Test"
+    stat = core.createAsset ( db = None, doc_id = doc_id, description = description )
+    print stat
+
+def createTaskOnDB( doc_id ):
+    db = utils.getDb()
+    description = "Test"
+    stat = core.createTask( db = db, doc_id = doc_id, description = description )
+    print stat
+
+def createMassiveAssets():
+    prj = utils.getProjectName()
+    for i in range( 1, 10 ):
+        createAssetOnDB( "%s_chr_donald%s" % ( prj, i ) )
+        createTaskOnDB( "%s_chr_donald%s_mod_a" % ( prj, i ) )
+        createTaskOnDB( "%s_chr_donald%s_tex_a" % ( prj, i ) )
+        createTaskOnDB( "%s_chr_donald%s_rig_a" % ( prj, i ) )
+        createTaskOnDB( "%s_chr_donald%s_sur_a" % ( prj, i ) )
+
+    for i in range( 1, 10 ):
+        createAssetOnDB( "%s_prp_bike%s" % ( prj, i ) )
+        createTaskOnDB( "%s_prp_bike%s_mod_a" % ( prj, i ) )
+        createTaskOnDB( "%s_prp_bike%s_tex_a" % ( prj, i ) )
+        createTaskOnDB( "%s_prp_bike%s_rig_a" % ( prj, i ) )
+        createTaskOnDB( "%s_prp_bike%s_sur_a" % ( prj, i ) )
 
 if __name__ == '__main__':
 #     path = "/homeworks/users/pixo/projects/test/chr/mickey/mod/a/test_chr_mickey_mod_a.ma"
@@ -117,5 +154,24 @@ if __name__ == '__main__':
 #     getAnAssetVersion ()
 #     db = utils.getDb()
 #     versions = db [ "cpt_chr_jdoe_mod_a" ]["versions"]
-#     print (versions)
-    createAssetWS()
+
+#     createAssetOnDB( "ben_chr_donald" )
+#     createTaskOnDB( "ben_chr_donald_mod_a" )
+#     createAssetOnDB( "loc_prp_umbrella" )
+#     createTaskOnDB( "loc_prp_umbrella_mod_a" )
+#     createAssetWS("test_chr_mimi_mod_a")
+#     createAssetWS("test_prp_umbrella_mod_a")
+
+#     pushfile("/homeworks/users/pixo/projects/test/chr/mimi/mod/a/review/test.ma", "this is a test")
+#     pushfile("/homeworks/users/pixo/projects/test/prp/umbrella/mod/a/review/test.ma", "this is a test")
+    createMassiveAssets()
+#     print utils.getDb()
+#     y = time.gmtime()clock
+
+#     y = time.time()
+#     print time.localtime( y )
+#     print time.gmtime( y )
+
+
+
+

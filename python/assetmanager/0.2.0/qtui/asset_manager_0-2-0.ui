@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>786</width>
-    <height>755</height>
+    <width>1042</width>
+    <height>878</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -346,6 +346,22 @@
                  </widget>
                 </item>
                 <item>
+                 <widget class="QCheckBox" name="checkBoxActive">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>active only</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                  <property name="tristate">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <spacer name="horizontalSpacerVersions">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
@@ -418,6 +434,24 @@
                    <italic>false</italic>
                    <bold>true</bold>
                   </font>
+                 </property>
+                 <property name="background">
+                  <brush brushstyle="NoBrush">
+                   <color alpha="255">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>0</blue>
+                   </color>
+                  </brush>
+                 </property>
+                 <property name="foreground">
+                  <brush brushstyle="NoBrush">
+                   <color alpha="255">
+                    <red>1</red>
+                    <green>0</green>
+                    <blue>0</blue>
+                   </color>
+                  </brush>
                  </property>
                  <item>
                   <property name="text">
