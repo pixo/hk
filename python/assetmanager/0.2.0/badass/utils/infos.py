@@ -29,7 +29,6 @@ def getBadassVersions ():
     
     >>> getBadassVersions ()
     >>> ["0.1.0", "0.2.0"]
-    
     """
     code = os.getenv( "HK_CODE_PATH" )
     versions = list()

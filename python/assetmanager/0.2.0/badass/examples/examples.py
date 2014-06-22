@@ -133,19 +133,36 @@ def createTaskOnDB( doc_id ):
 
 def createMassiveAssets():
     prj = utils.getProjectName()
-    for i in range( 1, 10 ):
-        createAssetOnDB( "%s_chr_donald%s" % ( prj, i ) )
-        createTaskOnDB( "%s_chr_donald%s_mod_a" % ( prj, i ) )
-        createTaskOnDB( "%s_chr_donald%s_tex_a" % ( prj, i ) )
-        createTaskOnDB( "%s_chr_donald%s_rig_a" % ( prj, i ) )
-        createTaskOnDB( "%s_chr_donald%s_sur_a" % ( prj, i ) )
+    types = utils.getAssetTypes()
+    tasks = utils.getAssetTasks()
 
-    for i in range( 1, 10 ):
-        createAssetOnDB( "%s_prp_bike%s" % ( prj, i ) )
-        createTaskOnDB( "%s_prp_bike%s_mod_a" % ( prj, i ) )
-        createTaskOnDB( "%s_prp_bike%s_tex_a" % ( prj, i ) )
-        createTaskOnDB( "%s_prp_bike%s_rig_a" % ( prj, i ) )
-        createTaskOnDB( "%s_prp_bike%s_sur_a" % ( prj, i ) )
+    for t in types:
+        createAssetOnDB( "%s_%s_donald%s" % ( prj, types[t], types[t] ) )
+
+        for k in tasks:
+            createTaskOnDB( "%s_%s_donald%s_%s_a" % ( prj, types[t], types[t], tasks[k] ) )
+
+# def pub():
+#     path = "/homeworks/users/pixo/projects/test/cam/donaldcam/ani/a/review/caca.ma"
+#     description = "caca"
+# 
+#     db = utils.getDb ()
+#     doc_id = core.getIdFromPath ( path )
+# 
+#     if not ( doc_id in db ) :
+#         print "hk-push: %s isn't in the  database" % doc_id
+#         return 1
+# 
+#     if os.path.isdir ( path ) :
+#         core.pushDir ( db, doc_id, path, description )
+# 
+#     else :
+#         basename = os.path.basename ( path )
+#         if basename.find ( doc_id ) == 0 :
+#             core.pushFile ( db = db, doc_id = doc_id, path = path, description = description )
+# 
+#         else:
+#             print "wrong naming convention"
 
 if __name__ == '__main__':
 #     path = "/homeworks/users/pixo/projects/test/chr/mickey/mod/a/test_chr_mickey_mod_a.ma"
@@ -164,13 +181,14 @@ if __name__ == '__main__':
 
 #     pushfile("/homeworks/users/pixo/projects/test/chr/mimi/mod/a/review/test.ma", "this is a test")
 #     pushfile("/homeworks/users/pixo/projects/test/prp/umbrella/mod/a/review/test.ma", "this is a test")
-    createMassiveAssets()
+#     createMassiveAssets()
 #     print utils.getDb()
 #     y = time.gmtime()clock
 
 #     y = time.time()
 #     print time.localtime( y )
 #     print time.gmtime( y )
+#     pub()
 
 
 

@@ -3,7 +3,7 @@ Created on Mar 5, 2013
 
 @author: pixo
 '''
-import sys, re, os
+import sys, re
 import badass.core as core
 import badass.utils as utils
 from PySide import QtCore, QtGui
@@ -239,66 +239,65 @@ class UiProjectCreator ( QtGui.QMainWindow ):
 
 
     def setUi ( self ):
-        ccpath = utils.getCCPath()
 
         """Username"""
         username = "admin"
-        icon = os.path.join ( utils.getCCPath (), "admin.png" )
+        icon = utils.getIconPath( "admin" )
         self.label_username.setText ( "DB user" )
         self.labelpixmap_username.setPixmap ( icon )
         self.lineEdit_username.setText ( username )
 
         """Password"""
         password = "admin"
-        icon = os.path.join ( utils.getCCPath (), "password.png" )
+        icon = utils.getIconPath( "password" )
         self.labelPassword.setText ( "DB password" )
         self.labelPixmapPassword.setPixmap ( icon )
         self.lineEditPassword.setText ( password )
 
         """DB adress"""
         adress = "127.0.0.1:5984"
-        icon = os.path.join ( utils.getCCPath (), "adress.png" )
+        icon = utils.getIconPath( "adress" )
         self.label_adress.setText ( "DB adress" )
         self.labelpixmap_adress.setPixmap ( icon )
         self.lineEdit_adress.setText ( adress )
 
         """host Username"""
-        username = "admin"
-        icon = os.path.join ( utils.getCCPath (), "admin.png" )
+        username = "homeworks"
+        icon = utils.getIconPath( "admin" )
         self.label_husername.setText ( "Host user" )
         self.labelpixmap_husername.setPixmap ( icon )
         self.lineEdit_husername.setText ( username )
 
         """host adress"""
         hadress = "127.0.0.1"
-        icon = os.path.join ( utils.getCCPath (), "adress.png" )
+        icon = utils.getIconPath( "adress" )
         self.label_hadress.setText ( "Host adress" )
         self.labelpixmap_hadress.setPixmap ( icon )
         self.lineEdit_hadress.setText ( hadress )
 
         """Homework root"""
-        root = "homeworks"
-        icon = os.path.join ( utils.getCCPath (), "hierarchy.png" )
+        root = "volume1"
+        icon = utils.getIconPath( "hierarchy" )
         self.label_root.setText ( "Host root" )
         self.lineEdit_root.setText ( root )
         self.labelpixmap_root.setPixmap ( icon )
 
         """project"""
         project = "prj"
-        icon = os.path.join( utils.getCCPath (), "project.png" )
+        icon = utils.getIconPath( "project" )
         self.label_project.setText( "Project slug" )
         self.labelpixmap_project.setPixmap( icon )
         self.lineEdit_project.setText( project )
 
         """Version"""
-        icon = os.path.join ( utils.getCCPath (), "hktitle16x16.png" )
+        icon = utils.getIconPath( "hktitle16x16" )
         self.label_version.setText ( "Badass" )
         self.labelpixmap_version.setPixmap ( icon )
         self.comboBoxVersions.addItems( utils.getBadassVersions() )
 
         """Create"""
         self.pushButton_create.setEnabled ( False )
-        self.pushButton_create.setIcon ( QtGui.QIcon ( os.path.join ( ccpath, "add.png" ) ) )
+        self.pushButton_create.setIcon ( QtGui.QIcon ( utils.getIconPath( "add" ) ) )
 
 
 if __name__ == '__main__':

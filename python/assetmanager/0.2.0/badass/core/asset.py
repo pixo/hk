@@ -163,10 +163,6 @@ def createPack ( db = None, doc_id = "", description = "No description" ):
     :type doc_id: str
     :param description: The asset description.
     :type description: str
-    :param cut_in: The first frame of the shot.
-    :type cut_in: float
-    :param cut_out: The last frame of the shot.
-    :type cut_out: float
     :returns:  document -- The database document.
     :raises: AttributeError, KeyError
 
@@ -181,9 +177,9 @@ def createPack ( db = None, doc_id = "", description = "No description" ):
     overdoc = {"pack" : {}}
 
     # Create asset shot with shot extra attributes
-    shot = createAsset ( db, doc_id, description, overdoc )
+    result = createAsset ( db, doc_id, description, overdoc )
 
-    return shot
+    return result
 
 def createShot ( db = None, doc_id = "", description = "No description",
                     cut_in = 1, cut_out = 100 ):
@@ -216,7 +212,7 @@ def createShot ( db = None, doc_id = "", description = "No description",
                "cut_out": cut_out }
 
     # Create asset shot with shot extra attributes
-    shot = createAsset ( db, doc_id, description, overdoc )
+    result = createAsset ( db, doc_id, description, overdoc )
 
-    return shot
+    return result
 

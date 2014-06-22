@@ -21,15 +21,10 @@ def cli ( path, description ):
         return 1
 
     if os.path.isdir ( path ) :
-        core.pushDir ( db, doc_id, path, description )
+        core.pushDir ( db = db, doc_id = doc_id, path = path, description = description )
             
     else :
-        basename = os.path.basename ( path )
-        if basename.find ( doc_id ) == 0 :
-            core.pushFile ( db, doc_id, path, description )
-    
-        else:
-            print "wrong naming convention"
+        core.pushFile ( db = db, doc_id = doc_id, path = path, description = description )
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

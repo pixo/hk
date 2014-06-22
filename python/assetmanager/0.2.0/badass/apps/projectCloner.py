@@ -70,12 +70,12 @@ class UiProjectCloner ( QtGui.QWidget ):
         """If server exist set 'ok' icon """
         self.server = False
         if utils.serverExists ( serveradress ) :
-            icon = os.path.join ( utils.getCCPath (), "ok.png" )
+            icon = utils.getIconPath( "ok" )
             self.server = utils.getServer ( serveradress )
 
         """Clear current comboBox_project list"""
         self.comboBox_project.clear ()
-        icon = os.path.join ( utils.getCCPath (), "cross.png" )
+        icon = utils.getIconPath( "cross" )
         self.projects = ["No project available"]
 
         if utils.serverExists ( serveradress ) :
@@ -93,10 +93,10 @@ class UiProjectCloner ( QtGui.QWidget ):
             curroot = os.path.join ( root, proj )
 
             if proj == "No project available" or os.path.exists ( curroot ) :
-                icon = os.path.join ( utils.getCCPath (), "cross.png" )
+                icon = utils.getIconPath( "cross" )
                 self.project_stat [ proj ] = False
             else:
-                icon = os.path.join ( utils.getCCPath (), "ok.png" )
+                icon = utils.getIconPath( "ok" )
                 self.project_stat [ proj ] = True
 
             self.comboBox_project.setItemIcon ( i, QtGui.QIcon ( icon ) )
@@ -241,48 +241,47 @@ class UiProjectCloner ( QtGui.QWidget ):
 
 
     def setUi ( self ):
-        ccpath = utils.getCCPath()
-
         """Username"""
         username = "admin"
-        icon = os.path.join ( utils.getCCPath (), "admin.png" )
+        icon = utils.getIconPath( "admin" )
         self.label_username.setText ( "DB user" )
         self.labelpixmap_username.setPixmap ( icon )
         self.lineEdit_username.setText ( username )
 
         """Password"""
         password = "admin"
-        icon = os.path.join ( utils.getCCPath (), "password.png" )
+        icon = utils.getIconPath( "password" )
         self.label_password.setText ( "DB password" )
         self.labelpixmap_password.setPixmap ( icon )
         self.lineEdit_password.setText ( password )
 
         """DB adress"""
         adress = "127.0.0.1:5984"
-        icon = os.path.join ( utils.getCCPath (), "adress.png" )
+        icon = utils.getIconPath( "adress" )
         self.label_adress.setText ( "DB adress" )
         self.labelpixmap_adress.setPixmap ( icon )
         self.lineEdit_adress.setText ( adress )
 
         """DB project"""
-        icon = os.path.join ( utils.getCCPath (), "refresh.png" )
+        icon = utils.getIconPath( "refresh" )
         self.label_project.setText ( "DB project" )
         self.refresh.setIcon ( QtGui.QIcon ( icon ) )
 
 
         """Homework root"""
         root = "/homeworks"
-        icon = os.path.join ( utils.getCCPath (), "hierarchy.png" )
+        icon = utils.getIconPath( "hierarchy" )
         self.label_root.setText ( "Project root" )
         self.lineEdit_root.setText ( root )
         self.lineEdit_root.setReadOnly ( True )
         self.labelpixmap_root.setPixmap ( icon )
 
         """Description"""
+        icon = utils.getIconPath( "pull" )
         self.label_4.setText ( "Description" )
         self.plainTextEdit.setPlainText ( "This is the project" )
         self.pushButton.setText ( "Synchronize" )
-        self.pushButton.setIcon ( QtGui.QIcon ( os.path.join ( ccpath, "pull.png" ) ) )
+        self.pushButton.setIcon ( QtGui.QIcon ( icon ) )
 
         self.project_stat = dict ()
         self.project_stat [ "No project available" ] = False

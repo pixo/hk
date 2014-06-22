@@ -11,7 +11,7 @@ def checkVersionType ( vtype = "" ):
         print ( "utils.checkVersionType: wrong version type" )
         return True
 
-def getTextureTypes () :
+def getTextureTypes() :
     return {  # TODO: Create a dict instead of a list for the type parameters
             "bump" : ( "R", "8-bit 16-bit", "rgb(127,127,127)", True, "bspline", "1" ),
             "bumpbk" : ( "R", "8-bit 16-bit", "rgb(127,127,127)", True, "bspline", "1" ),
@@ -75,39 +75,69 @@ def getTextureTypes () :
             "transcol" : ( "RGB", "8-bit 16-bit", "rgb(127,127,255)", True, "triangle", "1" ),
             "dens" : ( "R", "8-bit 16-bit", "rgb(255,255,255)", True, "triangle", "1" )}
 
-def getAssetTypes ():
+def getAssetTypes():
     return {'camera':'cam',
             'character':'chr',
-            'environment':'env',
-            'material':'mtl',
             'prop':'prp',
-            'sequence':'seq',
-            'shot':'shot',
             'vehicle':'vcl',
-            'effect':'fx',
-            'pack':'pck'}
+            'interior':'int',
+            'exterior':'ext',
+            'material':'mtl',
+            'sequence':'seq',
+            'scene':'scn',
+            'shot':'sht',
+            'visual-effect':'vfx'}
 
-def getAssetTasks ():
+def getAssetTasks():
     return {'animation':'ani',
-            'bashcomp':'bcmp',
-            'composite':'rcmp',
-            'mattepaint':'dmp',
+            'compositing':'cmp',
+            'render':'ren',  # TODO: automate creation of main(CG)/COMP forks
+            'matte-painting':'dmp',
             'dynamic':'dyn',
             'fluid':'fld',
             'ibl':'ibl',
             'layout':'lay',
             'lighting':'lit',
-            'model':'mod',
-            'override' : 'ovr',
+            'modeling':'mod',  # TODO: automate creation of main/sculpt/retopo forks
+            'override' :'ovr',
             'particle':'pcl',
-            'render':'ren',
-            'rendercam':'rca',
-            'projcam':'pca',
+            'camera':'cam',  # TODO: automate creation of main(render)/projection forks
+            'previz':"viz",
             'rig' : 'rig',
-            'retopo':'rtp',
             'rotoscopy':'rot',
-            'sculpt':'sct',
             'shader':'shd',
-            'surface':'sur',
-            'texture':'tex',
-            'texgroom':'tgr'}
+            'surfacing':'sur',
+            'texturing':'tex',  # TODO: automate creation of main(surfacing)/grooming forks
+            'grooming':'grm',
+            'sound':'snd',
+            'concept':'cpt',
+            'model-sheet':'mst'}
+
+def getDefaultTasks ():
+    return {"chr":{'animation':'ani',
+                'bash-comp':'bcp',
+                'render-comp':'rcp',
+                'render-cg':'rcg',
+                'matte-painting':'dmp',
+                'dynamic':'dyn',
+                'fluid':'fld',
+                'ibl':'ibl',
+                'layout':'lay',
+                'lighting':'lit',
+                'modeling':'mod',
+                'override' :'ovr',
+                'particle':'pcl',
+                'camera-projection':'cpj',
+                'camera-render':'crn',
+                'previz':"viz",
+                'rig' : 'rig',
+                'retopo':'rtp',
+                'rotoscopy':'rot',
+                'sculpt':'sct',
+                'shader':'shd',
+                'surfacing':'sur',
+                'texture':'tex',
+                'texture-grooming':'tgr',
+                'sound':'snd',
+                'concept':'cpt',
+                'model-sheet':'mst'}}

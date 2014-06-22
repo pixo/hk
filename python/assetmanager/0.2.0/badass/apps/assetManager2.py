@@ -4,17 +4,17 @@ from PySide import QtCore, QtGui
 import badass.utils as utils
 import badass.core as core
 
-try :
-    CC_PATH = utils.getCCPath()
-except:
-    CC_PATH = "/tmp"
-    print "assetManager module: Can't set CC_PATH \n set CC_PATH > /tmp"
-
-try :
-    PROJECT = utils.getProjectName()
-except:
-    PROJECT = "temp"
-    print "assetManager module: Can't set PROJECT \n set PROJECT > tmp"
+# try :
+#     CC_PATH = utils.getCCPath()
+# except:
+#     CC_PATH = "/tmp"
+#     print "assetManager module: Can't set CC_PATH \n set CC_PATH > /tmp"
+#
+# try :
+#     PROJECT = utils.getProjectName()
+# except:
+#     PROJECT = "temp"
+#     print "assetManager module: Can't set PROJECT \n set PROJECT > tmp"
 
 # TODO: Add image reference task
 # TODO: create ui for shot creation
@@ -203,13 +203,13 @@ class UiPush ( QtGui.QWidget ) :
                                     </p></body></html>""" )
 
         self.listWidget_file.setSortingEnabled ( True )
-        self.checkBox.setIcon( QtGui.QIcon ( os.path.join ( CC_PATH, "all.png" ) ) )
+        self.checkBox.setIcon( QtGui.QIcon( utils.getIconPath( "all" ) ) )
         self.checkBox.setVisible( False )
         self.progressBar.setHidden( True )
-        self.label_search.setPixmap( os.path.join ( CC_PATH, "search.png" ) )
+        self.label_search.setPixmap( utils.getIconPath( "search" ) )
         self.pushButton.setText( "Push" )
         self.pushButton.setDisabled( True )
-        icon_push = QtGui.QIcon( os.path.join( CC_PATH, "push.png" ) )
+        icon_push = QtGui.QIcon( utils.getIconPath( "push" ) )
         self.pushButton.setIcon( icon_push )
         self.createWidgetList()
         self.signalConnect()
@@ -272,7 +272,7 @@ class UiPushLs ( UiPush ) :
 class UiPush3dPack ( QtGui.QWidget ) :
 
 
-    screenshot = os.path.join ( CC_PATH, "hk_title_medium.png" )
+    screenshot = utils.getIconPath( "hk_title_medium" )
 
     def __init__( self, parent = None, db = None, doc_id = "", item = "" ):
         super ( UiPush3dPack, self ).__init__( parent )
@@ -361,14 +361,14 @@ class UiPush3dPack ( QtGui.QWidget ) :
 
         self.progressBar.setHidden ( True )
 
-        self.label_launcher.setPixmap( os.path.join ( CC_PATH, "%s.png" % self.launcher ) )
+        self.label_launcher.setPixmap( utils.getIconPath( self.launcher ) )
         self.pushButton.setText ( "Push" )
-        icon_push = QtGui.QIcon ( os.path.join ( CC_PATH, "push.png" ) )
+        icon_push = QtGui.QIcon ( utils.getIconPath( "push" ) )
         self.pushButton.setIcon ( icon_push )
         self.pushButton.setDisabled ( True )
 
         self.screenshotButton.setText( "Screenshot" )
-        icon_push_2 = QtGui.QIcon ( os.path.join ( CC_PATH, "screenshot.png" ) )
+        icon_push_2 = QtGui.QIcon ( utils.getIconPath( "screenshot" ) )
         self.screenshotButton.setIcon ( icon_push_2 )
 
         self.labelImage.setPixmap ( self.screenshot )
@@ -478,7 +478,7 @@ class UiCreateAsset ( UiCreateOnDb ):
             return
 
         description = self.plainTextEdit.toPlainText()
-        doc_id = "%s_%s_%s" % ( PROJECT, dbtyp, name )
+        doc_id = "%s_%s_%s" % ( utils.getProjectName(), dbtyp, name )
         doc = core.createAsset ( doc_id = doc_id, description = description )
 
         if doc :
@@ -554,7 +554,7 @@ class UiCreateTask ( QtGui.QWidget ) :
                 """create task id from asset id, item text and fork line """
                 itemId = self.taskTypes [ itemText ]
                 task = "%s_%s_%s" % ( asset_id, itemId, fork, )
-                icon = os.path.join ( CC_PATH, itemId + ".png" )
+                icon = utils.getIconPath( itemId )
                 item.setIcon ( QtGui.QIcon ( icon ) )
 
                 """if task exist change bg color"""
@@ -850,12 +850,12 @@ class UiMainManager( QtGui.QMainWindow ):
                                     font-weight:600;\">Asset Manager </span><span style=\" font-size:12pt;
                                     \"/><span style=\" font-size:12pt;font-weight:600;
                                     \">:</span><span style=\" font-size:12pt;
-                                    \"> '%s'</span></p></body></html>""" % PROJECT )
+                                    \"> '%s'</span></p></body></html>""" % utils.getProjectName() )
 
-        self.labelImage.setPixmap( os.path.join( CC_PATH, "hk_title_medium.png" ) )
-        self.label_sys.setPixmap ( os.path.join ( CC_PATH, "%s.png" % self.launcher ) )
-        self.label.setPixmap ( os.path.join ( CC_PATH, "search.png" ) )
-        self.label_filter.setPixmap( os.path.join ( CC_PATH, "filter.png" ) )
+        self.labelImage.setPixmap( utils.getIconPath( "hk_title_medium" ) )
+        self.label_sys.setPixmap ( utils.getIconPath( self.launcher ) )
+        self.label.setPixmap ( utils.getIconPath( "search.png" ) )
+        self.label_filter.setPixmap( utils.getIconPath( "filter.png" ) )
 
         self.treeWidget_a.setContextMenuPolicy( QtCore.Qt.CustomContextMenu )
         self.treeWidget_a.headerItem().setText ( 0, "asset" )
@@ -876,7 +876,7 @@ class UiAssetManager ( UiMainManager ):
 
     assettype = utils.getAssetTypes ()
 
-    icon_empty = os.path.join ( CC_PATH, "empty.png" )
+    icon_empty = utils.getIconPath( "empty" )
 
     def createAsset ( self ) :
         nicename = self.comboBox_a.currentText()
@@ -961,7 +961,7 @@ class UiAssetManager ( UiMainManager ):
     def contextMenuAsset ( self, item ) :
         menu = QtGui.QMenu ()
         curtext = self.comboBox_a.currentText()
-        icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
+        icon_new = QtGui.QIcon ( utils.getIconPath( "add" ) )
 
         """Do not allow to create asset from asset or task"""
         if not ( curtext in ( "asset", "task" ) ):
@@ -974,7 +974,7 @@ class UiAssetManager ( UiMainManager ):
         newTask.triggered.connect ( self.createTask )
 
         """Refresh option """
-        icon_refresh = QtGui.QIcon ( os.path.join ( CC_PATH, "refresh.png" ) )
+        icon_refresh = QtGui.QIcon ( utils.getIconPath( "refresh" ) )
         refresh = menu.addAction ( icon_refresh, 'Refresh' )
         refresh.triggered.connect ( self.refreshBranch )
 
@@ -991,13 +991,13 @@ class UiAssetManager ( UiMainManager ):
 
         if os.path.exists ( path ) :
             """Check if workspace exists"""
-            icon_push = QtGui.QIcon ( os.path.join ( CC_PATH, "push.png" ) )
+            icon_push = QtGui.QIcon ( utils.getIconPath( "push" ) )
             push = menu.addAction ( icon_push, 'Push a new %s version' % doc_id )
             push.triggered.connect ( self.pushVersion )
 
         else:
             """If not existing create action createWorkspace """
-            icon_new = QtGui.QIcon ( os.path.join ( CC_PATH, "add.png" ) )
+            icon_new = QtGui.QIcon ( utils.getIconPath( "add" ) )
             createWorkspace = menu.addAction ( icon_new, 'Create workspace' )
             createWorkspace.triggered.connect ( self.createWorkspace )
 
@@ -1005,7 +1005,7 @@ class UiAssetManager ( UiMainManager ):
 
     def contextMenuVersion ( self, item ) :
         menu = QtGui.QMenu ()
-        icon_pull = QtGui.QIcon ( os.path.join ( CC_PATH, "pull.png" ) )
+        icon_pull = QtGui.QIcon ( utils.getIconPath( "pull" ) )
         action_pull = menu.addAction ( icon_pull, 'Pull version %s' % item.text ( 0 ) )
         action_pull.triggered.connect ( self.pullVersion )
 
@@ -1038,7 +1038,7 @@ class UiAssetManager ( UiMainManager ):
         item = self.treeWidget_a.currentItem ()
         if item :
             item.takeChildren()
-            icon_empty = os.path.join ( CC_PATH, "hk_title.png" )
+            icon_empty = utils.getIconPath( "hk_title" )
             item_none = QtGui.QTreeWidgetItem ( item )
             item_none.hktype = "none"
             item_none.setText ( 0, "Empty" )
@@ -1048,7 +1048,7 @@ class UiAssetManager ( UiMainManager ):
     def itemExpandedSequence ( self, item ) :
         itChildCount = item.childCount ()
         if not ( itChildCount > 1 ) :
-            icon_empty = os.path.join ( CC_PATH, "empty.png" )
+            icon_empty = utils.getIconPath( "empty" )
             startkey = item.hkid.replace( "seq", "shot" )
             shot_ls = utils.lsDb ( self.db, "shot", startkey )
 
@@ -1059,11 +1059,11 @@ class UiAssetManager ( UiMainManager ):
                 itemChild = QtGui.QTreeWidgetItem ( item )
                 itemChild.setFont( 0, item.font( 0 ) )
                 itemChild.setText ( 0, shot.split( "_" )[1] )
-                icon = os.path.join ( CC_PATH, "shot.png" )
+                icon = utils.getIconPath( "shot" )
                 itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
                 itemChild.hktype = "asset"
                 itemChild.hkbranch = shot
-                itemChild.hkid = ( "%s_%s" ) % ( PROJECT, shot )
+                itemChild.hkid = ( "%s_%s" ) % ( utils.getProjectName(), shot )
 
                 item_none = QtGui.QTreeWidgetItem( itemChild )
                 item_none.hktype = "none"
@@ -1081,7 +1081,7 @@ class UiAssetManager ( UiMainManager ):
     def itemExpandedAsset ( self, item ) :
 
         if item.child ( 0 ).hktype == "none" :
-            icon_empty = os.path.join ( CC_PATH, "empty.png" )
+            icon_empty = utils.getIconPath( "empty" )
             doc_id = item.hkid
             tasks = utils.lsDb ( self.db, "task", doc_id )
             font = item.font( 0 )
@@ -1098,10 +1098,10 @@ class UiAssetManager ( UiMainManager ):
                 itemChild.setFont( 0, font )
                 itemChild.hktype = "task"
                 itemChild.hkbranch = task.split( "_" )[2]
-                itemChild.hkid = "%s_%s" % ( PROJECT, task )
+                itemChild.hkid = "%s_%s" % ( utils.getProjectName(), task )
                 itemChild.versions = dict ()
-                itemChild.dbdoc = self.db [ "%s_%s" % ( PROJECT, task ) ]
-                icon = os.path.join ( CC_PATH, itemChild.hkbranch + ".png" )
+                itemChild.dbdoc = self.db [ "%s_%s" % ( utils.getProjectName(), task ) ]
+                icon = utils.getIconPath( itemChild.hkbranch )
                 itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
 
                 item_none = QtGui.QTreeWidgetItem( itemChild )
@@ -1131,7 +1131,7 @@ class UiAssetManager ( UiMainManager ):
                         itemChild = QtGui.QTreeWidgetItem ( item )
                         itemChild.setFont ( 0, font )
                         itemChild.setForeground ( 0, brush )
-                        icon = os.path.join ( CC_PATH, "file.png" )
+                        icon = utils.getIconPath( "file" )
                         itemChild.setIcon ( 0, QtGui.QIcon ( icon ) )
                         itemChild.setText ( 0, "%03d" % float ( ver ) )
                         itemChild.hkbranch = item.hkbranch
@@ -1190,7 +1190,7 @@ class UiAssetManager ( UiMainManager ):
                 break
 
         if not os.path.exists ( screenshot ) :
-            screenshot = os.path.join ( CC_PATH, "hk_title_medium.png" )
+            screenshot = utils.getIconPath( "hk_title_medium" )
 
         self.labelImage.setPixmap ( screenshot )
 #         self.labelImage.setFixedSize ( QtCore.QSize ( 640, 480 ) )
@@ -1215,11 +1215,11 @@ class UiAssetManager ( UiMainManager ):
     def setComboTask ( self ) :
         task_dict = utils.getAssetTasks ()
         self.comboBox_b.clear ()
-        icon = os.path.join ( CC_PATH, "cross.png" )
+        icon = utils.getIconPath( "cross" )
         self.comboBox_b.addItem ( QtGui.QIcon ( icon ), "No filter" )
 
         for key in task_dict :
-            icon = os.path.join ( CC_PATH, task_dict [ key ] + ".png" )
+            icon = utils.getIconPath( task_dict [ key ] )
             self.comboBox_b.addItem ( QtGui.QIcon ( icon ), key )
 
     def filterTree ( self ) :
@@ -1243,7 +1243,7 @@ class UiAssetManager ( UiMainManager ):
         assettype [ "asset" ] = "asset"
         assettype [ "task" ] = "task"
         self.typ = assettype [ currtext ]
-        startkey = PROJECT
+        startkey = utils.getProjectName()
         hktype = "asset"
 
         """Check if current filter is asset or task"""
@@ -1255,7 +1255,7 @@ class UiAssetManager ( UiMainManager ):
         asset_ls = utils.lsDb ( self.db, self.typ, startkey )
 
         """Clear the tree"""
-        icon_empty = os.path.join ( CC_PATH, "empty.png" )
+        icon_empty = utils.getIconPath( "empty" )
         self.treeWidget_a.clear ()
 
         """Setup the items fonts"""
@@ -1274,18 +1274,18 @@ class UiAssetManager ( UiMainManager ):
 
             if self.typ == "task" :
                 item_asset.versions = dict ()
-                item_asset.dbdoc = self.db [ "%s_%s" % ( PROJECT, asset ) ]
+                item_asset.dbdoc = self.db [ "%s_%s" % ( utils.getProjectName(), asset ) ]
                 hktype = "task"
                 name = asset
 
-            item_asset.hkid = "%s_%s" % ( PROJECT, asset )
+            item_asset.hkid = "%s_%s" % ( utils.getProjectName(), asset )
             item_asset.hkbranch = "root"
             item_asset.hktype = hktype
 
             """UI look"""
             item_asset.setFont ( 0, font )
             item_asset.setText ( 0, name )
-            icon = os.path.join ( CC_PATH, typ + ".png" )
+            icon = utils.getIconPath( typ )
             item_asset.setIcon ( 0, QtGui.QIcon( icon ) )
 
             """Children"""
@@ -1317,7 +1317,7 @@ class UiAssetManager ( UiMainManager ):
         item = item + tmp
 
         for key in item :
-            icon = os.path.join ( CC_PATH, assettype [ key ] + ".png" )
+            icon = utils.getIconPath( assettype [ key ] )
             self.comboBox_a.addItem ( QtGui.QIcon ( icon ), key )
 
         self.comboTypeChange ()
