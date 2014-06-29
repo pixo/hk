@@ -1,9 +1,0 @@
-'''
-Created on Nov 12, 2013
-
-@author: pixo
-'''
-
-def getBadassVersion ()
-    from badass import version as VERSION
-    return VERSION

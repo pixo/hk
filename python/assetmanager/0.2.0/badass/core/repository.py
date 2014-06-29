@@ -7,18 +7,18 @@ Created on Jan 8, 2013
 import os, time, shutil, re, commands, glob
 import badass.utils as utils
 
-class RepositoryError ( Exception ):
+class RepositoryError (Exception):
     """
     Error raised by the repository module.
     
     """
 
-    def __init__ ( self, value ):
+    def __init__ (self, value):
         self.value = value
-    def __str__ ( self ):
-        return repr ( self.value )
+    def __str__ (self):
+        return repr (self.value)
 
-def getIdFromFile ( path = "" ):
+def getIdFromFile (path = ""):
     """
     This function return the asset id from a file.
     :param path: The asset file .
@@ -33,14 +33,14 @@ def getIdFromFile ( path = "" ):
     """
 
     # Check if the path exists
-    if os.path.exists ( path ):
-        raise RepositoryError ( "Can't get 'doc_id' from '%s', path doesn't exists." % path )
+    if os.path.exists (path):
+        raise RepositoryError ("Can't get 'doc_id' from '%s', path doesn't exists." % path)
 
-    basename = os.path.basename ( path )
-    doc_id = os.path.splitext ( basename )[0]
+    basename = os.path.basename (path)
+    doc_id = os.path.splitext (basename)[0]
     return doc_id
 
-def getIdFromPath ( path = "" ):
+def getIdFromPath (path = ""):
     """
     This function return the asset id from path.
 
@@ -57,23 +57,23 @@ def getIdFromPath ( path = "" ):
     """
 
     # Check if the path exists
-    if not os.path.exists ( path ):
-        raise RepositoryError ( "Can't get 'doc_id' from '%s', path doesn't exists." % path )
+    if not os.path.exists (path):
+        raise RepositoryError ("Can't get 'doc_id' from '%s', path doesn't exists." % path)
 
     # Expand contained variables
-    path = os.path.expandvars ( path )
+    path = os.path.expandvars (path)
 
     # Get user repository
-    user_repo = os.getenv ( "HK_USER_REPO" ) + os.sep
+    user_repo = os.getenv ("HK_USER_REPO") + os.sep
 
     # Get the doc_id
-    path = path.replace ( user_repo, "" )
-    part = path.split ( os.sep )
-    doc_id = "%s_%s_%s_%s_%s" % ( part[0], part[1], part[2], part[3], part[4] )
+    path = path.replace (user_repo, "")
+    part = path.split (os.sep)
+    doc_id = "%s_%s_%s_%s_%s" % (part[0], part[1], part[2], part[3], part[4])
 
     return doc_id
 
-def getPathFromId ( doc_id = "", local = False, vtype = "review" ):
+def getPathFromId (doc_id = "", local = False, vtype = "review"):
     """
     This function return a path based from a provided 'doc_id'.
 
@@ -96,30 +96,30 @@ def getPathFromId ( doc_id = "", local = False, vtype = "review" ):
     >>> '/homeworks/users/jdoe/projects/prod/chr/mickey/mod/a'    
     
     """
-    if utils.checkVersionType ( vtype ) :
+    if utils.checkVersionType (vtype) :
         return False
 
     # Get the last part of the path
-    path = doc_id.replace ( "_", os.sep )
+    path = doc_id.replace ("_", os.sep)
 
     # Get the first part of the path
     if local :
         # If true return the local project root
-        root = os.getenv ( "HK_USER_REPO" )
+        root = os.getenv ("HK_USER_REPO")
     else:
         # If false return the repository project root
-        root = os.getenv ( "HK_REPO" )
+        root = os.getenv ("HK_REPO")
 
     # Check the root path value
-    if ( not root ) or root == "" :
-        raise RepositoryError ( "getPathFromId(): incorrect value for root path " )
+    if (not root) or root == "" :
+        raise RepositoryError ("getPathFromId(): incorrect value for root path ")
 
     # Full path
-    path = os.path.join ( root, path, vtype )
+    path = os.path.join (root, path, vtype)
 
     return path
 
-def getVersions ( db = None, doc_id = "", vtype = "review" ):
+def getVersions (db = None, doc_id = "", vtype = "review"):
     """
     This function return all versions in a dictionnary of a particular asset.
 
@@ -143,7 +143,7 @@ def getVersions ( db = None, doc_id = "", vtype = "review" ):
         '2': {'files': ['bls_chr_belanus_mod_main.mb'] ... and so ... }
     """
 
-    if utils.checkVersionType ( vtype ) :
+    if utils.checkVersionType (vtype) :
         return False
 
     # If db is not provided get the current project DB
@@ -155,7 +155,7 @@ def getVersions ( db = None, doc_id = "", vtype = "review" ):
 
     return versions
 
-def getVersionPath ( doc_id = "", version = "last", db = None, vtype = "review" ):
+def getVersionPath (doc_id = "", version = "last", db = None, vtype = "review"):
     """
     This function return the asset path of a particular version.
 
@@ -178,28 +178,28 @@ def getVersionPath ( doc_id = "", version = "last", db = None, vtype = "review" 
     """
     # old getAssetPath
 
-    if utils.checkVersionType ( vtype ) :
+    if utils.checkVersionType (vtype) :
         return False
 
     # Get asset versions
-    versions = getVersions ( db = db, doc_id = doc_id, vtype = vtype )
+    versions = getVersions (db = db, doc_id = doc_id, vtype = vtype)
     num = None
 
     # If the queried version is the latest
     if version == "last" :
-        num = int ( len ( versions ) )
+        num = int (len (versions))
     else:
-        num = int ( version )
+        num = int (version)
 
     # Get version num attr
-    version = versions [ str ( num ) ]
+    version = versions [ str (num) ]
 
     # Get the version path
     path = version ["path"]
 
     return path
 
-def getLocalVersionPath ( doc_id = "", version = 1, vtype = "review" ):
+def getLocalVersionPath (doc_id = "", version = 1, vtype = "review"):
     """
     This function return the path of a particular asset version into the user directory .
 
@@ -220,26 +220,26 @@ def getLocalVersionPath ( doc_id = "", version = 1, vtype = "review" ):
     # old getAssetLocalPath
 
     # Make sure vtype exists
-    if utils.checkVersionType ( vtype ) :
+    if utils.checkVersionType (vtype) :
         return False
 
     # Make sure to get the right type for concatenation
-    version = int ( version )
+    version = int (version)
 
     # Get asset local path
-    fdir = getPathFromId ( doc_id = doc_id, local = True, vtype = vtype )
-    name = "%s.v%03d.base" % ( doc_id, version )
-    dst = os.path.join ( fdir, name )
+    fdir = getPathFromId (doc_id = doc_id, local = True, vtype = vtype)
+    name = "%s.v%03d.base" % (doc_id, version)
+    dst = os.path.join (fdir, name)
 
     # Return a path that doesn't exist
     count = 1
-    while os.path.exists ( dst ) :
-        dst = os.path.join ( fdir, name + str ( count ) )
+    while os.path.exists (dst) :
+        dst = os.path.join (fdir, name + str (count))
         count += 1
 
     return dst
 
-def getTypeFromId ( doc_id = None ):
+def getTypeFromId (doc_id = None):
     """
     This function return the asset path of a particular version.
     :param doc_id: The asset code.
@@ -253,12 +253,12 @@ def getTypeFromId ( doc_id = None ):
     
     """
 
-    if not ( doc_id ) :
-        raise RepositoryError ( "getTypeFromId(): can't get type from wrong 'doc_id'" )
+    if not (doc_id) :
+        raise RepositoryError ("getTypeFromId(): can't get type from wrong 'doc_id'")
 
-    return doc_id.split( "_" )[1]
+    return doc_id.split("_")[1]
 
-def getTaskFromId ( doc_id = None ):
+def getTaskFromId (doc_id = None):
     """
     This function return the asset path of a particular version.
     :param doc_id: The asset code.
@@ -272,12 +272,12 @@ def getTaskFromId ( doc_id = None ):
     
     """
 
-    if not ( doc_id ) :
-        raise RepositoryError ( "getTaskFromId(): can't get type from wrong 'doc_id'" )
+    if not (doc_id) :
+        raise RepositoryError ("getTaskFromId(): can't get type from wrong 'doc_id'")
 
-    return doc_id.split( "_" )[3]
+    return doc_id.split("_")[3]
 
-def createWorkspace ( doc_id = "", vtype = "review" ):
+def createWorkspace (doc_id = "", vtype = "review"):
     """
     This function create the asset user path of a particular asset.
     :param doc_id: The asset code.
@@ -293,28 +293,28 @@ def createWorkspace ( doc_id = "", vtype = "review" ):
     
     """
     # Make sure vtype exists
-    if utils.checkVersionType ( vtype ) :
+    if utils.checkVersionType (vtype) :
         return False
 
     # Get the local asset path to create from asset id
-    path = getPathFromId ( doc_id = doc_id, local = True, vtype = vtype )
+    path = getPathFromId (doc_id = doc_id, local = True, vtype = vtype)
 
     # Check if the path exist
-    if os.path.exists ( path ) :
-        print ( "createWorkspace(): %s already exist" % path )
+    if os.path.exists (path) :
+        print ("createWorkspace(): %s already exist" % path)
         return False
 
     # Create the asset path with the proper permission
-    os.makedirs ( path, 0775 )
+    os.makedirs (path, 0775)
 
     # Check if the path was created
-    if not os.path.exists ( path ) :
-        raise RepositoryError ( "createWorkspace(): cannot create directory %s" % path )
+    if not os.path.exists (path) :
+        raise RepositoryError ("createWorkspace(): cannot create directory %s" % path)
 
-    print ( "createWorkspace(): %s created" % path )
+    print ("createWorkspace(): %s created" % path)
     return path
 
-def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) :
+def transfer (sources = list(), destination = "", doc_id = "", rename = True) :
 
     """
     This function create the asset user path of a particular asset.
@@ -330,8 +330,8 @@ def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) 
     """
 
     # Check the sources type is a list
-    if type ( sources ) == str :
-        sources = list ( [ sources ] )
+    if type (sources) == str :
+        sources = list ([ sources ])
 
     files = dict ()
 
@@ -339,33 +339,33 @@ def transfer ( sources = list(), destination = "", doc_id = "", rename = True ) 
     for src in sources :
 
         # Check if the source file exists
-        if os.path.exists ( src ) :
+        if os.path.exists (src) :
             # TODO: Make it simpler
             # Create the destination path
-            basename = os.path.basename ( src )
-            filename = basename.replace ( basename.split ( "." )[0], doc_id )
+            basename = os.path.basename (src)
+            filename = basename.replace (basename.split (".")[0], doc_id)
 
             # Set filename as key value for source file
-            files [src] = os.path.join ( destination, filename )
+            files [src] = os.path.join (destination, filename)
 
         else :
             print "Warning: %s doesn't exist" % src
 
     # Set the permission file
-    os.chmod ( destination, 0775 )
+    os.chmod (destination, 0775)
 
     # Iterate over files
     for fil in files:
-        dirname = os.path.dirname ( files [ fil ] )
+        dirname = os.path.dirname (files [ fil ])
 
-        if not os.path.exists ( dirname ) :
-            os.makedirs ( dirname )
+        if not os.path.exists (dirname) :
+            os.makedirs (dirname)
 
-        shutil.copy ( fil, files [ fil ] )
-    os.system( "chmod -R 555  %s" % destination )
+        shutil.copy (fil, files [ fil ])
+    os.system("chmod -R 555  %s" % destination)
 
-def pull ( db = None, doc_id = "", version = "last", extension = False,
-           progressbar = False, msgbar = False, vtype = "review" ):
+def pull (db = None, doc_id = "", version = "last", extension = False,
+           progressbar = False, msgbar = False, vtype = "review"):
 
     """
     This function copy the desired file from repository to local workspace.
@@ -395,74 +395,74 @@ def pull ( db = None, doc_id = "", version = "last", extension = False,
 
     """
     # Make sure vtype exists
-    if utils.checkVersionType ( vtype ) :
+    if utils.checkVersionType (vtype) :
         return False
 
-    def echoMsg ( msg = "", msgbar = None ):
+    def echoMsg (msg = "", msgbar = None):
         print msg
         if msgbar :
-            msgbar ( msg )
+            msgbar (msg)
 
     # If db is not provided get the current project DB
     if db == None :
         db = utils.getDb()
 
     # Check id is respecting the homeworks naming convention
-    docsplit = doc_id.split( "_" )
-    if len ( docsplit ) < 5:
-        echoMsg ( msg = "pull(): Wrong asset id", msgbar = msgbar )
+    docsplit = doc_id.split("_")
+    if len (docsplit) < 5:
+        echoMsg (msg = "pull(): Wrong asset id", msgbar = msgbar)
         return False
 
     # Get asset repository and local asset path
-    src = getVersionPath ( doc_id = doc_id, version = version, db = db, vtype = vtype )
-    dst = getLocalVersionPath ( doc_id = doc_id, version = version, vtype = vtype )
+    src = getVersionPath (doc_id = doc_id, version = version, db = db, vtype = vtype)
+    dst = getLocalVersionPath (doc_id = doc_id, version = version, vtype = vtype)
 
     # Add/Check files to pull
     lsdir = list ()
-    for root, subFolders, files in os.walk ( src ):
+    for root, subFolders, files in os.walk (src):
 
         for fil in files:
-            curfile = os.path.join ( root, fil )
+            curfile = os.path.join (root, fil)
 
             if extension and extension != "" :
-                if os.path.splitext ( curfile )[-1] == extension :
-                    lsdir.append ( curfile )
+                if os.path.splitext (curfile)[-1] == extension :
+                    lsdir.append (curfile)
             else :
-                lsdir.append ( curfile )
+                lsdir.append (curfile)
 
     # Prepare the progress bar
     if progressbar :
         progress_value = 0
-        progress_step = 100.0 / len( lsdir ) if len( lsdir ) != 0 else 1
+        progress_step = 100.0 / len(lsdir) if len(lsdir) != 0 else 1
 
     # Check there is something to pull
-    if len ( lsdir ) > 0 :
-        os.makedirs ( dst, 0775 )
-        if not os.path.exists ( dst ):
-            raise RepositoryError ( "Pull(): cannot create %s " % dst )
+    if len (lsdir) > 0 :
+        os.makedirs (dst, 0775)
+        if not os.path.exists (dst):
+            raise RepositoryError ("Pull(): cannot create %s " % dst)
 
     # Pull lsdir file
     pulled = list()
     for fil in lsdir:
-        fulldst = fil.replace ( src, dst )
+        fulldst = fil.replace (src, dst)
 #         dirname = os.path.dirname ( fulldst )
 
-        shutil.copyfile ( fil, fulldst )
-        pulled.append ( fulldst )
+        shutil.copyfile (fil, fulldst)
+        pulled.append (fulldst)
 
         # Echo message
         msg = "Pulled: %s" % fulldst
-        echoMsg ( msg = msg, msgbar = msgbar )
+        echoMsg (msg = msg, msgbar = msgbar)
 
         if progressbar :
             progress_value += progress_step
-            progressbar.setProperty ( "value", progress_value )
+            progressbar.setProperty ("value", progress_value)
 
     return pulled
 
 
-def push ( db = "", doc_id = "", path = list(), description = "",
-          progressbar = False, msgbar = False, rename = True, vtype = "review" ):
+def push (db = "", doc_id = "", path = list(), description = "",
+          progressbar = False, msgbar = False, rename = True, vtype = "review"):
     """
     This function copy the desired file from local workspace to repository.
 
@@ -494,50 +494,50 @@ def push ( db = "", doc_id = "", path = list(), description = "",
     """
 
     # Make sure vtype exists
-    if utils.checkVersionType ( vtype ) :
+    if utils.checkVersionType (vtype) :
         return False
 
     # TODO: Check push for auto screenshot publish
     # Check the path type is a list
-    if type ( path ) == str :
-        path = list ( [ path ] )
+    if type (path) == str :
+        path = list ([ path ])
 
     # check if the source file exists in the repository
     file_list = list ()
 
     for src in path :
-        if os.path.exists ( src ) :
-            file_list.append ( src )
+        if os.path.exists (src) :
+            file_list.append (src)
 
         else:
             print "Warning: %s doesn't exist" % src
 
     # Get root destination directory to push files
-    dst_dir = getPathFromId ( doc_id, vtype = vtype )
+    dst_dir = getPathFromId (doc_id, vtype = vtype)
 
     # Get temporary destination directory to push files
-    tmp_dir = os.path.join ( dst_dir, utils.hashTime () )
+    tmp_dir = os.path.join (dst_dir, utils.hashTime ())
 
     # Create temporary directory
-    if not os.path.exists ( tmp_dir ):
-        os.makedirs ( tmp_dir )
+    if not os.path.exists (tmp_dir):
+        os.makedirs (tmp_dir)
 
     # Copy all the files in the destination directory
     progress_value = 0
-    progress_step = 100.0 / len ( file_list )
+    progress_step = 100.0 / len (file_list)
     files_attr = list ()
-    wspace = getPathFromId ( doc_id = doc_id, local = True, vtype = vtype )
+    wspace = getPathFromId (doc_id = doc_id, local = True, vtype = vtype)
 
     # Iterate over all the provided source files
     for src in file_list :
         # Get file dir
-        src_dir = os.path.dirname ( src )
+        src_dir = os.path.dirname (src)
         # file space in case we need to publish directories
-        file_space = src_dir.replace ( wspace, "" )
-        file_name = os.path.join ( file_space, os.path.basename ( src ) )
+        file_space = src_dir.replace (wspace, "")
+        file_name = os.path.join (file_space, os.path.basename (src))
 
         # Get extension(s) ,UDIMs and frames are commonly separated with this char
-        file_ext = "." + file_name.split ( "." )[-1]
+        file_ext = "." + file_name.split (".")[-1]
 
         # Get screenshot file
         screenshot = False
@@ -546,16 +546,16 @@ def push ( db = "", doc_id = "", path = list(), description = "",
 
         for ext in screenshot_exts :
             screenpath = file_name + ext
-            screenpath = os.path.join ( src_dir, screenpath )
+            screenpath = os.path.join (src_dir, screenpath)
 
-            if os.path.exists ( screenpath ) :
+            if os.path.exists (screenpath) :
                 screenshot_ext = ext
                 screenshot = screenpath
                 break
             else :
-                screenpath = screenpath.replace ( "." + file_ext, ext )
+                screenpath = screenpath.replace ("." + file_ext, ext)
                 if screenpath != file_name :
-                    if os.path.exists ( screenpath ) :
+                    if os.path.exists (screenpath) :
                         screenshot_ext = ext
                         screenshot = screenpath
 
@@ -571,52 +571,57 @@ def push ( db = "", doc_id = "", path = list(), description = "",
         if dst_file [0] == os.sep :
             dst_file = dst_file [1:]
 
-        tmp_file = os.path.join ( tmp_dir, dst_file )
+        tmp_file = os.path.join (tmp_dir, dst_file)
 
         # Store the files names in a list to avoid to call the database for each source file
-        files_attr.append ( dst_file )
+        files_attr.append (dst_file)
 
         # Copy files to temporary directory
-        shutil.copy ( src, tmp_file )
+        shutil.copy (src, tmp_file)
 
         # Copy screenshot to temporary directory
         if screenshot :
             if dst_screenshot [0] == os.sep :
                 dst_screenshot = dst_screenshot [1:]
-            tmp_screenshot = os.path.join ( tmp_dir, dst_screenshot )
-            shutil.copy ( screenshot, tmp_screenshot )
+            tmp_screenshot = os.path.join (tmp_dir, dst_screenshot)
+            shutil.copy (screenshot, tmp_screenshot)
 
         # Set progress value
         progress_value += progress_step
         if progressbar :
-            progressbar.setProperty ( "value", progress_value )
+            progressbar.setProperty ("value", progress_value)
         else :
-            print ( str ( progress_value ) + "%" )
+            print (str (progress_value) + "%")
 
         if msgbar :
-            msgbar ( dst_file )
+            msgbar (dst_file)
 
     # Get latest version
     doc = db [ doc_id ]
-    ver_attr = getVersions ( db, doc_id, vtype = vtype )
-    ver = len ( ver_attr ) + 1
-    path_attr = os.path.join ( dst_dir, "%03d" % ver )
-    repo = os.path.expandvars ( path_attr )
+    ver_attr = getVersions (db, doc_id, vtype = vtype)
+    ver = len (ver_attr) + 1
+    path_attr = os.path.join (dst_dir, "%03d" % ver)
+    repo = os.path.expandvars (path_attr)
 
     # Rename the temp dir
-    os.rename ( tmp_dir, repo )
+    os.rename (tmp_dir, repo)
 
     # TODO:Replace os.system ( "chmod -R 555  %s" % repo ) by python function
-    os.system ( "chmod -R 555  %s" % repo )
+    os.system ("chmod -R 555  %s" % repo)
 
     # Create the new version data for the "versions" document's attribute
     fileinfo = {
-                "creator" : os.getenv ( "USER" ),
+                "creator" : os.getenv ("USER"),
                 "created" : time.time(),
                 "description" : description ,
                 "path" : path_attr ,
                 "files" : files_attr
                 }
+    # Check status
+    status = doc ["status"]
+    if status["tec"] == "ns":
+        status["tec"] = "wip"
+        doc ["status"] = status
 
     # Append the data into the document version attribute copy
     ver_attr [ ver ] = fileinfo
@@ -629,12 +634,12 @@ def push ( db = "", doc_id = "", path = list(), description = "",
 
     # print published file for the user
     for fil in files_attr:
-        print os.path.join ( repo , fil )
+        print os.path.join (repo , fil)
 
     # Return the published directory
     return repo
 
-def pushDir ( db = "", doc_id = "", path = list(), description = "", vtype = "review" ):
+def pushDir (db = "", doc_id = "", path = list(), description = "", vtype = "review"):
     """
     This function copy the desired file from local workspace to repository.
 
@@ -659,54 +664,54 @@ def pushDir ( db = "", doc_id = "", path = list(), description = "", vtype = "re
 
     """
     # Make sure vtype exists
-    if utils.checkVersionType ( vtype ) :
+    if utils.checkVersionType (vtype) :
         return False
 
     # check if the source file exists in the repository
-    if not os.path.exists ( path ) :
+    if not os.path.exists (path) :
         print "pushDir(): %s doesn't exist" % path
         return False
 
     # Get root destination directory to push files
-    dst_dir = getPathFromId ( doc_id = doc_id, vtype = vtype )
+    dst_dir = getPathFromId (doc_id = doc_id, vtype = vtype)
 
     # Get temporary destination directory to push files
-    tmp_dir = os.path.join ( dst_dir, utils.hashTime () )
-    os.makedirs ( tmp_dir )
+    tmp_dir = os.path.join (dst_dir, utils.hashTime ())
+    os.makedirs (tmp_dir)
 
     # Copy all the files in the destination directory
     files_attr = list ()
-    file_list = os.listdir ( path )
+    file_list = os.listdir (path)
 
     for src in file_list :
         # file space in case we need to publish directories """
-        path_src = os.path.join ( path, src )
-        dst = os.path.join ( tmp_dir, src )
+        path_src = os.path.join (path, src)
+        dst = os.path.join (tmp_dir, src)
 
-        if os.path.isfile ( path_src ):
+        if os.path.isfile (path_src):
             print  "pushDir(): copying file %s " % src
-            shutil.copy ( path_src, dst )
-        elif os.path.isdir ( path_src ):
+            shutil.copy (path_src, dst)
+        elif os.path.isdir (path_src):
             print  "pushDir(): copying directory %s " % src
-            shutil.copytree ( path_src, dst )
+            shutil.copytree (path_src, dst)
 
         # Store the files names in a list to avoid to call the database for each source file
-        files_attr.append ( src )
+        files_attr.append (src)
 
     # Get latest version number because somebody may push a new version during the process
     doc = db [ doc_id ]
-    ver_attr = getVersions ( db = db, doc_id = doc_id, vtype = vtype )
-    ver = len ( ver_attr ) + 1
-    path_attr = os.path.join ( dst_dir, "%03d" % ver )
-    repo = os.path.expandvars ( path_attr )
+    ver_attr = getVersions (db = db, doc_id = doc_id, vtype = vtype)
+    ver = len (ver_attr) + 1
+    path_attr = os.path.join (dst_dir, "%03d" % ver)
+    repo = os.path.expandvars (path_attr)
 
     # Rename the temp dir
-    os.rename ( tmp_dir, repo )
-    os.chmod ( repo, 0555 )
+    os.rename (tmp_dir, repo)
+    os.chmod (repo, 0555)
 
     # Create the new version data for the "versions" document's attribute
     fileinfo = {
-                "creator" : os.getenv ( "USER" ),
+                "creator" : os.getenv ("USER"),
                 "created" : time.time(),
                 "description" : description ,
                 "path" : path_attr ,
@@ -724,12 +729,12 @@ def pushDir ( db = "", doc_id = "", path = list(), description = "", vtype = "re
 
     # print published file for the user
     for fil in files_attr:
-        print os.path.join ( repo , fil )
+        print os.path.join (repo , fil)
 
     # Return the published directory
     return repo
 
-def pushFile ( db = None, doc_id = False, path = list (), description = "", rename = True, vtype = "review" ):
+def pushFile (db = None, doc_id = False, path = list (), description = "", rename = True, vtype = "review"):
     """
     This function copy the desired file from local workspace to repository.
 
@@ -755,33 +760,33 @@ def pushFile ( db = None, doc_id = False, path = list (), description = "", rena
 
     """
     # Make sure vtype exists
-    if utils.checkVersionType ( vtype ) :
+    if utils.checkVersionType (vtype) :
         return False
 
     # Check if DB is provided else get the project DB
-    if ( not db )  or db == "" :
+    if (not db)  or db == "" :
         db = utils.getDb()
 
     # Check if 'path' is a string
-    if type ( path ) == str:
+    if type (path) == str:
 
         # If 'path' is a string then append it in a list
-        path = list ( [ path ] )
+        path = list ([ path ])
 
     # If doc_id not provided
     if not doc_id:
 
         # Get doc_id from path
-        doc_id = getIdFromPath ( path = path[0] )
+        doc_id = getIdFromPath (path = path[0])
 
     # Return the directory of the pushed files
-    result = push ( db = db , doc_id = doc_id , path = path ,
+    result = push (db = db , doc_id = doc_id , path = path ,
                   description = description, progressbar = False,
-                  msgbar = False, rename = rename, vtype = vtype )
+                  msgbar = False, rename = rename, vtype = vtype)
     return result
 
 
-def getTextureAttr ( path = None ):
+def getTextureAttr (path = None):
     """
     This function return a list containing the type of the texture
     and a list of attributes that should match the textures attribute.
@@ -801,7 +806,7 @@ def getTextureAttr ( path = None ):
     textureType = utils.getTextureTypes ()
 
     # Get the texture filename
-    fname = os.path.basename ( path )
+    fname = os.path.basename (path)
 
     # Iterate over all the texture types
     for typ in textureType :
@@ -813,15 +818,15 @@ def getTextureAttr ( path = None ):
         animTex = "%s\d*.\d\d\d\d.\d\d\d\d." % typ
 
         # Combine patterns
-        pattern = "%s|%s" % ( simpTex, animTex )
+        pattern = "%s|%s" % (simpTex, animTex)
 
         # Check the filename belong to one of the texture type
-        if re.findall ( pattern, fname ) == []:
-            return ( typ, textureType [ typ ] )
+        if re.findall (pattern, fname) == []:
+            return (typ, textureType [ typ ])
 
-    return ( False, False )
+    return (False, False)
 
-def textureBuild ( path = "", mode = "ww", texfilter = None ):
+def textureBuild (path = "", mode = "ww", texfilter = None):
     """
     This function build the textures.
 
@@ -845,9 +850,9 @@ def textureBuild ( path = "", mode = "ww", texfilter = None ):
     # TODO: Add Gamma support
 
     # Check the texture filter
-    if ( texfilter == None ) and ( mode != "latlong" ) :
+    if (texfilter == None) and (mode != "latlong") :
         # Get default texture filter for this texture
-        texattr = getTextureAttr ( path )[1]
+        texattr = getTextureAttr (path)[1]
 
         if not texattr :
             # It means the texture is not conform to the naming convention
@@ -861,22 +866,22 @@ def textureBuild ( path = "", mode = "ww", texfilter = None ):
             texfilter = "triangle"
 
     # Guerilla builder function
-    def guerillaBuild ( path, mode, texfilter ):
+    def guerillaBuild (path, mode, texfilter):
         ''
-        fil = os.path.splitext ( path )[0]
+        fil = os.path.splitext (path)[0]
         tex = fil + ".tex"
-        cmd = """render --buildtex --in %s --mode %s --filter %s --out %s""" % ( path, mode, texfilter, tex )
-        os.system ( cmd )
+        cmd = """render --buildtex --in %s --mode %s --filter %s --out %s""" % (path, mode, texfilter, tex)
+        os.system (cmd)
         print "buildtex: building %s" % tex
 
     # Build guerilla texture file
-    guerillaBuild ( path, mode, texfilter )
+    guerillaBuild (path, mode, texfilter)
 
     # Here you can add your custom builder function
 
     return True
 
-def textureOptimise ( path = None ):
+def textureOptimise (path = None):
     """
     This function optimise the provided texture.
 
@@ -892,10 +897,10 @@ def textureOptimise ( path = None ):
         
     """
     # Get the filename
-    fname = os.path.basename ( path )
+    fname = os.path.basename (path)
 
     # Get the texture attributes
-    texattr = getTextureAttr ( path )[1]
+    texattr = getTextureAttr (path)[1]
 
     if texattr :
         # Default texture attributes
@@ -909,8 +914,8 @@ def textureOptimise ( path = None ):
         cmd_identify = "identify %s" % path
 
         # Get the current image attributes
-        imgattr = commands.getoutput ( cmd_identify ).split( "\n" )[-1]
-        imgattr = imgattr.split ( " " )
+        imgattr = commands.getoutput (cmd_identify).split("\n")[-1]
+        imgattr = imgattr.split (" ")
         imgdepth = imgattr[4]
         imgformat = imgattr[1]
         # imgres = imgattr[2]
@@ -918,34 +923,34 @@ def textureOptimise ( path = None ):
         if texcompress :
             # Zip aka Deflate compression with imagemagick mogrify
             cmd_compress = "mogrify -compress Zip %s" % path
-            os.system ( cmd_compress )
+            os.system (cmd_compress)
             print "compress 'Deflate': %s" % fname
 
         elif texbgcolor != "" :
             # Remove image alpha with imagemagick mogrify
-            cmd_alpharm = """mogrify -background "%s" -flatten +matte %s""" % ( path, texbgcolor )
-            os.system ( cmd_alpharm )
+            cmd_alpharm = """mogrify -background "%s" -flatten +matte %s""" % (path, texbgcolor)
+            os.system (cmd_alpharm)
             print "remove alpha: %s" % fname
 
         if texchannel == "R" :
             # Set to single channel with imagemagick mogrify
             cmd_channel = "mogrify -channel R -separate %s" % path
-            os.system ( cmd_channel )
+            os.system (cmd_channel)
             print "grayscale: %s" % fname
 
-        if texdepth.find ( imgdepth ) < 0 :
+        if texdepth.find (imgdepth) < 0 :
             # Check the image depth
-            print "warning: wrong depth '%s', %s should be '%s'  " % ( imgdepth, fname, texdepth )
+            print "warning: wrong depth '%s', %s should be '%s'  " % (imgdepth, fname, texdepth)
 
         # TODO:check if tiff format warning is working
         if imgformat != "TIFF":
             # Check image format
-            print "warning: wrong format '%s', %s should be '%s'  " % ( imgformat, fname, "TIFF" )
+            print "warning: wrong format '%s', %s should be '%s'  " % (imgformat, fname, "TIFF")
 
     else:
         print "Can't find the '%s' texture type" % fname
 
-def textureExport ( path = "", progressbar = False ):
+def textureExport (path = "", progressbar = False):
     """
     This function optimise and build the 'tif' textures contained in the provided path.
 
@@ -965,19 +970,19 @@ def textureExport ( path = "", progressbar = False ):
     """
 
     # Get all the tif files in the directory 'path'
-    files = glob.glob ( os.path.join ( path, "*.tif" ) )
+    files = glob.glob (os.path.join (path, "*.tif"))
 
     # TODO: support progressbar for textures optimisation
     for fil in files :
         # Optimise the current texture 'fil'
-        textureOptimise ( fil )
+        textureOptimise (fil)
 
         # Build the current texture 'fil'
-        textureBuild ( fil )
+        textureBuild (fil)
 
     return True
 
-def textureCheck ( doc_id = "", files = list() ) :
+def textureCheck (doc_id = "", files = list()) :
     """
     This function check if textures respect the Homeworks rules.
 
@@ -1000,47 +1005,47 @@ def textureCheck ( doc_id = "", files = list() ) :
     textureType = utils.getTextureTypes ()
 
     # Make sure files is a list
-    not_success = list ( files )
+    not_success = list (files)
 
     # Iterate over provided files
     for fil in files :
 
         # Get filename
-        fname = os.path.basename ( fil )
+        fname = os.path.basename (fil)
 
         # Check the texture 'fil' is legal
         for typ in textureType :
 
             # Common texture pattern
-            simpTex = "%s_\d*_%s\d*.\d\d\d\d." % ( doc_id, typ )
+            simpTex = "%s_\d*_%s\d*.\d\d\d\d." % (doc_id, typ)
             simpTex = simpTex + "tif|" + simpTex + "exr"
 
             # Animated texture pattern
-            animTex = "%s_\d*_%s\d*.\d\d\d\d.\d\d\d\d." % ( doc_id, typ )
+            animTex = "%s_\d*_%s\d*.\d\d\d\d.\d\d\d\d." % (doc_id, typ)
             animTex = animTex + "tif|" + animTex + "exr"
 
             # Combine patterns
-            pattern = "%s|%s" % ( simpTex, animTex )
+            pattern = "%s|%s" % (simpTex, animTex)
 
             # If 'fil' texture respect one of the patterns
-            if re.findall ( pattern, fname ):
+            if re.findall (pattern, fname):
 
                 texfile = ""
                 # Get the extension
-                fext = fname.split ( "." )[-1]
+                fext = fname.split (".")[-1]
 
                 # Check if the texture is already built
                 if fext != "tex":
 
                     # Replace the current extension by .tex
-                    texfile = fil.replace ( ".%s" % fext, ".tex" )
+                    texfile = fil.replace (".%s" % fext, ".tex")
 
                     # Check if texfile exist
-                    if os.path.exists ( texfile ):
+                    if os.path.exists (texfile):
 
                         # Remove the textures from not_success
-                        not_success.remove ( fil )
-                        not_success.remove ( texfile )
+                        not_success.remove (fil)
+                        not_success.remove (texfile)
                         print "textureCheck: %s OK" % fname
 
                     else:
@@ -1048,8 +1053,8 @@ def textureCheck ( doc_id = "", files = list() ) :
 
     return not_success
 
-def texturePush ( db = None, doc_id = "", path = "", description = "",
-                  progressbar = False, msgbar = False, rename = False, vtype = "review" ) :
+def texturePush (db = None, doc_id = "", path = "", description = "",
+                  progressbar = False, msgbar = False, rename = False, vtype = "review") :
 
     """
     This function copy the desired file from local workspace to repository.
@@ -1081,15 +1086,15 @@ def texturePush ( db = None, doc_id = "", path = "", description = "",
 
     """
     # Make sure vtype exists
-    if utils.checkVersionType ( vtype ) :
+    if utils.checkVersionType (vtype) :
         return False
 
     # List the directory
     # TODO: Use glob to get the right textures
-    if not os.path.isdir ( path ):
+    if not os.path.isdir (path):
         return False
 
-    lsdir = os.listdir ( path )
+    lsdir = os.listdir (path)
 
     files = list ()
     # Iterate over files contained in the directory 'path'
@@ -1097,32 +1102,32 @@ def texturePush ( db = None, doc_id = "", path = "", description = "",
     for fil in lsdir:
 
         # Get file extension
-        ext = os.path.splitext ( fil ) [-1]
+        ext = os.path.splitext (fil) [-1]
 
-        if ext in ( ".mra", ".psd" ):
+        if ext in (".mra", ".psd"):
             # If current file is a Mari or photoshop file
             # aka extraordinary textures files
-            if not ( fil.find ( doc_id ) == 0 ) :
+            if not (fil.find (doc_id) == 0) :
                 print fil, "should begin with %s" % doc_id
                 return False
         else:
             # else add the file for texture check
-            files.append ( os.path.join ( path, fil ) )
+            files.append (os.path.join (path, fil))
 
     # Check the none extraordinary textures files
-    texCheck = textureCheck ( doc_id, files )
+    texCheck = textureCheck (doc_id, files)
 
     # If every textures success the check
-    if len ( texCheck ) == 0 :
+    if len (texCheck) == 0 :
         # Push the directory containing the textures
-        pushed = pushDir ( db = db, doc_id = doc_id, path = path, description = description, vtype = vtype )
+        pushed = pushDir (db = db, doc_id = doc_id, path = path, description = description, vtype = vtype)
         return pushed
     else :
         for tex in texCheck :
-            print ( "texturePush(): %s is wrong" % tex )
+            print ("texturePush(): %s is wrong" % tex)
 
-        simptex = "%s_%s_%s.%s.%s" % ( doc_id, "<variation>", "<type>", "<udim>", "tif" )
-        animtex = "%s_%s_%s.%s.%s.%s" % ( doc_id, "<variation>", "<type>", "<udim>", "<frame>", "tif" )
-        print "texturePush(): expect %s or %s " % ( simptex , animtex )
+        simptex = "%s_%s_%s.%s.%s" % (doc_id, "<variation>", "<type>", "<udim>", "tif")
+        animtex = "%s_%s_%s.%s.%s.%s" % (doc_id, "<variation>", "<type>", "<udim>", "<frame>", "tif")
+        print "texturePush(): expect %s or %s " % (simptex , animtex)
 
         return False

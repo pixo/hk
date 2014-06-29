@@ -3,7 +3,7 @@ import badass.core as core
 import badass.utils as utils
 import time
 
-def measureTime( a ):
+def measureTime(a):
     start = time.clock()
     l = a()
     elapsed = time.clock()
@@ -16,7 +16,7 @@ def getAllAssetVersions ():
     This is a simple example to get all asset versions.
     """
     db = utils.getDb()
-    versions = core.getVersions ( db = db, doc_id = "bls_chr_belanus_mod_main" )
+    versions = core.getVersions (db = db, doc_id = "bls_chr_belanus_mod_main")
     print versions
     return versions
 
@@ -25,7 +25,7 @@ def getAnAssetVersion ():
     This is a simple example to get a particular asset version path.
     """
     db = utils.getDb()
-    version = core.getVersionPath ( db = db, doc_id = "cpt_chr_jdoe_mod_a", version = "last" )
+    version = core.getVersionPath (db = db, doc_id = "cpt_chr_jdoe_mod_a", version = "last")
     print version
     return version
 
@@ -35,7 +35,7 @@ def pullAnAssetVersion ():
     """
     db = utils.getDb ()
     version = 2
-    result = core.pull ( db = db, doc_id = "bls_chr_belanus_mod_main", version = version )
+    result = core.pull (db = db, doc_id = "bls_chr_belanus_mod_main", version = version)
     print result
 
 def getFileTexType ():
@@ -43,7 +43,7 @@ def getFileTexType ():
     This is a simple example to pull to workspace a particular asset version.
     """
     path = "bls_chr_belanus_tex_spec1.1001.tif"
-    result = core.getTextureAttr ( path )
+    result = core.getTextureAttr (path)
     print result
 
 def getEnv ():
@@ -89,46 +89,46 @@ def getEnv ():
     return env_data
 
 
-def pushfile ( path, description ):
+def pushfile (path, description):
 
-    if not os.path.isabs( path ) :
-        path = os.path.abspath( path )
+    if not os.path.isabs(path) :
+        path = os.path.abspath(path)
 
-    if not os.path.exists( path ):
+    if not os.path.exists(path):
         print "hk-texture-publish: %s doesn't exists" % path
         return 1
 
     db = utils.getDb()
-    doc_id = core.getIdFromPath( path )
+    doc_id = core.getIdFromPath(path)
 
-    if not ( doc_id in db ) :
+    if not (doc_id in db) :
         print "hk-push: %s isn't in the  database" % doc_id
         return 1
 
-    if os.path.isdir ( path ) :
-        core.pushDir( db, doc_id, path, description )
+    if os.path.isdir (path) :
+        core.pushDir(db, doc_id, path, description)
     else :
-        core.pushFile( db, doc_id, path, description )
+        core.pushFile(db, doc_id, path, description)
 
 def lsAllType():
     db = utils.getDb()
     typ = "asset"
     startkey = "loc"
-    asset_ls = utils.lsDb( db, typ, startkey )
+    asset_ls = utils.lsDb(db, typ, startkey)
     return asset_ls
 
-def createAssetWS( doc_id ):
-    core.createWorkspace( doc_id )
+def createAssetWS(doc_id):
+    core.createWorkspace(doc_id)
 
-def createAssetOnDB( doc_id ):
+def createAssetOnDB(doc_id):
     description = "Test"
-    stat = core.createAsset ( db = None, doc_id = doc_id, description = description )
+    stat = core.createAsset (db = None, doc_id = doc_id, description = description)
     print stat
 
-def createTaskOnDB( doc_id ):
+def createTaskOnDB(doc_id):
     db = utils.getDb()
     description = "Test"
-    stat = core.createTask( db = db, doc_id = doc_id, description = description )
+    stat = core.createTask(db = db, doc_id = doc_id, description = description)
     print stat
 
 def createMassiveAssets():
@@ -137,30 +137,42 @@ def createMassiveAssets():
     tasks = utils.getAssetTasks()
 
     for t in types:
-        createAssetOnDB( "%s_%s_donald%s" % ( prj, types[t], types[t] ) )
+        createAssetOnDB("%s_%s_donald%s" % (prj, types[t], types[t]))
 
         for k in tasks:
-            createTaskOnDB( "%s_%s_donald%s_%s_a" % ( prj, types[t], types[t], tasks[k] ) )
+            createTaskOnDB("%s_%s_donald%s_%s_a" % (prj, types[t], types[t], tasks[k]))
+
+def changeAttr(db = None, docId = "", attr = None, value = None):
+    if docId == "" or attr or value :
+        print ("setAssetAttr(): please provide proper attributes.")
+        return
+
+    if not db :
+        db = utils.getDb ()
+
+    doc = db[docId]
+    doc[attr] = value
+    _id, _rev = db.save (doc)
 
 # def pub():
 #     path = "/homeworks/users/pixo/projects/test/cam/donaldcam/ani/a/review/caca.ma"
 #     description = "caca"
-# 
+#
 #     db = utils.getDb ()
 #     doc_id = core.getIdFromPath ( path )
-# 
+#
 #     if not ( doc_id in db ) :
 #         print "hk-push: %s isn't in the  database" % doc_id
 #         return 1
-# 
+#
 #     if os.path.isdir ( path ) :
 #         core.pushDir ( db, doc_id, path, description )
-# 
+#
 #     else :
 #         basename = os.path.basename ( path )
 #         if basename.find ( doc_id ) == 0 :
 #             core.pushFile ( db = db, doc_id = doc_id, path = path, description = description )
-# 
+#
 #         else:
 #             print "wrong naming convention"
 
@@ -189,7 +201,8 @@ if __name__ == '__main__':
 #     print time.localtime( y )
 #     print time.gmtime( y )
 #     pub()
-
-
+#     print utils.getBadassVersions ()
+#     pushfile("/homeworks/users/pixo/projects/tst/cam/camera/cam/a/review/caca.ma", "this is a test")
+    changeAttr()
 
 

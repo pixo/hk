@@ -5,7 +5,7 @@ Created on Jan 10, 2013
 import time
 import badass.utils as utils
 
-def createAsset ( db = None, doc_id = "", description = "", overdoc = dict() ):
+def createAsset (db = None, doc_id = "", description = "", overdoc = dict()):
     """
     This function create an **asset** into the provided database.
 
@@ -32,11 +32,11 @@ def createAsset ( db = None, doc_id = "", description = "", overdoc = dict() ):
         db = utils.getDb ()
 
     # Get data from doc_id
-    project, typ, slug = doc_id.split ( "_" )
-    asset = "%s_%s" % ( typ, slug )
+    project, typ, slug = doc_id.split ("_")
+    asset = "%s_%s" % (typ, slug)
 
     # Check if project name is right
-    if not ( project in db ) :
+    if not (project in db) :
         print "createAsset: %s project doesn't exist" % project
         return False
 
@@ -47,32 +47,34 @@ def createAsset ( db = None, doc_id = "", description = "", overdoc = dict() ):
 
     # Create the asset structure
     doc = {
-        "type" : typ,
         "_id" : doc_id,
-        "project_id" : project,
+        "project" : project,
         "name" : slug,
-        "description" : description,
-        "creator" : utils.getCurrentUser(),
-        "created" : time.time(),  # time.strftime ( "%Y %b %d %H:%M:%S", time.localtime() ),
-        "status": {"art":"ns", "tec":"ns"},
+        "type" : typ,
         "masters":{},
         "tags":{},
         "comments":{},
         "inactive" : False,
         "parents": {},
-        "children": {}
+        "children": {},
+        "description" : description,
+        "creator" : utils.getCurrentUser(),
+        "created" : time.time(),  # time.strftime ( "%Y %b %d %H:%M:%S", time.localtime() ),
+        "status": { "art":"ns", "tec":"ns" },
+        "infos": { "bid":1, "delivery": 20140611.5, "spent":0, "assigned":"" },
+        "subscribers": {}
         }
 
     # Add extra data if needed
-    doc.update ( overdoc )
+    doc.update (overdoc)
 
     # Save data structure into the database
-    _id, _rev = db.save( doc )
+    _id, _rev = db.save(doc)
 
-    print "createAsset: Added %r to project %r" % ( asset , project )
+    print "createAsset: Added %r to project %r" % (asset , project)
     return db[_id]
 
-def createTask ( db = None, doc_id = "", description = "", overdoc = dict() ):
+def createTask (db = None, doc_id = "", description = "", overdoc = dict()):
     """
     This function create a **task** into the provided database.
 
@@ -102,17 +104,17 @@ def createTask ( db = None, doc_id = "", description = "", overdoc = dict() ):
         db = utils.getDb()
 
     # Get datas from doc_id
-    project, typ, slug, task, fork = doc_id.split ( "_" )
-    asset_id = "%s_%s_%s" % ( project, typ, slug )
-    asset = "%s_%s_%s_%s" % ( typ, slug, task, fork )
+    project, typ, slug, task, fork = doc_id.split ("_")
+    asset_id = "%s_%s_%s" % (project, typ, slug)
+    asset = "%s_%s_%s_%s" % (typ, slug, task, fork)
 
     # Check if project name is right
-    if not ( project in db ) :
+    if not (project in db) :
         print "createTask: %s project doesn't exist" % project
         return False
 
     # Check if the asset exist
-    if not ( asset_id in db ):
+    if not (asset_id in db):
         print "createTask: Asset '%s' doesn't exist" % asset_id
         return False
 
@@ -123,37 +125,39 @@ def createTask ( db = None, doc_id = "", description = "", overdoc = dict() ):
 
     # Create the task structure
     doc = {
-        "type" : typ,
-        "task" : task,
         "_id" : doc_id,
-        "project_id" : project,
-        "asset_id" : asset_id,
-        "fork" : fork,
+        "project" : project,
+        "type" : typ,
         "name" : slug,
-        "description" : description,
+        "task" : task,
+#         "asset_id" : asset_id,
+        "fork" : fork,
         "review" : dict(),
         "release" : dict(),
-        "comments":{},
-        "creator" : user,
-        "created" : time.time(),
         "masters":{},
         "tags":{},
         "inactive" : False,
-        "status": {"art":"ns", "tec":"ns"},
         "parents": {},
-        "children": {}
+        "children": {},
+        "comments":{},
+        "description" : description,
+        "creator" : utils.getCurrentUser(),
+        "created" : time.time(),  # time.strftime ( "%Y %b %d %H:%M:%S", time.localtime() ),
+        "status": { "art":"ns", "tec":"ns" },
+        "infos": { "bid":1, "delivery": 20140611.5, "spent":0, "assigned":"" },
+        "subscribers": {}
         }
 
     # Add extra data if needed
-    doc.update( overdoc )
+    doc.update(overdoc)
 
     # Save data structure into the database
-    _id, _rev = db.save ( doc )
+    _id, _rev = db.save (doc)
 
-    print "createTask: Added %r to project %r" % ( asset , project )
+    print "createTask: Added %r to project %r" % (asset , project)
     return db[_id]
 
-def createPack ( db = None, doc_id = "", description = "No description" ):
+def createPack (db = None, doc_id = "", description = "No description"):
     """
     This function create an asset of type **Pack** into the provided database.
 
@@ -177,12 +181,12 @@ def createPack ( db = None, doc_id = "", description = "No description" ):
     overdoc = {"pack" : {}}
 
     # Create asset shot with shot extra attributes
-    result = createAsset ( db, doc_id, description, overdoc )
+    result = createAsset (db, doc_id, description, overdoc)
 
     return result
 
-def createShot ( db = None, doc_id = "", description = "No description",
-                    cut_in = 1, cut_out = 100 ):
+def createShot (db = None, doc_id = "", description = "No description",
+                    cut_in = 1, cut_out = 100):
     """
     This function create an asset of type **Shot** into the provided database.
 
@@ -207,12 +211,23 @@ def createShot ( db = None, doc_id = "", description = "No description",
     """
 
     # Extra shot attributes
-    overdoc = {"seq" : doc_id.split( "_" )[2].split( "-" )[0],
+    overdoc = {"seq" : doc_id.split("_")[2].split("-")[0],
                "cut_in": cut_in,
                "cut_out": cut_out }
 
     # Create asset shot with shot extra attributes
-    result = createAsset ( db, doc_id, description, overdoc )
+    result = createAsset (db, doc_id, description, overdoc)
 
     return result
 
+def setAssetAttr(db = None, docId = "", attr = None, value = None):
+    if docId == "" or not attr:
+        print ("setAssetAttr(): please provide proper attributes.")
+        return
+
+    if not db :
+        db = utils.getDb ()
+
+    doc = db[docId]
+    doc[attr] = value
+    _id, _rev = db.save (doc)

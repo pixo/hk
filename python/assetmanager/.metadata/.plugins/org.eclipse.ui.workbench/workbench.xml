@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workbench progressCount="33" version="2.0">
 <workbenchAdvisor/>
-<window height="764" width="1362" x="0" y="0">
+<window height="681" maximized="true" width="1358" x="65" y="87">
 <fastViewData fastViewLocation="1024">
 <orientation position="512" view="org.eclipse.ui.views.ProblemView"/>
 </fastViewData>
@@ -16,7 +16,7 @@
 <coolItem id="com.python.pydev.navigate.actionSet" itemType="typeToolBarContribution" x="36" y="26"/>
 <coolItem id="com.python.pydev.toolbars.evaluateActionSetterToolbar" itemType="typeToolBarContribution" x="36" y="26"/>
 <coolItem id="org.eclipse.debug.ui.launchActionSet" itemType="typeToolBarContribution" x="112" y="26"/>
-<coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="44" y="26"/>
+<coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="70" y="26"/>
 <coolItem id="org.eclipse.ui.edit.text.actionSet.presentation" itemType="typeToolBarContribution" x="62" y="26"/>
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="172" y="26"/>
@@ -26,7 +26,7 @@
 <coolItem id="group.help" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.help" itemType="typeToolBarContribution" x="-1" y="-1"/>
 </coolbarLayout>
-<page aggregateWorkingSetId="Aggregate for window 1384187535212" focus="true" label="Workspace - PyDev">
+<page aggregateWorkingSetId="Aggregate for window 1384187535212" focus="true" label="Workspace - Debug">
 <editors>
 <editorArea activeWorkbook="DefaultEditorWorkbook">
 <info part="DefaultEditorWorkbook">
@@ -37,99 +37,29 @@
 <part id="2"/>
 <part id="3"/>
 <part id="4"/>
-<part id="5"/>
-<part id="6"/>
-<part id="7"/>
-<part id="8"/>
-<part id="9"/>
-<part id="10"/>
-<part id="11"/>
-<part id="12"/>
-<part id="13"/>
-<part id="14"/>
-<part id="15"/>
-<part id="16"/>
-<part id="17"/>
-<part id="18"/>
 </presentation>
 </folder>
 </info>
 </editorArea>
-<editor id="org.python.pydev.editor.PythonEditor" name="__init__.py" partName="apps" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/apps/__init__.py" title="apps" tooltip="0.1.0/badass/apps/__init__.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/apps/__init__.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
+<editor activePart="true" focus="true" id="org.python.pydev.editor.PythonEditor" name="assetManager.py" partName="assetManager" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.2.0/badass/apps/assetManager.py" title="assetManager" tooltip="0.2.0/badass/apps/assetManager.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.2.0/badass/apps/assetManager.py"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="39073" selectionTopPixel="15714"/>
 </editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="assetManager.py" partName="assetManager" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/apps/assetManager.py" title="assetManager" tooltip="0.1.0/badass/apps/assetManager.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/apps/assetManager.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="103" selectionTopPixel="0"/>
+<editor id="org.python.pydev.editor.PythonEditor" name="examples.py" partName="examples" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.2.0/badass/examples/examples.py" title="examples" tooltip="0.2.0/badass/examples/examples.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.2.0/badass/examples/examples.py"/>
+<editorState selectionHorizontalPixel="0" selectionLength="304" selectionOffset="4670" selectionTopPixel="2479"/>
 </editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="checkDependencies.py" partName="checkDependencies" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/apps/checkDependencies.py" title="checkDependencies" tooltip="0.1.0/badass/apps/checkDependencies.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/apps/checkDependencies.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2579" selectionTopPixel="1638"/>
+<editor id="org.python.pydev.editor.PythonEditor" name="repository.py" partName="repository" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.2.0/badass/core/repository.py" title="repository" tooltip="0.2.0/badass/core/repository.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.2.0/badass/core/repository.py"/>
+<editorState selectionHorizontalPixel="0" selectionLength="8" selectionOffset="18860" selectionTopPixel="11859"/>
 </editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="projectCloner.py" partName="projectCloner" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/apps/projectCloner.py" title="projectCloner" tooltip="0.1.0/badass/apps/projectCloner.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/apps/projectCloner.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="42" selectionTopPixel="0"/>
+<editor id="org.python.pydev.editor.PythonEditor" name="asset.py" partName="asset" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.2.0/badass/core/asset.py" title="asset" tooltip="0.2.0/badass/core/asset.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.2.0/badass/core/asset.py"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="6873" selectionTopPixel="3727"/>
 </editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="projectCreator.py" partName="projectCreator" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/apps/projectCreator.py" title="projectCreator" tooltip="0.1.0/badass/apps/projectCreator.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/apps/projectCreator.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="27" selectionTopPixel="0"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="referencer.py" partName="referencer" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/apps/referencer.py" title="referencer" tooltip="0.1.0/badass/apps/referencer.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/apps/referencer.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="__init__.py" partName="core" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/core/__init__.py" title="core" tooltip="0.1.0/badass/core/__init__.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/core/__init__.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="20" selectionTopPixel="0"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="asset.py" partName="asset" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/core/asset.py" title="asset" tooltip="0.1.0/badass/core/asset.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/core/asset.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="671" selectionOffset="182" selectionTopPixel="211"/>
-</editor>
-<editor activePart="true" focus="true" id="org.python.pydev.editor.PythonEditor" name="project.py" partName="project" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/core/project.py" title="project" tooltip="0.1.0/badass/core/project.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/core/project.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5708" selectionTopPixel="3762"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="repository.py" partName="repository" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/core/repository.py" title="repository" tooltip="0.1.0/badass/core/repository.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/core/repository.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="45" selectionTopPixel="0"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="examples.py" partName="examples" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/examples/examples.py" title="examples" tooltip="0.1.0/badass/examples/examples.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/examples/examples.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="93" selectionTopPixel="0"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="__init__.py" partName="utils" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/utils/__init__.py" title="utils" tooltip="0.1.0/badass/utils/__init__.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/utils/__init__.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="10" selectionTopPixel="0"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="dataBase.py" partName="dataBase" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/utils/dataBase.py" title="dataBase" tooltip="0.1.0/badass/utils/dataBase.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/utils/dataBase.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="41" selectionTopPixel="2335"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="__init__.py" partName="examples" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/examples/__init__.py" title="examples" tooltip="0.1.0/badass/examples/__init__.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/examples/__init__.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="rule.py" partName="rule" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/utils/rule.py" title="rule" tooltip="0.1.0/badass/utils/rule.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/utils/rule.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="28" selectionTopPixel="0"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="system.py" partName="system" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/utils/system.py" title="system" tooltip="0.1.0/badass/utils/system.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/utils/system.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="3430" selectionTopPixel="2322"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="__init__.py" partName="badass" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/__init__.py" title="badass" tooltip="0.1.0/badass/__init__.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/__init__.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="75" selectionTopPixel="0"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="pydevd.py" partName="pydevd" title="pydevd" tooltip="/home/pixo/.eclipse/org.eclipse.platform_3.7.0_155965261/plugins/org.python.pydev_2.8.2.2013090511/pysrc/pydevd.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/home/pixo/.eclipse/org.eclipse.platform_3.7.0_155965261/plugins/org.python.pydev_2.8.2.2013090511/pysrc/pydevd.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="62719" selectionTopPixel="25812"/>
-</editor>
-<editor id="org.python.pydev.editor.PythonEditor" name="infos.py" partName="infos" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/utils/infos.py" title="infos" tooltip="0.1.0/badass/utils/infos.py" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.1.0/badass/utils/infos.py"/>
-<editorState selectionHorizontalPixel="0" selectionLength="16" selectionOffset="52" selectionTopPixel="0"/>
+<editor id="org.python.pydev.editor.PythonEditor" name="projectCreator.py" partName="projectCreator" path="/homeworks/users/pixo/codes/public/python/assetmanager/0.2.0/badass/apps/projectCreator.py" title="projectCreator" tooltip="0.2.0/badass/apps/projectCreator.py" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/0.2.0/badass/apps/projectCreator.py"/>
+<editorState selectionHorizontalPixel="0" selectionLength="4" selectionOffset="1750" selectionTopPixel="931"/>
 </editor>
 </editors>
 <views>
@@ -149,9 +79,8 @@
 <viewState PRIMARY_SORT_FIELD="org.eclipse.ui.ide.severityAndDescriptionField" categoryGroup="org.eclipse.ui.ide.severity" markerContentGenerator="org.eclipse.ui.ide.problemsGenerator" partName="Problems">
 <expanded>
 <category IMemento.internal.id="Warnings (1 item)"/>
-<category IMemento.internal.id="Errors"/>
 </expanded>
-<columnWidths org.eclipse.ui.ide.locationField="105" org.eclipse.ui.ide.markerType="337" org.eclipse.ui.ide.pathField="140" org.eclipse.ui.ide.resourceField="105" org.eclipse.ui.ide.severityAndDescriptionField="350"/>
+<columnWidths org.eclipse.ui.ide.locationField="105" org.eclipse.ui.ide.markerType="337" org.eclipse.ui.ide.pathField="178" org.eclipse.ui.ide.resourceField="156" org.eclipse.ui.ide.severityAndDescriptionField="350"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.severityAndDescriptionField"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.resourceField"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.pathField"/>
@@ -162,10 +91,10 @@
 <view id="org.eclipse.ui.console.ConsoleView" partName="Console">
 <viewState/>
 </view>
-<view id="org.eclipse.debug.ui.BreakpointView" partName="Breakpoints">
+<view id="org.eclipse.debug.ui.VariableView" partName="Variables">
 <viewState/>
 </view>
-<view id="org.eclipse.debug.ui.VariableView" partName="Variables">
+<view id="org.eclipse.debug.ui.BreakpointView" partName="Breakpoints">
 <viewState/>
 </view>
 <view id="org.eclipse.ui.views.TaskList" partName="Tasks">
@@ -185,18 +114,18 @@
 </view>
 <view id="org.python.pydev.navigator.view" partName="PyDev Package Explorer">
 <viewState CommonNavigator.LINKING_ENABLED="0" org.eclipse.ui.navigator.resources.workingSets.showTopLevelWorkingSets="0">
-<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0"/>
-<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass"/>
-<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/apps"/>
-<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/apps/assetManager.py"/>
-<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/core"/>
-<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/examples"/>
-<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/utils"/>
-<selected IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.1.0/badass/utils/__init__.py"/>
+<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.2.0"/>
+<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.2.0/badass"/>
+<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.2.0/badass/apps"/>
+<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.2.0/badass/apps/projectCreator.py"/>
+<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.2.0/badass/core"/>
+<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.2.0/badass/core/asset.py"/>
+<expanded IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.2.0/badass/core/repository.py"/>
+<selected IMemento.internal.id="/homeworks/users/pixo/codes/public/python/assetmanager/0.2.0/badass/core/asset.py"/>
 </viewState>
 </view>
 </views>
-<perspectives activePart="org.python.pydev.editor.PythonEditor" activePerspective="org.python.pydev.ui.PythonPerspective">
+<perspectives activePart="org.python.pydev.editor.PythonEditor" activePerspective="org.eclipse.debug.ui.DebugPerspective">
 <perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
 <descriptor class="org.eclipse.ui.internal.ide.application.ResourcePerspective" id="org.eclipse.ui.resourcePerspective" label="Resource"/>
 <alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
@@ -320,7 +249,7 @@
 </info>
 <info part="org.eclipse.ui.editorss" ratio="0.22797927" ratioLeft="308" ratioRight="1043" relationship="2" relative="topLeft"/>
 <info folder="true" part="bottom" ratio="0.6283988" ratioLeft="416" ratioRight="246" relationship="4" relative="org.eclipse.ui.editorss">
-<folder activePageID="org.eclipse.ui.views.ProblemView" appearance="2" expanded="2">
+<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">
 <page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
 <page content="org.eclipse.search.ui.views.SearchView" label="Search"/>
 <page content="org.eclipse.ui.views.ProblemView" label="Problems"/>
@@ -370,24 +299,21 @@
 <perspective_action id="org.eclipse.jdt.ui.JavaBrowsingPerspective"/>
 <hide_toolbar_item_id id="org.eclipse.jdt.ui.actions.OpenProjectWizard"/>
 <hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
-<view id="org.eclipse.ui.console.ConsoleView"/>
-<view id="org.eclipse.ui.views.TaskList"/>
 <view id="org.eclipse.debug.ui.DebugView"/>
-<view id="org.eclipse.debug.ui.VariableView"/>
 <view id="org.eclipse.debug.ui.BreakpointView"/>
 <view id="org.eclipse.ui.views.ContentOutline"/>
+<view id="org.eclipse.ui.views.TaskList"/>
+<view id="org.eclipse.debug.ui.VariableView"/>
+<view id="org.eclipse.ui.console.ConsoleView"/>
 <fastViewBars/>
 <layout>
 <mainWindow>
 <info folder="true" part="org.eclipse.debug.internal.ui.NavigatorFolderView">
-<folder activePageID="org.eclipse.debug.ui.DebugView" appearance="2" expanded="2">
-<page content="org.eclipse.debug.ui.DebugView" label="Debug"/>
+<folder appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.ResourceNavigator" label="LabelNotFound"/>
 <page content="org.eclipse.jdt.ui.PackageExplorer" label="LabelNotFound"/>
 <page content="org.eclipse.jdt.ui.TypeHierarchy" label="LabelNotFound"/>
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
-<part id="0"/>
-</presentation>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
 <info folder="true" part="stickyFolderRight" ratio="0.74963075" ratioLeft="1015" ratioRight="339" relationship="2" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">
@@ -398,39 +324,51 @@
 </folder>
 </info>
 <info folder="true" part="org.eclipse.debug.internal.ui.ConsoleFolderView" ratio="0.74887216" ratioLeft="498" ratioRight="167" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">
-<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">
-<page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
-<page content="org.eclipse.ui.views.TaskList" label="Tasks"/>
+<folder appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
 <page content="org.eclipse.ui.views.PropertySheet" label="LabelNotFound"/>
 <page content="org.eclipse.jdt.debug.ui.DisplayView" label="LabelNotFound"/>
 <page content="org.eclipse.search.SearchResultView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@55254c3b" ratio="0.4497992" ratioLeft="224" ratioRight="274" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">
+<folder activePageID="org.eclipse.debug.ui.DebugView" appearance="2" expanded="2">
+<page content="org.eclipse.debug.ui.DebugView" label="Debug"/>
+<page content="org.eclipse.debug.ui.BreakpointView" label="Breakpoints"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
 <part id="0"/>
 <part id="1"/>
 </presentation>
 </folder>
 </info>
-<info part="org.eclipse.ui.editorss" ratio="0.4497992" ratioLeft="224" ratioRight="274" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView"/>
-<info folder="true" part="org.eclipse.debug.internal.ui.OutlineFolderView" ratio="0.74963075" ratioLeft="1015" ratioRight="339" relationship="2" relative="org.eclipse.ui.editorss">
-<folder activePageID="org.eclipse.ui.views.ContentOutline" appearance="2" expanded="2">
+<info folder="true" part="org.eclipse.debug.internal.ui.OutlineFolderView" ratio="0.8926721" ratioLeft="1206" ratioRight="145" relationship="2" relative="org.eclipse.ui.internal.ViewStack@55254c3b">
+<folder activePageID="org.eclipse.debug.ui.VariableView" appearance="2" expanded="2">
+<page content="org.eclipse.debug.ui.VariableView" label="Variables"/>
 <page content="org.eclipse.ui.views.ContentOutline" label="Outline"/>
+<page content="org.eclipse.ui.views.TaskList" label="Tasks"/>
 <page content="org.eclipse.ant.ui.views.AntView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
+<part id="1"/>
+<part id="2"/>
+</presentation>
+</folder>
+</info>
+<info part="org.eclipse.ui.editorss" ratio="0.27378815" ratioLeft="305" ratioRight="809" relationship="2" relative="org.eclipse.ui.internal.ViewStack@55254c3b"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@2aa96881" ratio="0.74922603" ratioLeft="484" ratioRight="162" relationship="4" relative="org.eclipse.ui.editorss">
+<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">
+<page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
 <part id="0"/>
 </presentation>
 </folder>
 </info>
 <info folder="true" part="org.eclipse.debug.internal.ui.ToolsFolderView" ratio="0.5" ratioLeft="677" ratioRight="677" relationship="2" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">
-<folder activePageID="org.eclipse.debug.ui.VariableView" appearance="2" expanded="2">
-<page content="org.eclipse.debug.ui.VariableView" label="Variables"/>
-<page content="org.eclipse.debug.ui.BreakpointView" label="Breakpoints"/>
+<folder appearance="2" expanded="2">
 <page content="org.eclipse.debug.ui.ExpressionView" label="LabelNotFound"/>
 <page content="org.eclipse.debug.ui.RegisterView" label="LabelNotFound"/>
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
-<part id="0"/>
-<part id="1"/>
-</presentation>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
 </mainWindow>
@@ -440,167 +378,159 @@
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" path="/0.1.0/badass/apps/assetManager.py"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" path="/0.1.0/badass/core/__init__.py"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" path="/0.1.0/badass/__init__.py"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" path="/0.1.0/badass/core/project.py"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" uri="file:/home/pixo/.eclipse/org.eclipse.platform_3.7.0_155965261/plugins/org.python.pydev_2.8.2.2013090511/pysrc/pydevd.py"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" path="/0.1.0/badass/utils/system.py"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" path="/0.1.0/badass/utils/dataBase.py"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" path="/0.1.0/badass/core/asset.py"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" path="/0.1.0/badass/core/repository.py"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" path="/0.1.0/badass/utils/infos.py"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" path="/0.1.0/badass/utils/__init__.py"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" path="/0.2.0/badass/core/asset.py"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" path="/0.2.0/badass/apps/assetManager.py"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" path="/0.2.0/badass/examples/examples.py"/>
 </editors>
-<item historyLabel="badass" index="2">
-<position info="not_deleted" x="86" y="0"/>
+<item historyLabel="examples" index="2">
+<position info="not_deleted" x="4759" y="0"/>
 </item>
-<item historyLabel="assetManager" index="0">
-<position info="not_deleted" x="49" y="28"/>
-</item>
-<item historyLabel="pydevd" index="4">
-<position info="not_deleted" x="47707" y="0"/>
-</item>
-<item historyLabel="pydevd" index="4">
-<position info="not_deleted" x="62719" y="0"/>
-</item>
-<item historyLabel="project" index="3">
+<item historyLabel="examples" index="2">
 <position/>
 </item>
-<item historyLabel="assetManager" index="0">
-<position info="not_deleted" x="143" y="0"/>
-</item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="91" y="0"/>
-</item>
-<item historyLabel="core" index="1">
-<position info="not_deleted" x="20" y="0"/>
-</item>
-<item historyLabel="badass" index="2">
-<position info="not_deleted" x="86" y="0"/>
-</item>
-<item historyLabel="assetManager" index="0">
-<position info="not_deleted" x="49" y="0"/>
-</item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="91" y="0"/>
-</item>
-<item historyLabel="badass" index="2">
-<position info="not_deleted" x="99" y="0"/>
-</item>
-<item historyLabel="assetManager" index="0">
-<position info="not_deleted" x="95" y="0"/>
-</item>
-<item historyLabel="project" index="3">
+<item historyLabel="examples" index="2">
 <position/>
 </item>
-<item historyLabel="assetManager" index="0">
-<position info="not_deleted" x="104" y="0"/>
+<item historyLabel="examples" index="2">
+<position info="not_deleted" x="4834" y="0"/>
 </item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="91" y="0"/>
+<item historyLabel="examples" index="2">
+<position info="not_deleted" x="4838" y="0"/>
 </item>
-<item historyLabel="core" index="1">
-<position info="not_deleted" x="20" y="0"/>
+<item historyLabel="examples" index="2">
+<position info="not_deleted" x="4670" y="304"/>
 </item>
-<item historyLabel="badass" index="2">
-<position info="not_deleted" x="15" y="0"/>
+<item historyLabel="asset" index="0">
+<position info="not_deleted" x="4591" y="25"/>
 </item>
-<item historyLabel="core" index="1">
-<position info="not_deleted" x="20" y="0"/>
+<item historyLabel="asset" index="0">
+<position info="not_deleted" x="6787" y="62"/>
 </item>
-<item historyLabel="assetManager" index="0">
-<position info="not_deleted" x="104" y="0"/>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="35390" y="0"/>
 </item>
-<item historyLabel="system" index="5">
-<position info="not_deleted" x="3430" y="0"/>
-</item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="61" y="0"/>
-</item>
-<item historyLabel="assetManager" index="0">
-<position info="not_deleted" x="105" y="0"/>
-</item>
-<item historyLabel="project" index="3">
+<item historyLabel="assetManager" index="1">
 <position/>
 </item>
-<item historyLabel="core" index="1">
-<position info="not_deleted" x="20" y="0"/>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="39497" y="0"/>
 </item>
-<item historyLabel="badass" index="2">
-<position info="not_deleted" x="75" y="0"/>
-</item>
-<item historyLabel="assetManager" index="0">
-<position info="not_deleted" x="49" y="0"/>
-</item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="91" y="0"/>
-</item>
-<item historyLabel="assetManager" index="0">
-<position info="not_deleted" x="103" y="0"/>
-</item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="90" y="0"/>
-</item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="91" y="0"/>
-</item>
-<item historyLabel="project" index="3">
+<item historyLabel="assetManager" index="1">
 <position/>
 </item>
-<item historyLabel="assetManager" index="0">
-<position info="not_deleted" x="103" y="0"/>
+<item historyLabel="asset" index="0">
+<position info="not_deleted" x="6787" y="62"/>
 </item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="90" y="0"/>
+<item historyLabel="asset" index="0">
+<position info="not_deleted" x="6881" y="0"/>
 </item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="91" y="0"/>
+<item historyLabel="assetManager" index="1">
+<position/>
 </item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="93" y="0"/>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="39027" y="0"/>
 </item>
-<item historyLabel="dataBase" index="6">
-<position info="not_deleted" x="23" y="0"/>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="39075" y="0"/>
 </item>
-<item historyLabel="asset" index="7">
-<position info="not_deleted" x="45" y="0"/>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="39076" y="0"/>
 </item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="90" y="0"/>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="39156" y="0"/>
 </item>
-<item historyLabel="repository" index="8">
-<position info="not_deleted" x="45" y="0"/>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="39157" y="0"/>
 </item>
-<item historyLabel="infos" index="9">
-<position info="not_deleted" x="72" y="0"/>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="39193" y="0"/>
 </item>
-<item historyLabel="core" index="1">
-<position info="not_deleted" x="20" y="0"/>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="39194" y="0"/>
 </item>
-<item historyLabel="asset" index="7">
-<position info="not_deleted" x="182" y="671"/>
+<item historyLabel="assetManager" index="1">
+<position/>
 </item>
-<item historyLabel="assetManager" index="0">
-<position info="not_deleted" x="103" y="0"/>
+<item historyLabel="assetManager" index="1">
+<position/>
 </item>
-<item historyLabel="infos" index="9">
-<position info="not_deleted" x="52" y="16"/>
+<item historyLabel="assetManager" index="1">
+<position/>
 </item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="90" y="0"/>
+<item historyLabel="assetManager" index="1">
+<position/>
 </item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="1253" y="0"/>
+<item historyLabel="assetManager" index="1">
+<position/>
 </item>
-<item historyLabel="project" index="3">
-<position info="not_deleted" x="5710" y="0"/>
+<item historyLabel="asset" index="0">
+<position info="not_deleted" x="6851" y="0"/>
 </item>
-<item historyLabel="utils" index="10">
-<position info="not_deleted" x="10" y="0"/>
+<item historyLabel="asset" index="0">
+<position info="not_deleted" x="6873" y="0"/>
 </item>
-<item active="true" historyLabel="project" index="3">
-<position info="not_deleted" x="5710" y="15"/>
+<item historyLabel="assetManager" index="1">
+<position/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="34873" y="0"/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="35798" y="0"/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="37510" y="0"/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="37461" y="0"/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="32235" y="0"/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="39583" y="0"/>
+</item>
+<item historyLabel="assetManager" index="1">
+<position info="not_deleted" x="39155" y="0"/>
+</item>
+<item active="true" historyLabel="assetManager" index="1">
+<position info="not_deleted" x="39116" y="0"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -608,6 +538,12 @@
 <workbenchWindowAdvisor/>
 <actionBarAdvisor/>
 <trimLayout>
+<trimArea IMemento.internal.id="16384">
+<trimItem IMemento.internal.id="org.eclipse.ui.internal.ViewStack@55254c3b"/>
+</trimArea>
+<trimArea IMemento.internal.id="131072">
+<trimItem IMemento.internal.id="org.eclipse.debug.internal.ui.OutlineFolderView"/>
+</trimArea>
 <trimArea IMemento.internal.id="128">
 <trimItem IMemento.internal.id="org.eclipse.ui.internal.WorkbenchWindow.topBar"/>
 </trimArea>
@@ -615,36 +551,16 @@
 <trimItem IMemento.internal.id="org.eclise.ui.internal.FastViewBar"/>
 <trimItem IMemento.internal.id="org.eclipse.jface.action.StatusLineManager"/>
 <trimItem IMemento.internal.id="org.eclipse.ui.internal.progress.ProgressRegion"/>
+<trimItem IMemento.internal.id="org.eclipse.ui.internal.ViewStack@2aa96881"/>
 </trimArea>
 </trimLayout>
 </window>
 <mruList>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="infos.py" tooltip="0.1.0/badass/utils/infos.py">
-<persistable path="/0.1.0/badass/utils/infos.py"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="projectCreator.py" tooltip="0.2.0/badass/apps/projectCreator.py">
+<persistable path="/0.2.0/badass/apps/projectCreator.py"/>
 </file>
-<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="pydevd.py" tooltip="/home/pixo/.eclipse/org.eclipse.platform_3.7.0_155965261/plugins/org.python.pydev_2.8.2.2013090511/pysrc/pydevd.py">
-<persistable uri="file:/home/pixo/.eclipse/org.eclipse.platform_3.7.0_155965261/plugins/org.python.pydev_2.8.2.2013090511/pysrc/pydevd.py"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="__init__.py" tooltip="0.1.0/badass/__init__.py">
-<persistable path="/0.1.0/badass/__init__.py"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="system.py" tooltip="0.1.0/badass/utils/system.py">
-<persistable path="/0.1.0/badass/utils/system.py"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="rule.py" tooltip="0.1.0/badass/utils/rule.py">
-<persistable path="/0.1.0/badass/utils/rule.py"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="__init__.py" tooltip="0.1.0/badass/examples/__init__.py">
-<persistable path="/0.1.0/badass/examples/__init__.py"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="dataBase.py" tooltip="0.1.0/badass/utils/dataBase.py">
-<persistable path="/0.1.0/badass/utils/dataBase.py"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="__init__.py" tooltip="0.1.0/badass/utils/__init__.py">
-<persistable path="/0.1.0/badass/utils/__init__.py"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="examples.py" tooltip="0.1.0/badass/examples/examples.py">
-<persistable path="/0.1.0/badass/examples/examples.py"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="asset.py" tooltip="0.2.0/badass/core/asset.py">
+<persistable path="/0.2.0/badass/core/asset.py"/>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="repository.py" tooltip="0.1.0/badass/core/repository.py">
 <persistable path="/0.1.0/badass/core/repository.py"/>
@@ -655,14 +571,35 @@
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="asset.py" tooltip="0.1.0/badass/core/asset.py">
 <persistable path="/0.1.0/badass/core/asset.py"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="__init__.py" tooltip="0.1.0/badass/core/__init__.py">
-<persistable path="/0.1.0/badass/core/__init__.py"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="referencer.py" tooltip="0.1.0/badass/apps/referencer.py">
-<persistable path="/0.1.0/badass/apps/referencer.py"/>
-</file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="projectCreator.py" tooltip="0.1.0/badass/apps/projectCreator.py">
 <persistable path="/0.1.0/badass/apps/projectCreator.py"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="projectCloner.py" tooltip="0.1.0/badass/apps/projectCloner.py">
+<persistable path="/0.1.0/badass/apps/projectCloner.py"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="checkDependencies.py" tooltip="0.1.0/badass/apps/checkDependencies.py">
+<persistable path="/0.1.0/badass/apps/checkDependencies.py"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="assetManager.py" tooltip="0.1.0/badass/apps/assetManager.py">
+<persistable path="/0.1.0/badass/apps/assetManager.py"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="repository.py" tooltip="0.2.0/badass/core/repository.py">
+<persistable path="/0.2.0/badass/core/repository.py"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="examples.py" tooltip="0.2.0/badass/examples/examples.py">
+<persistable path="/0.2.0/badass/examples/examples.py"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="__init__.py" tooltip="0.2.0/badass/__init__.py">
+<persistable path="/0.2.0/badass/__init__.py"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="infos.py" tooltip="0.2.0/badass/utils/infos.py">
+<persistable path="/0.2.0/badass/utils/infos.py"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="assetManager.py" tooltip="0.2.0/badass/apps/assetManager.py">
+<persistable path="/0.2.0/badass/apps/assetManager.py"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.python.pydev.editor.PythonEditor" name="infos.py" tooltip="0.1.0/badass/utils/infos.py">
+<persistable path="/0.1.0/badass/utils/infos.py"/>
 </file>
 </mruList>
 </workbench>

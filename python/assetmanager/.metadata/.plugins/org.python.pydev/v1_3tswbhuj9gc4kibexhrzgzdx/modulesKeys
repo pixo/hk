@@ -287,6 +287,7 @@ PixarImagePlugin|/usr/lib/python2.7/dist-packages/PIL/PixarImagePlugin.py
 PngImagePlugin|/usr/lib/python2.7/dist-packages/PIL/PngImagePlugin.py
 PpmImagePlugin|/usr/lib/python2.7/dist-packages/PIL/PpmImagePlugin.py
 PsdImagePlugin|/usr/lib/python2.7/dist-packages/PIL/PsdImagePlugin.py
+PyKate4.__init__|/usr/lib/python2.7/dist-packages/PyKate4/__init__.py
 PySide.QtCore|/usr/lib/python2.7/dist-packages/PySide/QtCore.so
 PySide.QtDeclarative|/usr/lib/python2.7/dist-packages/PySide/QtDeclarative.so
 PySide.QtGui|/usr/lib/python2.7/dist-packages/PySide/QtGui.so
@@ -1378,6 +1379,7 @@ libxml2mod|/usr/lib/python2.7/dist-packages/libxml2mod.so
 linecache|/usr/lib/python2.7/linecache.py
 linuxaudiodev|/usr/lib/python2.7/lib-dynload/linuxaudiodev.so
 locale|/usr/lib/python2.7/locale.py
+lockfile|/usr/lib/python2.7/dist-packages/lockfile.py
 logging.__init__|/usr/lib/python2.7/logging/__init__.py
 logging.config|/usr/lib/python2.7/logging/config.py
 logging.handlers|/usr/lib/python2.7/logging/handlers.py
