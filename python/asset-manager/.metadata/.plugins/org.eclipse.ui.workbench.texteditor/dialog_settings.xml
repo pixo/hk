@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="310" key="DIALOG_WIDTH"/>
+		<item value="267" key="DIALOG_Y_ORIGIN"/>
+		<item value="401" key="DIALOG_HEIGHT"/>
+		<item value="939" key="DIALOG_X_ORIGIN"/>
+		<item value="1|Sans|10.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="true" key="wrap"/>
+		<item value="false" key="isRegEx"/>
+		<item value="true" key="casesensitive"/>
+		<item value="false" key="incremental"/>
+		<item value="false" key="wholeword"/>
+		<item value="stat" key="selection"/>
+		<list key="findhistory">
+			<item value="stat"/>
+			<item value="bar"/>
+			<item value="messa"/>
+			<item value="setStatusBar"/>
+			<item value="msgbar"/>
+			<item value="progress"/>
+			<item value="push"/>
+			<item value="labelSystemTitle"/>
+		</list>
+		<list key="replacehistory">
+			<item value="verticalLayoutMain"/>
+			<item value="verticalLayoutmain"/>
+			<item value="lineEditFile"/>
+			<item value="labelProject"/>
+			<item value="verticalLayoutCenter"/>
+			<item value="lineTop"/>
+			<item value="verticalLayoutFile"/>
+			<item value="horizontalLayoutCenter"/>
+		</list>
+	</section>
+</section>
