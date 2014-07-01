@@ -1,4 +1,4 @@
-import os
+import os, shutil
 import badass.core as core
 import badass.utils as utils
 import time
@@ -156,6 +156,12 @@ def changeAttr(db = None, docId = "", attr = None, value = None):
     doc[attr]=value
     _id, _rev=db.save (doc)
 
+def copydir():
+    try:
+        shutil.copytree("/homeworks/users/pixo/projects/test/cam/donaldcam/ani/a", "/homeworks/users/pixo/projects/test/cam/donaldcam/ani/b")
+    except:
+        print "fail to copy"
+
 # def pub():
 #     path = "/homeworks/users/pixo/projects/test/cam/donaldcam/ani/a/review/caca.ma"
 #     description = "caca"
@@ -195,7 +201,7 @@ if __name__=='__main__':
 
 #     pushfile("/homeworks/users/pixo/projects/test/chr/mimi/mod/a/review/test.ma", "this is a test")
 #     pushfile("/homeworks/users/pixo/projects/test/prp/umbrella/mod/a/review/test.ma", "this is a test")
-    createMassiveAssets()
+#     createMassiveAssets()
 #     print utils.getDb()
 #     y = time.gmtime()clock
 
@@ -206,5 +212,5 @@ if __name__=='__main__':
 #     print utils.getBadassVersions ()
 #     pushfile("/homeworks/users/pixo/projects/tst/cam/camera/cam/a/review/caca.ma", "this is a test")
 #     changeAttr()
-
+    copydir()
 

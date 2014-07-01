@@ -769,12 +769,20 @@ class UiAssetManager(QtGui.QMainWindow):
         self.verticalLayoutToolBar.addWidget(self.buttonCreateTaskToolBar)
 
         # Delete asset
-        self.buttonDeactiveAssetToolBar=QtGui.QPushButton(self.centralwidget)
-        self.buttonDeactiveAssetToolBar.setMinimumSize(QtCore.QSize(24, 24))
-        self.buttonDeactiveAssetToolBar.setMaximumSize(QtCore.QSize(24, 24))
-        self.buttonDeactiveAssetToolBar.setObjectName("buttonDeactiveAssetToolBar")
-        self.buttonDeactiveAssetToolBar.setDisabled(True)
-        self.verticalLayoutToolBar.addWidget(self.buttonDeactiveAssetToolBar)
+        self.buttonDeactivateAssetToolBar=QtGui.QPushButton(self.centralwidget)
+        self.buttonDeactivateAssetToolBar.setMinimumSize(QtCore.QSize(24, 24))
+        self.buttonDeactivateAssetToolBar.setMaximumSize(QtCore.QSize(24, 24))
+        self.buttonDeactivateAssetToolBar.setObjectName("buttonDeactivateAssetToolBar")
+        self.buttonDeactivateAssetToolBar.setDisabled(True)
+        self.verticalLayoutToolBar.addWidget(self.buttonDeactivateAssetToolBar)
+
+        # Delete asset
+        self.buttonReleaseToolBar=QtGui.QPushButton(self.centralwidget)
+        self.buttonReleaseToolBar.setMinimumSize(QtCore.QSize(24, 24))
+        self.buttonReleaseToolBar.setMaximumSize(QtCore.QSize(24, 24))
+        self.buttonReleaseToolBar.setObjectName("buttonReleaseToolBar")
+        self.buttonReleaseToolBar.setDisabled(True)
+        self.verticalLayoutToolBar.addWidget(self.buttonReleaseToolBar)
 
         spacerItem=QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayoutToolBar.addItem(spacerItem)
@@ -787,7 +795,8 @@ class UiAssetManager(QtGui.QMainWindow):
 
         # VersionType comboBox
         self.comboBoxVersionType=QtGui.QComboBox(self.centralwidget)
-        self.comboBoxVersionType.setMaximumSize(QtCore.QSize(90, 16777215))
+        self.comboBoxVersionType.setMinimumSize(QtCore.QSize(95, 16777215))
+        self.comboBoxVersionType.setMaximumSize(QtCore.QSize(95, 16777215))
         self.comboBoxVersionType.setAccessibleName("")
         self.comboBoxVersionType.setObjectName("comboBoxVersionType")
         self.horizontalLayoutVersions.addWidget(self.comboBoxVersionType)
@@ -1147,7 +1156,6 @@ class UiAssetManager(QtGui.QMainWindow):
         else:
             print "deactivateAsset(): Aborted"
 
-
     def workspace(self):
         item=self.treeWidgetMain.currentItem()
         core.createWorkspace(item.id, "review")
@@ -1182,17 +1190,18 @@ class UiAssetManager(QtGui.QMainWindow):
         # Enable buttons
         stat=False
         self.buttonCreateTaskToolBar.setDisabled(stat)
-        self.buttonDeactiveAssetToolBar.setDisabled(stat)
+        self.buttonDeactivateAssetToolBar.setDisabled(stat)
 
         # Disable buttons
         stat=True
         self.buttonCreateWorkspaceToolBar.setDisabled(stat)
         self.buttonPullToolBar.setDisabled(stat)
         self.buttonPushToolBar.setDisabled(stat)
+        self.buttonReleaseToolBar.setDisabled(stat)
 
-        # Set deactive icon
+        # Set deactivate icon
         icon="connect" if (item and item.inactive) else "disconnect"
-        self.buttonDeactiveAssetToolBar.setIcon(QtGui.QIcon(utils.getIconPath(icon)))
+        self.buttonDeactivateAssetToolBar.setIcon(QtGui.QIcon(utils.getIconPath(icon)))
         self.comboBoxVersions.setDisabled(True)
         self.comboBoxVersions.clear()
 
@@ -1202,6 +1211,7 @@ class UiAssetManager(QtGui.QMainWindow):
 
     def taskClicked(self, item):
         "Set Ui when a task is clicked"
+
         # Enable buttons
         stat=False
         self.buttonCreateWorkspaceToolBar.setDisabled(stat)
@@ -1211,17 +1221,23 @@ class UiAssetManager(QtGui.QMainWindow):
         # Disable buttons
         stat=True
         self.buttonCreateTaskToolBar.setDisabled(stat)
-        self.buttonDeactiveAssetToolBar.setDisabled(stat)
+        self.buttonDeactivateAssetToolBar.setDisabled(stat)
 
         # Set Versions comboBox
         versionType=self.comboBoxVersionType.currentText()
         value=self.allTasks[item.id]
         versions=value[versionType]
-        versionsList=list(versions)
+        versionsList=list()
+        for version in versions: versionsList.append("%03d"%int(version))
         versionsList.sort(reverse = True)
         stat=len(versionsList)==0
         self.buttonPullToolBar.setDisabled(stat)
         self.comboBoxVersions.setDisabled(stat)
+
+        # Set button release
+        stat=True if (versionType=="release" or stat) else False
+        self.buttonReleaseToolBar.setDisabled(stat)
+
         self.comboBoxVersions.clear()
         self.comboBoxVersions.addItems(versionsList)
 
@@ -1269,13 +1285,33 @@ class UiAssetManager(QtGui.QMainWindow):
         value=self.allTasks[item.id]
         versions=value[versionType]
         version=self.comboBoxVersions.currentText()
-        doc=None if version=="" else versions[version]
+        doc=None if version=="" else versions[str(int(version))]
         self.setDescription(item, doc)
+
 
     def versionTypeChanged(self):
         item=self.treeWidgetMain.currentItem()
         self.taskClicked(item)
         self.filterTasks()
+
+    def releaseAsset(self):
+        "release task"
+        item=self.treeWidgetMain.currentItem()
+        slug=item.slug
+        version=self.comboBoxVersions.currentText()
+
+        msgBox=QtGui.QMessageBox()
+        msgBox.setText("Are you sure to release %s version %s ?"%(slug, version))
+        msgBox.setStandardButtons(QtGui.QMessageBox.Ok|QtGui.QMessageBox.Cancel)
+        msgBox.setDefaultButton(QtGui.QMessageBox.Save)
+        ret=msgBox.exec_()
+
+        if ret==QtGui.QMessageBox.Ok:
+            core.release(self.db, item.id, version)
+            self.refreshTree()
+        else:
+            print "releaseAsset(): Aborted"
+        print('release asset')
 
     def signalConnect(self):
         self.comboBoxAssetTypeFilter.currentIndexChanged.connect(self.filterAssets)
@@ -1291,7 +1327,8 @@ class UiAssetManager(QtGui.QMainWindow):
         self.buttonSetStatusToolBar.clicked.connect(self.setStatusClicked)
         self.buttonCreateAssetToolBar.clicked.connect(self.createAsset)
         self.buttonCreateTaskToolBar.clicked.connect(self.createTask)
-        self.buttonDeactiveAssetToolBar.clicked.connect(self.deactivateAsset)
+        self.buttonDeactivateAssetToolBar.clicked.connect(self.deactivateAsset)
+        self.buttonReleaseToolBar.clicked.connect(self.releaseAsset)
         self.buttonRefresh.clicked.connect(self.refreshTree)
         self.treeWidgetMain.currentItemChanged.connect(self.treeClicked)
 
@@ -1346,8 +1383,12 @@ class UiAssetManager(QtGui.QMainWindow):
         self.buttonSetStatusToolBar.setToolTip("Set <b>Status</b>.")
 
         # Set delete/inactive button
-        self.buttonDeactiveAssetToolBar.setIcon(QtGui.QIcon(utils.getIconPath("disconnect")))
-        self.buttonDeactiveAssetToolBar.setToolTip("<b>activate/deactivate</b> an asset.")
+        self.buttonDeactivateAssetToolBar.setIcon(QtGui.QIcon(utils.getIconPath("disconnect")))
+        self.buttonDeactivateAssetToolBar.setToolTip("<b>activate/deactivate</b> an asset.")
+
+        # Set release button
+        self.buttonReleaseToolBar.setIcon(QtGui.QIcon(utils.getIconPath("release")))
+        self.buttonReleaseToolBar.setToolTip("<b>release</b> a task.")
 
         # Set active only checkBox
         self.checkBoxActive.setText("active only")

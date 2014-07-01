@@ -563,7 +563,6 @@ def push (db = "", doc_id = "", path = list(), description = "",
         if rename:
             dst_file=doc_id+file_ext
             dst_screenshot=doc_id+screenshot_ext
-
         else:
             dst_file=file_name
             dst_screenshot=screenshot
@@ -610,13 +609,12 @@ def push (db = "", doc_id = "", path = list(), description = "",
     os.system ("chmod -R 555  %s"%repo)
 
     # Create the new version data for the "versions" document's attribute
-    fileinfo={
-                "creator" : os.getenv ("USER"),
+    fileinfo={  "creator" : os.getenv ("USER"),
                 "created" : time.time(),
                 "description" : description ,
                 "path" : path_attr ,
-                "files" : files_attr
-                }
+                "files" : files_attr,
+                "release" : list() }
     # Check status
     status=doc ["status"]
     if status["tec"]=="ns":
@@ -784,6 +782,45 @@ def pushFile (db = None, doc_id = False, path = list (), description = "", renam
                   description = description, progressbar = False,
                   msgbar = False, rename = rename, vtype = vtype)
     return result
+
+def release(db = None, docId = False, version = False):
+    ""
+    # TODO: create core.release(db,docId,version)
+    # Check if DB is provided else get the project DB
+    if (not db)  or db=="" :
+        db=utils.getDb()
+
+    # Get task document
+    doc=db[docId]
+
+    review=doc["review"]
+    version=str(int(version))
+    reviewVersion=review[version]
+    if not ("release" in reviewVersion):
+        reviewVersion["release"]=list()
+
+    release=doc["release"]
+    last=str(len(release)+1)
+    releaseVersion=dict()
+    releaseVersion["description"]=reviewVersion["description"]
+    releaseVersion["review"]=version
+    releaseVersion["path"]=getPathFromId(doc_id = docId, vtype = "release")
+    releaseVersion["path"]=os.path.join(releaseVersion["path"], "%03d"%int(last))
+    releaseVersion["created"]=time.time()
+    releaseVersion["creator"]=utils.getCurrentUser()
+    release[last]=releaseVersion
+    doc["release"]=release
+
+    released=reviewVersion["release"]
+    released.append(last)
+    reviewVersion["release"]=released
+    review[version]=reviewVersion
+    doc["review"]=review
+
+    src=reviewVersion["path"]
+    dst=releaseVersion["path"]
+    shutil.copytree(src, dst)
+    _id, _rev=db.save (doc)
 
 
 def getTextureAttr (path = None):
