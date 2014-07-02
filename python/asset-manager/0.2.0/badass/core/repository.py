@@ -230,7 +230,7 @@ def getLocalVersionPath (doc_id = "", version = 1, vtype = "review"):
 
     # Get asset local path
     fdir=getPathFromId (doc_id = doc_id, local = True, vtype = vtype)
-    name="%s.%03d"%(vtype, version)
+    name="%s.from_v%03d.base"%(vtype, version)
     dst=os.path.join (fdir, name)
 
     # Return a path that doesn't exist

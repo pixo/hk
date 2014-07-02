@@ -58,7 +58,7 @@ class UiPush (QtGui.QWidget) :
 
     def pushClicked(self):
 
-        item=self.listWidget_file.currentItem ()
+        item=self.listWidget_file.currentItem()
 
         if type (item)==type (None) :
             self.labelStatus.setText ("Please select an item to publish")
@@ -74,6 +74,7 @@ class UiPush (QtGui.QWidget) :
                   self.msgbar)
 
             self.progressBar.setHidden (True)
+            self.assetManager.refreshTasks()
             self.close()
 
     def descriptionChanged(self):
@@ -95,9 +96,10 @@ class UiPush (QtGui.QWidget) :
         self.plainTextEdit_description.textChanged.connect (self.descriptionChanged)
         self.checkBox.clicked.connect (self.checkBoxClicked)
 
-    def __init__(self, parent = None, db = None, item = "", msgbar = None):
+    def __init__(self, parent = None, db = None, item = "", assetManager = None, msgbar = None):
         super (UiPush, self).__init__(parent)
 
+        self.assetManager=assetManager
         self.msgbar=msgbar
         self.setObjectName ("Form")
         self.resize (600, 600)
@@ -385,7 +387,6 @@ class UiCreateAsset(QtGui.QWidget):
         self.labelSystemTitle.setPixmap(utils.getIconPath("addasset"))
         self.labelProjectTitle.setText(QtGui.QApplication.translate("MainWindow", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">%s</span><span style=\" font-size:12pt;\"/></body></html>"%("Create Asset"), None, QtGui.QApplication.UnicodeUTF8))
         self.createFilterTypes()
-
 
 class UiCreateTask (QtGui.QWidget) :
 
@@ -1117,6 +1118,10 @@ class UiAssetManager(QtGui.QMainWindow):
         self.filterAssets()
         self.filterTasks()
 
+    def refreshTasks(self):
+        self.allTasks=utils.lsDb(self.db, "task", self.project)
+        self.taskClicked()
+
     def refreshTree(self):
         self.allAssets=utils.lsDb(self.db, "asset", self.project)
         self.allAssetsItems=list()
@@ -1162,12 +1167,13 @@ class UiAssetManager(QtGui.QMainWindow):
 
     def pushClicked(self):
         item=self.treeWidgetMain.currentItem()
-        self.pushVersionWin=UiPush (db = self.db, item = item, msgbar = self.statusbar.showMessage)
+        self.pushVersionWin=UiPush (db = self.db, item = item, assetManager = self, msgbar = self.statusbar.showMessage)
         self.pushVersionWin.show ()
 
     def pullClicked(self):
         self.progressBarStatus.setHidden (False)
         item=self.treeWidgetMain.currentItem ()
+        vtype=self.comboBoxVersionType.currentText()
 
         """get asset id and version"""
         docId=item.id
@@ -1177,16 +1183,17 @@ class UiAssetManager(QtGui.QMainWindow):
         """Pull asset"""
         core.pull (db = self.db, doc_id = docId, version = version,
                        progressbar = self.progressBarStatus,
-                       msgbar = self.statusbar.showMessage)
+                       msgbar = self.statusbar.showMessage, vtype = vtype)
 
         self.progressBarStatus.setHidden (True)
 
     def setStatusClicked(self):
         print ("setStatus")
 
-    def assetClicked(self, item):
+    def assetClicked(self):
         "Set Ui when an Asset is clicked"
 
+        item=self.treeWidgetMain.currentItem()
         # Enable buttons
         stat=False
         self.buttonCreateTaskToolBar.setDisabled(stat)
@@ -1209,9 +1216,10 @@ class UiAssetManager(QtGui.QMainWindow):
         doc=self.allAssets[item.id]
         self.setDescription(item, doc)
 
-    def taskClicked(self, item):
+    def taskClicked(self):
         "Set Ui when a task is clicked"
 
+        item=self.treeWidgetMain.currentItem()
         # Enable buttons
         stat=False
         self.buttonCreateWorkspaceToolBar.setDisabled(stat)
@@ -1269,10 +1277,11 @@ class UiAssetManager(QtGui.QMainWindow):
         self.labelImageInfos.setPixmap(image)
 
 
-    def treeClicked(self, item = None):
-        if not item : return
+    def treeClicked(self):
+        item=self.treeWidgetMain.currentItem()
+        if not item :return
         self.buttonSetStatusToolBar.setDisabled(False)
-        self.taskClicked(item) if item.task else self.assetClicked(item)
+        self.taskClicked() if item.task else self.assetClicked()
 
 
     def versionChanged(self):
@@ -1291,7 +1300,9 @@ class UiAssetManager(QtGui.QMainWindow):
 
     def versionTypeChanged(self):
         item=self.treeWidgetMain.currentItem()
-        self.taskClicked(item)
+
+        if (not item) or (not item.task) : return
+        self.taskClicked()
         self.filterTasks()
 
     def releaseAsset(self):
