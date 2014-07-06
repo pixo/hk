@@ -1098,7 +1098,6 @@ class UiAssetManager(QtGui.QMainWindow):
             if item.id.find(text)<0 :
                 item.setHidden(True)
 
-
     def filterTasks(self):
         currentTask=self.comboBoxAssetTaskFilter.currentText()
         currentTask=False if currentTask=="No filter" else currentTask
@@ -1127,6 +1126,7 @@ class UiAssetManager(QtGui.QMainWindow):
         self.allAssetsItems=list()
         self.allTasks=utils.lsDb(self.db, "task", self.project)
         self.allTasksItems=list()
+
         self.createFilterForks()
         self.createTree()
         self.treeClicked()
@@ -1255,11 +1255,11 @@ class UiAssetManager(QtGui.QMainWindow):
 
         if doc :
             # Set the data to the plain text
-            creator="Creator:\t%s\n"%doc [ 'creator' ]
-            created=time.localtime(float(doc [ 'created' ]))
+            creator="Creator:\t%s\n"%doc [ 'creator' ] if ('creator' in doc) else ''
+            created=time.localtime(float(doc [ 'created' ])) if ('created' in doc) else 0
             created=time.strftime ("%Y %b %d %H:%M:%S", created)
             created="\nCreated:\t%s\n"%created
-            description="\nDescription:\n\t%s\n"%doc [ 'description' ]
+            description="\nDescription:\n\t%s\n"%doc [ 'description' ] if ('description' in doc) else ''
             status=self.allAssets[item.id]["status"] if (item.id in self.allAssets) else self.allTasks[item.id]["status"]
             status="Status:\t%s \n\n"%str(status)
             infos=status+creator+created+description
@@ -1279,7 +1279,20 @@ class UiAssetManager(QtGui.QMainWindow):
 
     def treeClicked(self):
         item=self.treeWidgetMain.currentItem()
-        if not item :return
+
+        if not item :
+            self.comboBoxVersions.clear()
+            self.comboBoxVersions.setDisabled(True)
+            self.buttonCreateWorkspaceToolBar.setDisabled(True)
+            self.buttonPushToolBar.setDisabled(True)
+            self.buttonPullToolBar.setDisabled(True)
+            self.buttonSetStatusToolBar.setDisabled(True)
+            self.buttonCreateTaskToolBar.setDisabled(True)
+            self.buttonDeactivateAssetToolBar.setDisabled(True)
+
+            self.buttonReleaseToolBar.setDisabled(True)
+            return
+
         self.buttonSetStatusToolBar.setDisabled(False)
         self.taskClicked() if item.task else self.assetClicked()
 
@@ -1287,7 +1300,7 @@ class UiAssetManager(QtGui.QMainWindow):
     def versionChanged(self):
         ""
         item=self.treeWidgetMain.currentItem()
-        if not item.task: return
+        if (not item) or (not item.task): return
 
         # Description
         versionType=self.comboBoxVersionType.currentText()
@@ -1308,6 +1321,8 @@ class UiAssetManager(QtGui.QMainWindow):
     def releaseAsset(self):
         "release task"
         item=self.treeWidgetMain.currentItem()
+        if not item: return
+
         slug=item.slug
         version=self.comboBoxVersions.currentText()
 
