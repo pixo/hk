@@ -122,27 +122,30 @@ def createAssetWS(doc_id):
 
 def createAssetOnDB(doc_id):
     description="Test"
-    stat=core.createAsset (db = None, doc_id = doc_id, description = description)
-    print stat
+    stat=core.createAsset (db = None, doc_id = doc_id, description = description, debug = True)
+#     print stat
 
 def createTaskOnDB(doc_id):
     db=utils.getDb()
     description="Test"
-    stat=core.createTask(db = db, doc_id = doc_id, description = description)
-    print stat
+    stat=core.createTask(db = db, doc_id = doc_id, description = description, debug = True)
+#     print stat
 
 def createMassiveAssets():
     prj=utils.getProjectName()
     types=utils.getAssetTypes()
     tasks=utils.getAssetTasks()
 
-    for t in types:
-        docId="%s_%s_donald%s"%(prj, types[t], types[t])
-        createAssetOnDB(docId)
+    for i in range(0, 454):
+        for t in types:
+            docId="%s_%s_donald%s%d"%(prj, types[t], types[t], i)
+            createAssetOnDB(docId)
+            print docId
 
-        for k in tasks:
-            docId="%s_%s_donald%s_%s_a"%(prj, types[t], types[t], tasks[k])
-            createTaskOnDB(docId)
+            for k in tasks:
+                docId="%s_%s_donald%s%d_%s_a"%(prj, types[t], types[t], i, tasks[k])
+                createTaskOnDB(docId)
+#                 print docId
 
 def changeAttr(db = None, docId = "", attr = None, value = None):
     if docId=="" or attr or value :
@@ -212,5 +215,5 @@ if __name__=='__main__':
 #     print utils.getBadassVersions ()
 #     pushfile("/homeworks/users/pixo/projects/tst/cam/camera/cam/a/review/caca.ma", "this is a test")
 #     changeAttr()
-    copydir()
-
+#     copydir()
+    measureTime(createMassiveAssets)

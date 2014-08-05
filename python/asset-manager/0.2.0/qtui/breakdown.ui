@@ -18,9 +18,9 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayoutMain">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayoutTop">
+       <layout class="QHBoxLayout" name="horizontalLayoutTitle">
         <item>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="labelTitle">
           <property name="text">
            <string>Project</string>
           </property>
@@ -29,7 +29,7 @@
        </layout>
       </item>
       <item>
-       <widget class="Line" name="line">
+       <widget class="Line" name="lineTitle">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -38,26 +38,45 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
+         <layout class="QVBoxLayout" name="verticalLayoutAsset">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <layout class="QHBoxLayout" name="horizontalLayoutAssetFilter">
             <item>
-             <widget class="QLabel" name="label_2">
+             <widget class="QLabel" name="labelAssetSearch">
               <property name="text">
-               <string>TextLabel</string>
+               <string>searchAssets</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineEdit"/>
+             <widget class="QLineEdit" name="lineEditAssetSearch"/>
             </item>
             <item>
-             <widget class="QComboBox" name="comboBox"/>
+             <widget class="QComboBox" name="comboBoxAssetType"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonAssetRefresh">
+              <property name="minimumSize">
+               <size>
+                <width>16</width>
+                <height>16</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16</width>
+                <height>16</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>PushButton</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
           <item>
-           <widget class="QTreeWidget" name="treeWidget">
+           <widget class="QTreeWidget" name="treeWidgetAsset">
             <property name="dragEnabled">
              <bool>true</bool>
             </property>
@@ -97,32 +116,32 @@
          </layout>
         </item>
         <item>
-         <widget class="Line" name="line_2">
+         <widget class="Line" name="lineAssetPackShot">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
          </widget>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
+         <layout class="QVBoxLayout" name="verticalLayoutPackShot">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <layout class="QHBoxLayout" name="horizontalLayoutPackFilter">
             <item>
-             <widget class="QLabel" name="label_3">
+             <widget class="QLabel" name="labelPackFilter">
               <property name="text">
-               <string>TextLabel</string>
+               <string>searchPacks</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineEdit_2"/>
+             <widget class="QLineEdit" name="lineEditPackFilter"/>
             </item>
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <layout class="QHBoxLayout" name="horizontalLayoutPackBar">
             <item>
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="pushButtonPackAssign">
               <property name="minimumSize">
                <size>
                 <width>16</width>
@@ -141,7 +160,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_3">
+             <widget class="QPushButton" name="pushButtonPackAdd">
               <property name="maximumSize">
                <size>
                 <width>16</width>
@@ -154,7 +173,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_2">
+             <widget class="QPushButton" name="pushButtonPackDisable">
               <property name="maximumSize">
                <size>
                 <width>16</width>
@@ -167,7 +186,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_7">
+             <widget class="QPushButton" name="pushButtonPackSettings">
               <property name="maximumSize">
                <size>
                 <width>16</width>
@@ -180,7 +199,7 @@
              </widget>
             </item>
             <item>
-             <spacer name="horizontalSpacer">
+             <spacer name="horizontalSpacerPackBar">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -195,7 +214,7 @@
            </layout>
           </item>
           <item>
-           <widget class="QTreeWidget" name="treeWidget_3">
+           <widget class="QTreeWidget" name="treeWidgetPack">
             <property name="dragEnabled">
              <bool>true</bool>
             </property>
@@ -230,30 +249,30 @@
            </widget>
           </item>
           <item>
-           <widget class="Line" name="line_3">
+           <widget class="Line" name="linePackShot">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <layout class="QHBoxLayout" name="horizontalLayoutShotFilter">
             <item>
-             <widget class="QLabel" name="label_4">
+             <widget class="QLabel" name="labelShotFilter">
               <property name="text">
-               <string>TextLabel</string>
+               <string>searchShots</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineEdit_3"/>
+             <widget class="QLineEdit" name="lineEditShotFilter"/>
             </item>
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <layout class="QHBoxLayout" name="horizontalLayoutShotBar">
             <item>
-             <widget class="QPushButton" name="pushButton_5">
+             <widget class="QPushButton" name="pushButtonShotAssign">
               <property name="maximumSize">
                <size>
                 <width>16</width>
@@ -266,7 +285,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_4">
+             <widget class="QPushButton" name="pushButtonShotRemove">
               <property name="maximumSize">
                <size>
                 <width>16</width>
@@ -279,7 +298,7 @@
              </widget>
             </item>
             <item>
-             <spacer name="horizontalSpacer_2">
+             <spacer name="horizontalSpacerShotBar">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -294,7 +313,7 @@
            </layout>
           </item>
           <item>
-           <widget class="QTreeWidget" name="treeWidget_2">
+           <widget class="QTreeWidget" name="treeWidgetShot">
             <property name="dragDropMode">
              <enum>QAbstractItemView::DropOnly</enum>
             </property>
@@ -333,11 +352,11 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <tabstops>
-  <tabstop>lineEdit</tabstop>
-  <tabstop>treeWidget</tabstop>
-  <tabstop>lineEdit_2</tabstop>
-  <tabstop>treeWidget_3</tabstop>
-  <tabstop>treeWidget_2</tabstop>
+  <tabstop>lineEditAssetSearch</tabstop>
+  <tabstop>treeWidgetAsset</tabstop>
+  <tabstop>lineEditPackFilter</tabstop>
+  <tabstop>treeWidgetPack</tabstop>
+  <tabstop>treeWidgetShot</tabstop>
  </tabstops>
  <resources/>
  <connections/>

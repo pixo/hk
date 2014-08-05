@@ -1,8 +1,9 @@
 '''
-Created on Jun 17, 2014
+Created on Jul 22, 2014
 
 @author: pixo
 '''
+
 import sys, time, os
 from PySide import QtCore, QtGui
 import badass.utils as utils
@@ -1042,9 +1043,34 @@ class UiAssetManager(QtGui.QMainWindow):
             if values["inactive"]:
                 assetItem.setBackground(0, QtGui.QBrush(QtCore.Qt.red, QtCore.Qt.Dense4Pattern))
 
-            empty=QtGui.QTreeWidgetItem(assetItem)
-            empty.setText(0, "Empty")
+            # Create Task items
+            globStat=list()
+            if slug in self.tasksByAsset:  # Debug
+                for task in self.tasksByAsset[slug]:
+                    assetTask=task["task"]
+                    taskItem=QtGui.QTreeWidgetItem(assetItem)
+                    self.allTasksItems.append(taskItem)
+                    taskItem.type=assetType
+                    taskItem.task=assetTask
+                    taskItem.taskNiceName=self.assetTasksSwap[assetTask]
+                    taskItem.id=task["_id"]
+                    taskItem.fork=task["fork"]
+                    taskItem.slug=slug
+                    taskItem.inactive=values["inactive"]
+                    taskItem.setText(0, "%s %s"%(taskItem.taskNiceName, taskItem.fork))
+                    taskItem.setFont(0, taskFont)
+                    taskIcon=utils.getIconPath(taskItem.taskNiceName)
+                    taskIcon=QtGui.QIcon(taskIcon)
+                    taskItem.setIcon(0, taskIcon)
+                    stat=self.getStatusColor(task["status"])
+                    taskColor=stat[0]
+                    globStat.append(stat[1])
+                    taskItem.setForeground(0, QtGui.QBrush(taskColor))
+                    if values["inactive"]:
+                        taskItem.setBackground(0, QtGui.QBrush(QtCore.Qt.red, QtCore.Qt.Dense6Pattern))
 
+            assetColor=self.getGlobalStatusColor(globStat)
+            assetItem.setForeground(0, QtGui.QBrush(assetColor))
         self.filterTree()
 
     def filterAssets(self):
@@ -1066,7 +1092,6 @@ class UiAssetManager(QtGui.QMainWindow):
                 item.setHidden(True)
 
     def filterTasks(self):
-        # TODO:Make work filter
         currentTask=self.comboBoxAssetTaskFilter.currentText()
         currentTask=False if currentTask=="No filter" else currentTask
         currentFork=self.comboBoxAssetForkFilter.currentText()
@@ -1083,6 +1108,7 @@ class UiAssetManager(QtGui.QMainWindow):
 
     def filterTree(self):
         self.filterAssets()
+        self.filterTasks()
 
     def refreshTasks(self):
         """Refresh"""
@@ -1092,11 +1118,12 @@ class UiAssetManager(QtGui.QMainWindow):
     def refreshTree(self):
         self.allAssets=utils.lsDb(self.db, "asset", self.project)
         self.allAssetsItems=list()
-
+        self.allTasks=utils.lsDb(self.db, "task", self.project)
+        self.allTasksItems=list()
         self.createFilterForks()
         self.createTree()
         self.treeClicked()
-        self.statusbar.showMessage("Welcome '%s' you are logged as '%s'.This project contain %d assets."%(self.user, self.userStatus, len(self.allAssets)))
+        self.statusbar.showMessage("Welcome '%s' you are logged as '%s'.This project contain %d assets and %d tasks."%(self.user, self.userStatus, len(self.allAssets), len(self.allTasks)))
 
     def createAsset(self):
         self.createAssetWidget=UiCreateAsset(assetManager = self)
@@ -1179,7 +1206,7 @@ class UiAssetManager(QtGui.QMainWindow):
         self.comboBoxVersions.clear()
 
         # Description
-        doc=self.db[item.id]
+        doc=self.allAssets[item.id]
         self.setDescription(item, doc)
 
     def taskClicked(self):
@@ -1199,8 +1226,7 @@ class UiAssetManager(QtGui.QMainWindow):
 
         # Set Versions comboBox
         versionType=self.comboBoxVersionType.currentText()
-#         value=self.allTasks[item.id]
-        value=self.db[item.id]
+        value=self.allTasks[item.id]
         versions=value[versionType]
         versionsList=list()
         for version in versions: versionsList.append("%03d"%int(version))
@@ -1227,10 +1253,9 @@ class UiAssetManager(QtGui.QMainWindow):
             created=time.strftime ("%Y %b %d %H:%M:%S", created)
             created="\nCreated:\t%s\n"%created
             description="\nDescription:\n\t%s\n"%doc [ 'description' ] if ('description' in doc) else ''
-#             status=self.allAssets[item.id]["status"] if (item.id in self.allAssets) else self.allTasks[item.id]["status"]
-#             status="Status:\t%s \n\n"%str(status)
-#             infos=status+creator+created+description
-            infos=creator+created+description
+            status=self.allAssets[item.id]["status"] if (item.id in self.allAssets) else self.allTasks[item.id]["status"]
+            status="Status:\t%s \n\n"%str(status)
+            infos=status+creator+created+description
 
             # Set screenshot
             if "path" in doc :
@@ -1261,8 +1286,7 @@ class UiAssetManager(QtGui.QMainWindow):
             return
 
         self.buttonSetStatusToolBar.setDisabled(False)
-        if hasattr(item, "task"):
-            self.taskClicked() if item.task else self.assetClicked()
+        self.taskClicked() if item.task else self.assetClicked()
 
 
     def versionChanged(self):
@@ -1271,7 +1295,8 @@ class UiAssetManager(QtGui.QMainWindow):
 
         # Description
         versionType=self.comboBoxVersionType.currentText()
-        value=self.db[item.id]
+        value=self.allTasks[item.id]
+        value={"review":"a", "release":"a"}
         versions=value[versionType]
         version=self.comboBoxVersions.currentText()
         doc=None if version=="" else versions[str(int(version))]
@@ -1280,6 +1305,7 @@ class UiAssetManager(QtGui.QMainWindow):
 
     def versionTypeChanged(self):
         item=self.treeWidgetMain.currentItem()
+
         if (not item) or (not item.task) : return
         self.taskClicked()
         self.filterTasks()
@@ -1326,28 +1352,7 @@ class UiAssetManager(QtGui.QMainWindow):
         self.treeWidgetMain.itemExpanded.connect(self.itemExpanded)
 
     def itemExpanded(self, item):
-        tasks=utils.lsDb(self.db, "task", item.id)
-        if len(tasks)==0:return
-        item.takeChildren()
-
-        for task in tasks:
-            taskItem=QtGui.QTreeWidgetItem(item)
-
-            values=tasks[task]
-            taskItem.type=values["type"]
-            taskItem.task=values["task"]
-            taskItem.id=values["_id"]
-            taskItem.fork=values["fork"]
-            taskItem.slug=values["name"]
-            taskItem.inactive=values["inactive"]
-            taskItem.taskNiceName=self.assetTasksSwap[taskItem.task]
-            taskItem.setText(0, "%s %s"%(taskItem.taskNiceName, taskItem.fork))
-#             taskItem.setFont(0, taskFont)
-            taskIcon=utils.getIconPath(taskItem.taskNiceName)
-            taskIcon=QtGui.QIcon(taskIcon)
-            taskItem.setIcon(0, taskIcon)
-
-#         print tasks
+        print item.text(0)
 
     def setUi(self):
         # Filter

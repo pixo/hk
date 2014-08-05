@@ -30,18 +30,18 @@ def getBadassVersions ():
     >>> getBadassVersions ()
     >>> ["0.1.0", "0.2.0"]
     """
-    code = os.getenv( "HK_CODE_PATH" )
-    versions = list()
+    code=os.getenv("HK_CODE_PATH")
+    versions=list()
     if code:
-        path = os.path.join( code, "python", "assetmanager" )
-        if os.path.exists( path ):
-            amdir = os.listdir( path )
+        path=os.path.join(code, "python", "asset-manager")
+        if os.path.exists(path):
+            amdir=os.listdir(path)
             for i in amdir :
-                if re.findall ( "\d.\d.\d*", i ):
-                    versions.append( i )
-        versions.sort( reverse = True )
+                if re.findall ("\d.\d.\d*", i):
+                    versions.append(i)
+        versions.sort(reverse = True)
 
     return versions
 
 def getCurrentUser():
-    return os.getenv ( "USER" )
+    return os.getenv ("USER")

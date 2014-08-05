@@ -5,7 +5,7 @@ Created on Jan 10, 2013
 import time
 import badass.utils as utils
 
-def createAsset (db = None, doc_id = "", description = "", overdoc = dict()):
+def createAsset (db = None, doc_id = "", description = "", overdoc = dict(), debug = False):
     """
     This function create an **asset** into the provided database.
 
@@ -71,10 +71,11 @@ def createAsset (db = None, doc_id = "", description = "", overdoc = dict()):
     # Save data structure into the database
     _id, _rev=db.save(doc)
 
-    print "createAsset: Added %r to project %r"%(asset , project)
+    if not debug :
+        print "createAsset: Added %r to project %r"%(asset , project)
     return db[_id]
 
-def createTask (db = None, doc_id = "", description = "", overdoc = dict()):
+def createTask (db = None, doc_id = "", description = "", overdoc = dict(), debug = False):
     """
     This function create a **task** into the provided database.
 
@@ -149,8 +150,8 @@ def createTask (db = None, doc_id = "", description = "", overdoc = dict()):
 
     # Save data structure into the database
     _id, _rev=db.save (doc)
-
-    print "createTask: Added %r to project %r"%(asset , project)
+    if not debug :
+        print "createTask: Added %r to project %r"%(asset , project)
     return db[_id]
 
 def createPack (db = None, doc_id = "", description = "No description"):
