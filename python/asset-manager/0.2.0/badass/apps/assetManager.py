@@ -1065,21 +1065,31 @@ class UiAssetManager(QtGui.QMainWindow):
             if item.id.find(text)<0 :
                 item.setHidden(True)
 
-    def filterTasks(self):
-        # TODO:Make work filter
+    def filterTasks(self, taskLs):
         currentTask=self.comboBoxAssetTaskFilter.currentText()
         currentTask=False if currentTask=="No filter" else currentTask
         currentFork=self.comboBoxAssetForkFilter.currentText()
         currentFork=False if currentFork=="No filter" else currentFork
 
-        for item in self.allTasksItems:
-            item.setHidden(False)
+        def filterItem(item):
+            if hasattr(item, "task") and item.task:
+                    item.setHidden(False)
 
-            if currentTask and currentTask!=item.taskNiceName:
-                item.setHidden(True)
+                    if currentTask and currentTask!=item.taskNiceName:
+                        item.setHidden(True)
 
-            if currentFork and item.fork!=currentFork:
-                item.setHidden(True)
+                    if currentFork and item.fork!=currentFork:
+                        item.setHidden(True)
+
+        if type(taskLs)==list:
+            for item in taskLs:
+                filterItem(item)
+        else:
+            it=QtGui.QTreeWidgetItemIterator(self.treeWidgetMain)
+            while it.value():
+                item=it.value()
+                filterItem(item)
+                it.next()
 
     def filterTree(self):
         self.filterAssets()
@@ -1199,7 +1209,6 @@ class UiAssetManager(QtGui.QMainWindow):
 
         # Set Versions comboBox
         versionType=self.comboBoxVersionType.currentText()
-#         value=self.allTasks[item.id]
         value=self.db[item.id]
         versions=value[versionType]
         versionsList=list()
@@ -1330,9 +1339,10 @@ class UiAssetManager(QtGui.QMainWindow):
         if len(tasks)==0:return
         item.takeChildren()
 
+        taskLs=list()
         for task in tasks:
             taskItem=QtGui.QTreeWidgetItem(item)
-
+            taskLs.append(taskItem)
             values=tasks[task]
             taskItem.type=values["type"]
             taskItem.task=values["task"]
@@ -1347,7 +1357,7 @@ class UiAssetManager(QtGui.QMainWindow):
             taskIcon=QtGui.QIcon(taskIcon)
             taskItem.setIcon(0, taskIcon)
 
-#         print tasks
+        self.filterTasks(taskLs)
 
     def setUi(self):
         # Filter
@@ -1428,7 +1438,7 @@ class UiAssetManager(QtGui.QMainWindow):
 
 def systemAM () :
     app=QtGui.QApplication(sys.argv)
-    app.setStyle("cleanlooks")
+#     app.setStyle("windows")
     main=UiAssetManager()
     main.show()
     app.exec_()
