@@ -1,0 +1,37 @@
+arch: x86_64
+building: true
+caching: true
+created: 1415755842
+default_patch_lock: no_lock
+failure_description: null
+graph: |
+  digraph graphname {
+  }
+host: pixolaptop
+implicit_packages:
+- ~platform==linux
+- ~arch==x86_64
+- ~os==Ubuntu-12.04
+load_time: 0.0
+max_depth: 0
+os: Ubuntu-12.04
+package_paths:
+- /home/pixo/packages
+- /home/pixo/.rez/packages/int
+- /home/pixo/.rez/packages/ext
+package_requests: []
+parent_suite_path: null
+patch_locks: {}
+platform: linux
+requested_timestamp: 1415755842
+resolved_packages: []
+rez_path: >-
+  /homeworks/softwares/rez/local/lib/python2.7/site-packages/rez-2.0.BETA.12-py2.7.egg/rez
+rez_version: 2.0.BETA.12
+serialize_version: '3.1'
+solve_time: 0.000247955322265625
+start_depth: 1
+status: solved
+suite_context_name: null
+timestamp: 1415755842
+user: pixo

@@ -1,0 +1,18 @@
+config_version : 0
+
+name: hellorachid
+
+version: 1.0.0
+
+uuid: 101732ba-6a05-11e4-aba4-e3158ec4125a
+
+authors:
+- rchikh
+
+description: >
+ The simplest python example package.
+
+commands:
+- export PATH=$PATH:!ROOT!/bin
+
+
